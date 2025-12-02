@@ -223,10 +223,17 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       ? calculateLPM(targetText, correctChars, elapsedSeconds)
       : 0;
 
-    // 记录 WPM 历史
+    // 记录速度历史（根据模式使用不同的值）
+    // 英文模式用WPM，中文模式用CPM，代码模式用LPM
+    const speedValue = settings.mode === 'english'
+      ? currentWpm
+      : settings.mode === 'chinese'
+        ? currentCpm
+        : currentLpm;
+
     const wpmHistory = [...get().wpmHistory, {
       time: Math.floor(elapsedSeconds),
-      wpm: currentWpm,
+      wpm: speedValue,  // 实际是速度值，不一定是WPM
       accuracy: currentAccuracy
     }];
 
@@ -267,9 +274,11 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
     set({ settings: updatedSettings });
 
-    // 如果更改了模式或难度，重新生成文本
+    // 如果更改了模式、难度、文体或语言，重新生成文本
     if ((newSettings.mode && newSettings.mode !== settings.mode) ||
-      (newSettings.difficulty && newSettings.difficulty !== settings.difficulty)) {
+      (newSettings.difficulty && newSettings.difficulty !== settings.difficulty) ||
+      (newSettings.chineseStyle && newSettings.chineseStyle !== settings.chineseStyle) ||
+      (newSettings.programmingLanguage && newSettings.programmingLanguage !== settings.programmingLanguage)) {
       get().initTest();
     } else if (newSettings.englishOptions && settings.mode === 'english') {
       // 如果只是英文选项改变，重新处理文本
