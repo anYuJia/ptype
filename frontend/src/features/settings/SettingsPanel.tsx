@@ -4,8 +4,14 @@ import { motion } from 'framer-motion';
 import {
   DURATION_OPTIONS,
   DIFFICULTY_OPTIONS,
+  CHINESE_STYLE_OPTIONS,
+  PROGRAMMING_LANGUAGE_OPTIONS,
+  CHINESE_STYLE_LABELS,
+  PROGRAMMING_LANGUAGE_LABELS,
   TypingMode,
   DifficultyLevel,
+  ChineseStyle,
+  ProgrammingLanguage,
   EnglishOptions
 } from '@/lib/constants';
 
@@ -13,18 +19,22 @@ interface SettingsPanelProps {
   duration: number;
   mode: TypingMode;
   difficulty: DifficultyLevel;
+  chineseStyle: ChineseStyle;
+  programmingLanguage: ProgrammingLanguage;
   englishOptions: EnglishOptions;
   onDurationChange: (duration: number) => void;
   onModeChange: (mode: TypingMode) => void;
   onDifficultyChange: (difficulty: DifficultyLevel) => void;
+  onChineseStyleChange: (style: ChineseStyle) => void;
+  onProgrammingLanguageChange: (lang: ProgrammingLanguage) => void;
   onEnglishOptionsChange: (options: EnglishOptions) => void;
   disabled?: boolean;
 }
 
 const modes: { value: TypingMode; label: string; description: string }[] = [
   { value: 'english', label: 'English', description: 'Common phrases & quotes' },
-  { value: 'chinese', label: '中文', description: '名言警句、诗词' },
-  { value: 'coder', label: 'Coder', description: 'Code snippets & syntax' },
+  { value: 'chinese', label: '中文', description: '现代文、文言文' },
+  { value: 'coder', label: 'Coder', description: 'Multi-language code' },
 ];
 
 const difficultyLabels: Record<DifficultyLevel, string> = {
@@ -37,10 +47,14 @@ export function SettingsPanel({
   duration,
   mode,
   difficulty,
+  chineseStyle,
+  programmingLanguage,
   englishOptions,
   onDurationChange,
   onModeChange,
   onDifficultyChange,
+  onChineseStyleChange,
+  onProgrammingLanguageChange,
   onEnglishOptionsChange,
   disabled = false,
 }: SettingsPanelProps) {
@@ -182,6 +196,72 @@ export function SettingsPanel({
             />
             <span className="text-sm text-gray-300">忽略标点符号</span>
           </label>
+        </motion.div>
+      )}
+
+      {/* 中文选项：文体选择 */}
+      {mode === 'chinese' && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="flex items-center gap-2"
+        >
+          <span className="text-sm text-gray-400 mr-2">文体:</span>
+          <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
+            {CHINESE_STYLE_OPTIONS.map((style) => (
+              <motion.button
+                key={style}
+                onClick={() => !disabled && onChineseStyleChange(style)}
+                className={`
+                  px-4 py-1.5 rounded-md text-sm font-medium transition-all
+                  ${chineseStyle === style
+                    ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                  }
+                  ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                `}
+                whileHover={!disabled ? { scale: 1.05 } : {}}
+                whileTap={!disabled ? { scale: 0.95 } : {}}
+                disabled={disabled}
+              >
+                {CHINESE_STYLE_LABELS[style]}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* 代码选项：编程语言选择 */}
+      {mode === 'coder' && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="flex flex-col gap-2"
+        >
+          <span className="text-sm text-gray-400">编程语言:</span>
+          <div className="grid grid-cols-4 gap-2">
+            {PROGRAMMING_LANGUAGE_OPTIONS.map((lang) => (
+              <motion.button
+                key={lang}
+                onClick={() => !disabled && onProgrammingLanguageChange(lang)}
+                className={`
+                  px-3 py-2 rounded-md text-sm font-medium transition-all
+                  ${programmingLanguage === lang
+                    ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50'
+                    : 'text-gray-400 hover:text-white bg-gray-900/50 hover:bg-gray-800/50'
+                  }
+                  ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                `}
+                whileHover={!disabled ? { scale: 1.05 } : {}}
+                whileTap={!disabled ? { scale: 0.95 } : {}}
+                disabled={disabled}
+              >
+                {PROGRAMMING_LANGUAGE_LABELS[lang]}
+              </motion.button>
+            ))}
+          </div>
         </motion.div>
       )}
     </div>

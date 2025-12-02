@@ -28,6 +28,8 @@ export function TypingTest() {
     setMode,
     setDifficulty,
     setEnglishOptions,
+    setChineseStyle,
+    setProgrammingLanguage,
     inputHandlers,
   } = useTypingEngine();
 
@@ -110,10 +112,14 @@ export function TypingTest() {
                   duration={settings.duration}
                   mode={settings.mode}
                   difficulty={settings.difficulty}
+                  chineseStyle={settings.chineseStyle}
+                  programmingLanguage={settings.programmingLanguage}
                   englishOptions={settings.englishOptions}
                   onDurationChange={setDuration}
                   onModeChange={setMode}
                   onDifficultyChange={setDifficulty}
+                  onChineseStyleChange={setChineseStyle}
+                  onProgrammingLanguageChange={setProgrammingLanguage}
                   onEnglishOptionsChange={setEnglishOptions}
                   disabled={false}
                 />

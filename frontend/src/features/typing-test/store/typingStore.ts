@@ -3,10 +3,14 @@ import {
   TypingMode,
   TypingStatus,
   DifficultyLevel,
+  ChineseStyle,
+  ProgrammingLanguage,
   EnglishOptions,
   DEFAULT_DURATION,
   DEFAULT_MODE,
   DEFAULT_DIFFICULTY,
+  DEFAULT_CHINESE_STYLE,
+  DEFAULT_PROGRAMMING_LANGUAGE,
   DEFAULT_ENGLISH_OPTIONS,
 } from '@/lib/constants';
 import { generateText } from '@/lib/utils/textGenerator';
@@ -24,6 +28,8 @@ export interface TypingSettings {
   duration: number; // 秒数
   mode: TypingMode;
   difficulty: DifficultyLevel; // 难度级别
+  chineseStyle: ChineseStyle; // 中文文体
+  programmingLanguage: ProgrammingLanguage; // 编程语言
   englishOptions: EnglishOptions; // 英文选项
 }
 
@@ -104,13 +110,21 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     duration: DEFAULT_DURATION,
     mode: DEFAULT_MODE,
     difficulty: DEFAULT_DIFFICULTY,
+    chineseStyle: DEFAULT_CHINESE_STYLE,
+    programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
     englishOptions: DEFAULT_ENGLISH_OPTIONS,
   },
 
   // 初始化测试（生成新文本）
   initTest: () => {
     const { settings } = get();
-    const rawText = generateText(settings.mode, settings.difficulty, 500);
+    const rawText = generateText(
+      settings.mode,
+      settings.difficulty,
+      500,
+      settings.chineseStyle,
+      settings.programmingLanguage
+    );
     const displayText = processTargetText(rawText, settings.mode, settings.englishOptions);
 
     set({
