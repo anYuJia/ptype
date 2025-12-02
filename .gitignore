@@ -30,13 +30,8 @@ coverage/
 .env.production.local
 
 # ==================== IDE & Editor ====================
-# VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+# VSCode - 完全忽略
+.vscode/
 
 # IntelliJ IDEA
 .idea/
