@@ -1,44 +1,152 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# ==================== Dependencies ====================
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
 
-# local env files
-.env*.local
+# ==================== Next.js ====================
+.next/
+out/
+build/
+dist/
 
-# vercel
-.vercel
-
-# typescript
+# ==================== Production ====================
 *.tsbuildinfo
 next-env.d.ts
 
-# ptype
+# ==================== Testing ====================
+coverage/
+.nyc_output/
+*.lcov
+
+# ==================== Environment Variables ====================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==================== IDE & Editor ====================
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# WebStorm
+.webstorm/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# ==================== OS Files ====================
+# macOS
 .DS_Store
-.claude
-.vscode
-/frontend/node_modules
-/frontend/.next
-/backend/bin
-/backend/vendor
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ==================== Logs ====================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ==================== Runtime Data ====================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ==================== Cache ====================
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.npm/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ==================== TypeScript ====================
+*.tsbuildinfo
+.tscache/
+
+# ==================== Temporary Files ====================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# ==================== Miscellaneous ====================
+.vercel
+.turbo
+*.pem
+
+# ==================== Optional ====================
+# Debug
+debug/
+.vscode/launch.json
+
+# Lock files (keep package-lock.json or yarn.lock)
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

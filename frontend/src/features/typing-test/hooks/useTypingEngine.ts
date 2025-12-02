@@ -181,6 +181,16 @@ export function useTypingEngine() {
 
       if (status === 'finished') return;
 
+      // 处理 Tab 键（代码模式）
+      if (e.key === 'Tab' && settings.mode === 'coder') {
+        e.preventDefault();
+        handleInput('\t');  // 输入制表符
+        const target = e.target as HTMLInputElement;
+        target.value = '';
+        inputValueRef.current = '';
+        return;
+      }
+
       // 处理 Backspace
       if (e.key === 'Backspace') {
         e.preventDefault();
