@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: #030712;
+  color: #e5e7eb;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* 禁止文本选择（打字练习时） */
+.select-none {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 等宽字体 */
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* 表格数字（等宽数字） */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 焦点样式 */
+:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+/* 隐藏输入法候选框样式 */
+input:focus {
+  ime-mode: disabled;
+}
