@@ -120,6 +120,11 @@ export function useTypingEngine() {
       const newValue = e.target.value;
       const oldValue = inputValueRef.current;
 
+      // 如果两个值都是空，说明是在 handleKeyDown 中清空的，不需要处理
+      if (newValue === '' && oldValue === '') {
+        return;
+      }
+
       // 计算新增的字符
       if (newValue.length > oldValue.length) {
         const newChars = newValue.slice(oldValue.length);

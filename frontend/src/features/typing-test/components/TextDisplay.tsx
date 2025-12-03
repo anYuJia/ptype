@@ -42,6 +42,7 @@ const Character = memo(function Character({
   let displayChar = char;
   if (char === ' ') displayChar = '\u00A0';
   if (char === '\n') displayChar = '↵'; // 程序员模式显示换行符
+  if (char === '\t') displayChar = '→'; // Tab 显示为箭头
 
   return (
     <motion.span
@@ -76,7 +77,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
     normalizedDisplay = normalizedDisplay.normalize('NFC');
     normalizedTyped = normalizedTyped.normalize('NFC');
 
-    return normalizedDisplay.split('').map((char, index) => {
+    const result = normalizedDisplay.split('').map((char, index) => {
       let charStatus: 'pending' | 'correct' | 'incorrect' | 'current';
 
       if (index < normalizedTyped.length) {
@@ -92,6 +93,8 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
 
       return { char, status: charStatus, index };
     });
+
+    return result;
   }, [displayText, typedText, status]);
 
   // 计算当前应该显示的两行内容（优化版：真正的两行滚动）
@@ -120,15 +123,20 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       let line1Start = 0;
       for (let i = 0; i < currentLineIndex; i++) {
         line1Start += lines[i].length + 1; // +1 for \n
-
       }
 
-      return {
+      // 检查第一行后面是否有换行符（只要不是最后一行就有）
+      const line1HasNewline = currentLineIndex < lines.length - 1;
+
+      const result = {
         line1,
         line2,
         line1Start,
-        line2Start: line1Start + line1.length + (line2 ? 1 : 0)
+        line2Start: line1Start + line1.length + (line1HasNewline ? 1 : 0),
+        line1HasNewline,
       };
+
+      return result;
     } else {
       // 英文和中文模式：两行滚动显示，单词不截断 - 使用 displayText
       const words = mode === 'english' ? displayText.split(' ') : displayText.split('');
@@ -197,18 +205,19 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         line2: line2.text,
         line1Start: line1.startIndex,
         line2Start: line2.startIndex,
+        line1HasNewline: false, // 英文和中文模式不显示换行符
       };
     }
   }, [displayText, typedText, mode]);
 
   // 为两行中的每个字符添加状态
-  const renderLine = (lineText: string, startOffset: number) => {
-    return lineText.split('').map((char, i) => {
+  const renderLine = (lineText: string, startOffset: number, hasNewline: boolean = false) => {
+    const chars = lineText.split('');
+    const result = chars.map((char, i) => {
       const globalIndex = startOffset + i;
       const charData = characters[globalIndex];
       if (!charData) return null;
 
-      // 如果是当前字符，添加ref用于定位input
       const isCurrent = charData.status === 'current';
 
       return (
@@ -221,6 +230,27 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         </span>
       );
     });
+
+    // 在程序员模式下，如果这一行后面有换行符，也要渲染它
+    if (hasNewline && mode === 'coder') {
+      const newlineIndex = startOffset + chars.length;
+      const newlineData = characters[newlineIndex];
+
+      if (newlineData) {
+        const isCurrent = newlineData.status === 'current';
+        result.push(
+          <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+            <Character
+              char="\n"
+              status={newlineData.status}
+              index={newlineIndex}
+            />
+          </span>
+        );
+      }
+    }
+
+    return result;
   };
 
   return (
@@ -273,12 +303,12 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       >
         {/* 第一行 */}
         <div className="min-h-[2.5rem] mb-2">
-          {renderLine(displayLines.line1, displayLines.line1Start)}
+          {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
         </div>
 
         {/* 第二行 */}
         <div className="min-h-[2.5rem] text-gray-500">
-          {renderLine(displayLines.line2, displayLines.line2Start)}
+          {renderLine(displayLines.line2, displayLines.line2Start, false)}
         </div>
       </div>
 
