@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useTypingStore } from '../store/typingStore';
-import { DifficultyLevel, EnglishOptions, ChineseStyle, ProgrammingLanguage } from '@/lib/constants';
+import { DifficultyLevel, EnglishOptions, ChineseStyle, ProgrammingLanguage, TypingOptions } from '@/lib/constants';
 
 /**
  * 打字引擎 Hook
@@ -104,6 +104,13 @@ export function useTypingEngine() {
   const setProgrammingLanguage = useCallback(
     (programmingLanguage: ProgrammingLanguage) => {
       updateSettings({ programmingLanguage });
+    },
+    [updateSettings]
+  );
+
+  const setTypingOptions = useCallback(
+    (typingOptions: TypingOptions) => {
+      updateSettings({ typingOptions });
     },
     [updateSettings]
   );
@@ -255,6 +262,7 @@ export function useTypingEngine() {
     setEnglishOptions,
     setChineseStyle,
     setProgrammingLanguage,
+    setTypingOptions,
 
     // Input 事件处理器
     inputHandlers: {

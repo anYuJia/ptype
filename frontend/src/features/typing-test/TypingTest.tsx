@@ -30,6 +30,7 @@ export function TypingTest() {
     setEnglishOptions,
     setChineseStyle,
     setProgrammingLanguage,
+    setTypingOptions,
     inputHandlers,
   } = useTypingEngine();
 
@@ -63,7 +64,7 @@ export function TypingTest() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-200 flex flex-col">
       {/* 头部 */}
-      <header className="py-6 px-4">
+      <header className="py-4 px-4">
         <motion.h1
           className="text-2xl font-bold text-center text-teal-400"
           initial={{ opacity: 0, y: -20 }}
@@ -118,38 +119,18 @@ export function TypingTest() {
                   chineseStyle={settings.chineseStyle}
                   programmingLanguage={settings.programmingLanguage}
                   englishOptions={settings.englishOptions}
+                  typingOptions={settings.typingOptions}
+                  status={status}
                   onDurationChange={setDuration}
                   onModeChange={setMode}
                   onDifficultyChange={setDifficulty}
                   onChineseStyleChange={setChineseStyle}
                   onProgrammingLanguageChange={setProgrammingLanguage}
                   onEnglishOptionsChange={setEnglishOptions}
+                  onTypingOptionsChange={setTypingOptions}
+                  onRestart={restart}
                   disabled={false}
                 />
-
-                {/* 控制按钮 */}
-                <div className="flex justify-center gap-4">
-                  {status === 'running' && (
-                    <motion.button
-                      onClick={restart}
-                      className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      停止并重新开始
-                    </motion.button>
-                  )}
-                  {status === 'idle' && (
-                    <motion.button
-                      onClick={restart}
-                      className="px-6 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      重新生成文本
-                    </motion.button>
-                  )}
-                </div>
 
                 {/* 统计显示 */}
                 <StatsDisplay
@@ -160,6 +141,18 @@ export function TypingTest() {
                   accuracy={accuracy}
                   timeLeft={timeLeft}
                   status={status}
+                  actionButton={
+                    status === 'running' ? (
+                      <motion.button
+                        onClick={restart}
+                        className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        停止并重新开始
+                      </motion.button>
+                    ) : null
+                  }
                 />
 
                 {/* 文本显示 - 包含输入框 */}
@@ -172,21 +165,6 @@ export function TypingTest() {
                   inputRef={inputRef}
                   inputHandlers={inputHandlers}
                 />
-
-                {/* 重新开始提示 */}
-                {status === 'running' && (
-                  <motion.div
-                    className="text-center text-gray-500 text-sm"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    Press{' '}
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-400">Tab</kbd>{' '}
-                    +{' '}
-                    <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-400">Enter</kbd>{' '}
-                    to restart
-                  </motion.div>
-                )}
               </motion.div>
             )}
           </AnimatePresence>

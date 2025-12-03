@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { CustomSelect } from '@/components/CustomSelect';
 import {
   DURATION_OPTIONS,
   DIFFICULTY_OPTIONS,
@@ -12,7 +13,8 @@ import {
   DifficultyLevel,
   ChineseStyle,
   ProgrammingLanguage,
-  EnglishOptions
+  EnglishOptions,
+  TypingOptions,
 } from '@/lib/constants';
 
 interface SettingsPanelProps {
@@ -22,12 +24,16 @@ interface SettingsPanelProps {
   chineseStyle: ChineseStyle;
   programmingLanguage: ProgrammingLanguage;
   englishOptions: EnglishOptions;
+  typingOptions: TypingOptions;
+  status: 'idle' | 'running' | 'finished';
   onDurationChange: (duration: number) => void;
   onModeChange: (mode: TypingMode) => void;
   onDifficultyChange: (difficulty: DifficultyLevel) => void;
   onChineseStyleChange: (style: ChineseStyle) => void;
   onProgrammingLanguageChange: (lang: ProgrammingLanguage) => void;
   onEnglishOptionsChange: (options: EnglishOptions) => void;
+  onTypingOptionsChange: (options: TypingOptions) => void;
+  onRestart?: () => void;
   disabled?: boolean;
 }
 
@@ -50,16 +56,20 @@ export function SettingsPanel({
   chineseStyle,
   programmingLanguage,
   englishOptions,
+  typingOptions,
+  status,
   onDurationChange,
   onModeChange,
   onDifficultyChange,
   onChineseStyleChange,
   onProgrammingLanguageChange,
   onEnglishOptionsChange,
+  onTypingOptionsChange,
+  onRestart,
   disabled = false,
 }: SettingsPanelProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* 第一行：时间、模式、难度 */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
         {/* 时间选择 */}
@@ -157,45 +167,76 @@ export function SettingsPanel({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="flex items-center justify-center gap-4"
+          className="flex items-center justify-between gap-4"
         >
-          <span className="text-sm text-gray-400">Options:</span>
+          {/* 左侧：允许删除 + 英文选项 */}
+          <div className="flex items-center gap-6">
+            {/* 允许删除 */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={typingOptions.allowBackspace}
+                onChange={(e) =>
+                  !disabled &&
+                  onTypingOptionsChange({
+                    ...typingOptions,
+                    allowBackspace: e.target.checked,
+                  })
+                }
+                disabled={disabled}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300">允许删除</span>
+            </label>
 
-          {/* 区分大小写 */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={englishOptions.caseSensitive}
-              onChange={(e) =>
-                !disabled &&
-                onEnglishOptionsChange({
-                  ...englishOptions,
-                  caseSensitive: e.target.checked,
-                })
-              }
-              disabled={disabled}
-              className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
-            />
-            <span className="text-sm text-gray-300">区分大小写</span>
-          </label>
+            {/* 区分大小写 */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={englishOptions.caseSensitive}
+                onChange={(e) =>
+                  !disabled &&
+                  onEnglishOptionsChange({
+                    ...englishOptions,
+                    caseSensitive: e.target.checked,
+                  })
+                }
+                disabled={disabled}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300">区分大小写</span>
+            </label>
 
-          {/* 忽略标点符号 */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={englishOptions.ignorePunctuation}
-              onChange={(e) =>
-                !disabled &&
-                onEnglishOptionsChange({
-                  ...englishOptions,
-                  ignorePunctuation: e.target.checked,
-                })
-              }
-              disabled={disabled}
-              className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
-            />
-            <span className="text-sm text-gray-300">忽略标点符号</span>
-          </label>
+            {/* 忽略标点符号 */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={englishOptions.ignorePunctuation}
+                onChange={(e) =>
+                  !disabled &&
+                  onEnglishOptionsChange({
+                    ...englishOptions,
+                    ignorePunctuation: e.target.checked,
+                  })
+                }
+                disabled={disabled}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300">忽略标点符号</span>
+            </label>
+          </div>
+
+          {/* 右侧：重新生成按钮 */}
+          {status === 'idle' && onRestart && (
+            <motion.button
+              onClick={onRestart}
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              重新生成文本
+            </motion.button>
+          )}
         </motion.div>
       )}
 
@@ -205,30 +246,66 @@ export function SettingsPanel({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="flex items-center gap-2"
+          className="flex items-center justify-between gap-4"
         >
-          <span className="text-sm text-gray-400 mr-2">文体:</span>
-          <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
-            {CHINESE_STYLE_OPTIONS.map((style) => (
-              <motion.button
-                key={style}
-                onClick={() => !disabled && onChineseStyleChange(style)}
-                className={`
-                  px-4 py-1.5 rounded-md text-sm font-medium transition-all
-                  ${chineseStyle === style
-                    ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                  }
-                  ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                `}
-                whileHover={!disabled ? { scale: 1.05 } : {}}
-                whileTap={!disabled ? { scale: 0.95 } : {}}
+          {/* 左侧：允许删除 + 中文文体 */}
+          <div className="flex items-center gap-6">
+            {/* 允许删除 */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={typingOptions.allowBackspace}
+                onChange={(e) =>
+                  !disabled &&
+                  onTypingOptionsChange({
+                    ...typingOptions,
+                    allowBackspace: e.target.checked,
+                  })
+                }
                 disabled={disabled}
-              >
-                {CHINESE_STYLE_LABELS[style]}
-              </motion.button>
-            ))}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300">允许删除</span>
+            </label>
+
+            {/* 文体选择 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400 mr-2">文体:</span>
+              <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
+                {CHINESE_STYLE_OPTIONS.map((style) => (
+                  <motion.button
+                    key={style}
+                    onClick={() => !disabled && onChineseStyleChange(style)}
+                    className={`
+                      px-4 py-1.5 rounded-md text-sm font-medium transition-all
+                      ${chineseStyle === style
+                        ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/50'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                      }
+                      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    `}
+                    whileHover={!disabled ? { scale: 1.05 } : {}}
+                    whileTap={!disabled ? { scale: 0.95 } : {}}
+                    disabled={disabled}
+                  >
+                    {CHINESE_STYLE_LABELS[style]}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           </div>
+
+          {/* 右侧：重新生成按钮 */}
+          {status === 'idle' && onRestart && (
+            <motion.button
+              onClick={onRestart}
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              重新生成文本
+            </motion.button>
+          )}
         </motion.div>
       )}
 
@@ -238,28 +315,53 @@ export function SettingsPanel({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
-          className="flex items-center gap-2"
+          className="flex items-center justify-between gap-4"
         >
-          <span className="text-sm text-gray-400 mr-2">编程语言:</span>
-          <select
-            value={programmingLanguage}
-            onChange={(e) => !disabled && onProgrammingLanguageChange(e.target.value as ProgrammingLanguage)}
-            disabled={disabled}
-            className="
-              flex-1 px-4 py-2 rounded-lg
-              bg-gray-900/50 border border-gray-700
-              text-white text-sm
-              focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
-              disabled:opacity-50 disabled:cursor-not-allowed
-              cursor-pointer
-            "
-          >
-            {PROGRAMMING_LANGUAGE_OPTIONS.map((lang) => (
-              <option key={lang} value={lang}>
-                {PROGRAMMING_LANGUAGE_LABELS[lang]}
-              </option>
-            ))}
-          </select>
+          {/* 左侧：允许删除 + 编程语言选择器 */}
+          <div className="flex items-center gap-6">
+            {/* 允许删除 */}
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={typingOptions.allowBackspace}
+                onChange={(e) =>
+                  !disabled &&
+                  onTypingOptionsChange({
+                    ...typingOptions,
+                    allowBackspace: e.target.checked,
+                  })
+                }
+                disabled={disabled}
+                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-teal-500 focus:ring-teal-500 focus:ring-offset-gray-900 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300">允许删除</span>
+            </label>
+
+            {/* 编程语言 */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400 mr-2">编程语言:</span>
+              <CustomSelect
+                value={programmingLanguage}
+                options={PROGRAMMING_LANGUAGE_OPTIONS}
+                labels={PROGRAMMING_LANGUAGE_LABELS}
+                onChange={onProgrammingLanguageChange}
+                disabled={disabled}
+                className="w-40"
+              />
+            </div>
+          </div>
+
+          {/* 右侧：重新生成按钮 */}
+          {status === 'idle' && onRestart && (
+            <motion.button
+              onClick={onRestart}
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              重新生成文本
+            </motion.button>
+          )}
         </motion.div>
       )}
     </div>

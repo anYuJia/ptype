@@ -30,6 +30,11 @@ export interface EnglishOptions {
     ignorePunctuation: boolean; // 忽略标点符号
 }
 
+// 通用打字选项
+export interface TypingOptions {
+    allowBackspace: boolean; // 允许删除重新输入
+}
+
 // 默认配置
 export const DEFAULT_DURATION = 60; // 默认60秒
 export const DEFAULT_MODE: TypingMode = 'english';
@@ -39,6 +44,9 @@ export const DEFAULT_PROGRAMMING_LANGUAGE: ProgrammingLanguage = 'python';
 export const DEFAULT_ENGLISH_OPTIONS: EnglishOptions = {
     caseSensitive: false,
     ignorePunctuation: false,
+};
+export const DEFAULT_TYPING_OPTIONS: TypingOptions = {
+    allowBackspace: true, // 默认允许删除
 };
 
 // 时间选项（秒）

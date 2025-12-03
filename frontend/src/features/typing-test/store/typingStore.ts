@@ -6,12 +6,14 @@ import {
   ChineseStyle,
   ProgrammingLanguage,
   EnglishOptions,
+  TypingOptions,
   DEFAULT_DURATION,
   DEFAULT_MODE,
   DEFAULT_DIFFICULTY,
   DEFAULT_CHINESE_STYLE,
   DEFAULT_PROGRAMMING_LANGUAGE,
   DEFAULT_ENGLISH_OPTIONS,
+  DEFAULT_TYPING_OPTIONS,
 } from '@/lib/constants';
 import { generateText } from '@/lib/utils/textGenerator';
 import { analyzeTyping, calculateWPM, calculateCPM, calculateLPM, calculateAccuracy } from '../utils/wpmCalculator';
@@ -31,6 +33,7 @@ export interface TypingSettings {
   chineseStyle: ChineseStyle; // 中文文体
   programmingLanguage: ProgrammingLanguage; // 编程语言
   englishOptions: EnglishOptions; // 英文选项
+  typingOptions: TypingOptions; // 打字选项
 }
 
 // 状态接口
@@ -113,6 +116,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     chineseStyle: DEFAULT_CHINESE_STYLE,
     programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
     englishOptions: DEFAULT_ENGLISH_OPTIONS,
+    typingOptions: DEFAULT_TYPING_OPTIONS,
   },
 
   // 初始化测试（生成新文本）
@@ -183,9 +187,17 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
   // 处理退格
   handleBackspace: () => {
-    const { status, typedText, displayText } = get();
+    const { status, typedText, displayText, settings } = get();
+
+    // 检查是否允许删除
+    if (!settings.typingOptions.allowBackspace) return;
 
     if (status === 'finished' || typedText.length === 0) return;
+
+    // 检查是否会删除到上一行（防止跨行删除）
+    const charToDelete = typedText[typedText.length - 1];
+    // 如果要删除的是换行符，说明会返回上一行，阻止删除
+    if (charToDelete === '\n') return;
 
     const newTypedText = typedText.slice(0, -1);
     const analysis = analyzeTyping(displayText, newTypedText);

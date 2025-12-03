@@ -24,18 +24,20 @@ const Character = memo(function Character({
   char,
   status,
   index,
+  isCurrent,
 }: {
   char: string;
   status: 'pending' | 'correct' | 'incorrect' | 'current';
   index: number;
+  isCurrent: boolean;
 }) {
-  const baseClass = 'inline-block transition-colors duration-100';
+  const baseClass = 'inline-block transition-colors duration-100 relative';
 
   const statusClasses = {
     pending: 'text-gray-500',
     correct: 'text-emerald-400',  // 浅绿色 - 正确
     incorrect: 'text-red-400',     // 浅红色 - 错误
-    current: 'text-white bg-teal-500/30 border-b-2 border-teal-400',
+    current: 'text-white',
   };
 
   // 处理空格和换行显示
@@ -50,14 +52,21 @@ const Character = memo(function Character({
     <motion.span
       className={`${baseClass} ${statusClasses[status]} ${isSpecial ? 'opacity-50 font-bold' : ''}`}
       initial={status === 'correct' ? { scale: 1.1 } : false}
-      animate={{
-        scale: status === 'current' ? [1, 1.05, 1] : 1,
-      }}
-      transition={{
-        duration: status === 'current' ? 0.6 : 0.1,
-        repeat: status === 'current' ? Infinity : 0,
-      }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 0.1 }}
     >
+      {/* 平滑移动的光标背景 */}
+      {isCurrent && (
+        <motion.span
+          layoutId="cursor-highlight"
+          className="absolute inset-0 bg-teal-500/30 border-b-2 border-teal-400 -z-10"
+          transition={{
+            type: "spring",
+            stiffness: 500,
+            damping: 30
+          }}
+        />
+      )}
       {displayChar}
     </motion.span>
   );
@@ -280,6 +289,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
             char={charData.char}
             status={charData.status}
             index={globalIndex}
+            isCurrent={isCurrent}
           />
         </span>
       );
@@ -298,6 +308,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
               char={newlineData.char}
               status={newlineData.status}
               index={newlineIndex}
+              isCurrent={isCurrent}
             />
           </span>
         );
