@@ -106,18 +106,15 @@ export function SettingsPanel({
         {/* 模式选择 */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400 mr-2">Mode:</span>
-          <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
+          <div className="flex relative gap-1 bg-gray-900/50 rounded-lg p-1">
             {modes.map((m) => (
               <motion.button
                 key={m.value}
                 onClick={() => !disabled && onModeChange(m.value)}
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
-                  transition-colors duration-200
-                  ${mode === m.value
-                    ? 'bg-teal-500 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                  }
+                  transition-colors duration-200 relative
+                  ${mode === m.value ? 'text-white' : 'text-gray-400 hover:text-white'}
                   ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
                 whileHover={!disabled ? { scale: 1.05 } : undefined}
@@ -125,7 +122,14 @@ export function SettingsPanel({
                 disabled={disabled}
                 title={m.description}
               >
-                {m.label}
+                <span className="relative z-10">{m.label}</span>
+                {mode === m.value && (
+                  <motion.div
+                    layoutId="mode-highlight"
+                    className="absolute inset-0 bg-teal-500 rounded-md"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
               </motion.button>
             ))}
           </div>

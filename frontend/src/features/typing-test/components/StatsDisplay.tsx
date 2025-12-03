@@ -1,8 +1,9 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
 import { TypingMode } from '@/lib/constants';
 import { ReactNode } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatedNumber } from './AnimatedNumber';
 
 interface StatsDisplayProps {
   mode: TypingMode;
@@ -15,23 +16,24 @@ interface StatsDisplayProps {
   actionButton?: ReactNode; // 可选的右侧按钮
 }
 
+// 定义一个统一的、平滑的缓动动画，用于所有相关的动画效果
+const transition = {
+  duration: 0.4,
+  ease: 'easeInOut',
+};
+
 export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, actionButton }: StatsDisplayProps) {
   // 根据模式决定显示哪些指标
   const getSpeedStats = () => {
     switch (mode) {
       case 'english':
-        // 英文：显示 WPM 和 CPM
         return [
           { value: wpm, label: 'WPM', sublabel: '单词/分钟' },
           { value: cpm, label: 'CPM', sublabel: '字符/分钟' },
         ];
       case 'chinese':
-        // 中文：只显示 CPM
-        return [
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟' },
-        ];
+        return [{ value: cpm, label: 'CPM', sublabel: '字符/分钟' }];
       case 'coder':
-        // 代码：显示 LPM 和 CPM
         return [
           { value: lpm, label: 'LPM', sublabel: '行/分钟' },
           { value: cpm, label: 'CPM', sublabel: '字符/分钟' },
@@ -45,64 +47,56 @@ export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, 
 
   return (
     <div className="flex items-center justify-between gap-4">
-      {/* 左侧：统计信息 */}
-      <div className="flex items-center justify-center gap-6 md:gap-12 flex-1">
-        {/* 速度指标 - 动态显示 */}
-        {speedStats.map((stat, index) => (
-          <div key={stat.label} className="text-center">
+      <motion.div
+        layout
+        transition={transition}
+        className="flex items-center justify-center gap-6 md:gap-12 flex-1"
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          {speedStats.map((stat) => (
             <motion.div
-              className="text-4xl md:text-6xl font-extrabold text-teal-400 tracking-tighter tabular-nums"
-              key={stat.value}
-              initial={{ scale: 1.1, opacity: 0.5 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.15 }}
+              layout
+              key={stat.label}
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={transition}
             >
-              {stat.value}
+              <AnimatedNumber
+                value={stat.value}
+                className="text-4xl md:text-6xl font-extrabold text-teal-400 tracking-tighter tabular-nums"
+              />
+              <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
+              <div className="text-xs text-gray-500">{stat.sublabel}</div>
             </motion.div>
-            <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
-            <div className="text-xs text-gray-500">{stat.sublabel}</div>
-          </div>
-        ))}
+          ))}
+        </AnimatePresence>
 
-        {/* 时间 */}
-        <div className="text-center">
-          <motion.div
-            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${timeLeft <= 10 && status === 'running' ? 'text-red-400' : 'text-white'
-              }`}
-            key={timeLeft}
-            initial={timeLeft <= 10 ? { scale: 1.1 } : false}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.1 }}
-          >
-            {timeLeft}
-          </motion.div>
+        <motion.div layout transition={transition} className="text-center">
+          <AnimatedNumber
+            value={timeLeft}
+            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${
+              timeLeft <= 10 && status === 'running' ? 'text-red-400' : 'text-white'
+            }`}
+          />
           <div className="text-xs text-gray-400 mt-1">SEC</div>
           <div className="text-xs text-gray-500">秒</div>
-        </div>
+        </motion.div>
 
-        {/* 准确率 */}
-        <div className="text-center">
-          <motion.div
-            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${accuracy < 90 ? 'text-yellow-400' : 'text-emerald-400'
-              }`}
-            key={accuracy}
-            initial={{ scale: 1.05 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.15 }}
-          >
-            {accuracy}
-          </motion.div>
+        <motion.div layout transition={transition} className="text-center">
+          <AnimatedNumber
+            value={accuracy}
+            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${
+              accuracy < 90 ? 'text-yellow-400' : 'text-emerald-400'
+            }`}
+          />
           <div className="text-xs text-gray-400 mt-1">ACC%</div>
           <div className="text-xs text-gray-500">准确率</div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {/* 右侧：操作按钮 */}
-      {actionButton && (
-        <div className="flex items-end pb-2">
-          {actionButton}
-        </div>
-      )}
+      {actionButton && <div className="flex items-end pb-2">{actionButton}</div>}
     </div>
   );
 }
