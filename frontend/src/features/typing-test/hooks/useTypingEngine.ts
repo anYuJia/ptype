@@ -24,6 +24,7 @@ export function useTypingEngine() {
     wpmHistory,
     settings,
     initTest,
+    startTest, // 添加 startTest
     handleInput,
     handleBackspace,
     tick,
@@ -153,7 +154,11 @@ export function useTypingEngine() {
   // Composition event handlers
   const handleCompositionStart = useCallback(() => {
     isComposingRef.current = true;
-  }, []);
+    // 中文输入法开始时就开始计时
+    if (status === 'idle') {
+      startTest();
+    }
+  }, [status, startTest]);
 
   const handleCompositionEnd = useCallback(
     (e: React.CompositionEvent<HTMLInputElement>) => {
@@ -182,7 +187,14 @@ export function useTypingEngine() {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       // 忽略输入法激活时的按键
-      if (isComposingRef.current) return;
+      // 特殊处理：如果按的是 Enter，且原生状态显示不在 composing，说明我们的 ref 状态可能滞后，允许通过
+      if (isComposingRef.current) {
+        if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+          // 允许通过
+        } else {
+          return;
+        }
+      }
 
       if (status === 'finished') return;
 
@@ -206,8 +218,8 @@ export function useTypingEngine() {
         return;
       }
 
-      // 处理 Enter 换行（程序员模式）
-      if (e.key === 'Enter' && settings.mode === 'coder') {
+      // 处理 Enter 换行（所有模式）
+      if (e.key === 'Enter') {
         e.preventDefault();
         handleInput('\n');
         const target = e.target as HTMLInputElement;

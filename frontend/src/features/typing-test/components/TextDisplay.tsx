@@ -41,12 +41,14 @@ const Character = memo(function Character({
   // 处理空格和换行显示
   let displayChar = char;
   if (char === ' ') displayChar = '\u00A0';
-  if (char === '\n') displayChar = '↵'; // 程序员模式显示换行符
+  if (char === '\n') displayChar = '↵'; // 显示换行符
   if (char === '\t') displayChar = '→'; // Tab 显示为箭头
+
+  const isSpecial = char === '\n' || char === '\t';
 
   return (
     <motion.span
-      className={`${baseClass} ${statusClasses[status]}`}
+      className={`${baseClass} ${statusClasses[status]} ${isSpecial ? 'opacity-50 font-bold' : ''}`}
       initial={status === 'correct' ? { scale: 1.1 } : false}
       animate={{ scale: 1 }}
       transition={{ duration: 0.1 }}
@@ -139,28 +141,69 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       return result;
     } else {
       // 英文和中文模式：两行滚动显示，单词不截断 - 使用 displayText
-      const words = mode === 'english' ? displayText.split(' ') : displayText.split('');
+      // 1. 生成单词数组，保留换行符
+      let words: string[] = [];
+      if (mode === 'english') {
+        // 英文模式：按换行符分割，再按空格分割，保留换行符作为独立项
+        const lines = displayText.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].length > 0) {
+            words.push(...lines[i].split(' '));
+          }
+          // 如果不是最后一行，添加换行符
+          if (i < lines.length - 1) {
+            words.push('\n');
+          }
+        }
+      } else {
+        // 中文模式：按字符分割
+        words = displayText.split('');
+      }
+
       const separator = mode === 'english' ? ' ' : '';
       const maxCharsPerLine = mode === 'english' ? 55 : 35;
 
       // 将所有单词分成多行（每行不超过最大字符数）
-      const allLines: { text: string; startIndex: number }[] = [];
+      const allLines: { text: string; startIndex: number; hasNewline: boolean }[] = [];
       let currentLine: string[] = [];
       let currentLineLength = 0;
       let charIndex = 0;
 
       for (let i = 0; i < words.length; i++) {
         const word = words[i];
-        const wordWithSeparator = word + (mode === 'english' && i < words.length - 1 ? ' ' : '');
+
+        // 处理换行符 (所有模式)
+        if (word === '\n') {
+          // 保存当前行，并标记有换行符
+          const lineStartIndex = charIndex - currentLineLength;
+          allLines.push({
+            text: currentLine.join(separator),
+            startIndex: lineStartIndex,
+            hasNewline: true
+          });
+
+          // 重置当前行
+          currentLine = [];
+          currentLineLength = 0;
+          charIndex += 1; // 换行符占一个字符位置
+          continue;
+        }
+
+        // 计算单词长度（包含分隔符）
+        // 英文模式下，如果下一个词是换行符，或者这是最后一个词，就不加空格
+        const nextWord = words[i + 1];
+        const shouldAddSeparator = mode === 'english' && nextWord !== '\n' && i < words.length - 1;
+        const wordWithSeparator = word + (shouldAddSeparator ? separator : '');
         const wordLength = wordWithSeparator.length;
 
-        // 检查是否需要换行
+        // 检查是否需要自动换行（长度限制）
         if (currentLine.length > 0 && currentLineLength + wordLength > maxCharsPerLine) {
           // 保存当前行
           const lineStartIndex = charIndex - currentLineLength;
           allLines.push({
             text: currentLine.join(separator),
-            startIndex: lineStartIndex
+            startIndex: lineStartIndex,
+            hasNewline: false // 自动换行，没有硬换行符
           });
 
           // 开始新行
@@ -180,7 +223,8 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         const lineStartIndex = charIndex - currentLineLength;
         allLines.push({
           text: currentLine.join(separator),
-          startIndex: lineStartIndex
+          startIndex: lineStartIndex,
+          hasNewline: false
         });
       }
 
@@ -188,7 +232,9 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       let currentLineIndex = 0;
       for (let i = 0; i < allLines.length; i++) {
         const line = allLines[i];
-        const lineEndIndex = line.startIndex + line.text.length + (mode === 'english' && i < allLines.length - 1 ? 1 : 0);
+        // 行结束位置 = 下一行的开始位置，如果不存在下一行，则为当前行的结束位置
+        const nextLine = allLines[i + 1];
+        const lineEndIndex = nextLine ? nextLine.startIndex : (line.startIndex + line.text.length + (line.hasNewline ? 1 : 0));
 
         if (typedText.length < lineEndIndex) {
           currentLineIndex = i;
@@ -197,15 +243,18 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       }
 
       // 返回当前行和下一行
-      const line1 = allLines[currentLineIndex] || { text: '', startIndex: 0 };
-      const line2 = allLines[currentLineIndex + 1] || { text: '', startIndex: line1.startIndex + line1.text.length + (mode === 'english' ? 1 : 0) };
+      const line1 = allLines[currentLineIndex] || { text: '', startIndex: 0, hasNewline: false };
+      const line2 = allLines[currentLineIndex + 1] || { text: '', startIndex: 0, hasNewline: false }; // startIndex will be calculated if needed, but usually we just render text
+
+      // 修正 line2Start 的计算，如果 line2 不存在，或者我们需要根据 line1 推算
+      const line2Start = line2.text ? line2.startIndex : (line1.startIndex + line1.text.length + (line1.hasNewline ? 1 : 0) + (mode === 'english' && !line1.hasNewline ? 1 : 0));
 
       return {
         line1: line1.text,
         line2: line2.text,
         line1Start: line1.startIndex,
-        line2Start: line2.startIndex,
-        line1HasNewline: false, // 英文和中文模式不显示换行符
+        line2Start: line2Start, // 使用实际计算出的 startIndex
+        line1HasNewline: line1.hasNewline,
       };
     }
   }, [displayText, typedText, mode]);
@@ -231,8 +280,8 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       );
     });
 
-    // 在程序员模式下，如果这一行后面有换行符，也要渲染它
-    if (hasNewline && mode === 'coder') {
+    // 如果这一行后面有换行符，也要渲染它 (支持所有模式)
+    if (hasNewline) {
       const newlineIndex = startOffset + chars.length;
       const newlineData = characters[newlineIndex];
 
@@ -292,6 +341,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         ref={containerRef}
         className={`
           relative
+          flex flex-col gap-2
           font-mono leading-relaxed
           p-6 rounded-xl
           bg-gray-900/50 backdrop-blur-sm
@@ -302,12 +352,12 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         onClick={() => inputRef.current?.focus()}
       >
         {/* 第一行 */}
-        <div className="min-h-[2.5rem] mb-2">
+        <div className="min-h-[2.5rem] w-full break-words">
           {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
         </div>
 
         {/* 第二行 */}
-        <div className="min-h-[2.5rem] text-gray-500">
+        <div className="min-h-[2.5rem] w-full break-words text-gray-500">
           {renderLine(displayLines.line2, displayLines.line2Start, false)}
         </div>
       </div>

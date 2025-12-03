@@ -648,9 +648,9 @@ export function generateText(
   const textPool = getTextPool(mode, difficulty, chineseStyle, programmingLanguage);
   const shuffled = shuffleArray(textPool);
 
-  // 对于bash和powershell，每个命令占一行
-  const isBashOrPowershell = programmingLanguage === 'bash' || programmingLanguage === 'powershell';
-  const separator = isBashOrPowershell ? '\n' : ' ';
+  // 统一使用换行符作为分隔符，这样每句话/每个代码块都会独占一行
+  // 这符合用户“参考code的方式”的要求，也解决了中文模式下句子不换行的问题
+  const separator = '\n';
 
   let result = '';
   let index = 0;

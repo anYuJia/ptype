@@ -4,10 +4,13 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { WpmChart } from './WpmChart';
 import { WpmHistoryPoint } from '../store/typingStore';
-import { TypingMode } from '@/lib/constants';
+import { TypingMode, DifficultyLevel, ChineseStyle, ProgrammingLanguage } from '@/lib/constants';
 
 interface ResultsCardProps {
   mode: TypingMode;
+  difficulty: DifficultyLevel;
+  chineseStyle?: ChineseStyle;
+  programmingLanguage?: ProgrammingLanguage;
   wpm: number;
   cpm: number;
   lpm: number;
@@ -21,6 +24,9 @@ interface ResultsCardProps {
 
 export function ResultsCard({
   mode,
+  difficulty,
+  chineseStyle,
+  programmingLanguage,
   wpm,
   cpm,
   lpm,
@@ -55,6 +61,20 @@ export function ResultsCard({
 
   const speedStats = getSpeedStats();
 
+  // 获取模式显示文本
+  const getModeLabel = () => {
+    switch (mode) {
+      case 'english':
+        return 'English';
+      case 'chinese':
+        return `Chinese (${chineseStyle === 'modern' ? '现代文' : '古文'})`;
+      case 'coder':
+        return `Coder (${programmingLanguage})`;
+      default:
+        return mode;
+    }
+  };
+
   return (
     <motion.div
       className="
@@ -69,13 +89,31 @@ export function ResultsCard({
       transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
     >
       <motion.h2
-        className="text-3xl font-bold text-center text-white mb-8"
+        className="text-3xl font-bold text-center text-white mb-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
         测试完成！
       </motion.h2>
+
+      {/* 测试详情 */}
+      <motion.div
+        className="flex justify-center gap-3 mb-8 flex-wrap"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.25 }}
+      >
+        <span className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-sm text-gray-300">
+          {getModeLabel()}
+        </span>
+        <span className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-sm text-gray-300 capitalize">
+          {difficulty}
+        </span>
+        <span className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-sm text-gray-300">
+          {duration}s
+        </span>
+      </motion.div>
 
       {/* 主要统计 - 单行显示 */}
       <div className="flex items-center justify-center gap-8 md:gap-12 mb-8 flex-wrap">

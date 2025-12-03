@@ -6,6 +6,11 @@ import { TextLibrary } from './types';
 export const chineseModernLibrary: TextLibrary = {
     easy: [
         {
+            text: "床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。",
+            difficulty: 'easy',
+            category: 'poetry',
+        },
+        {
             text: "今天天气很好，阳光明媚，我和朋友一起去公园散步。",
             difficulty: 'easy',
             category: '日常',

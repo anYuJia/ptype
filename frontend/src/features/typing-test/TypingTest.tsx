@@ -89,6 +89,9 @@ export function TypingTest() {
               <ResultsCard
                 key="results"
                 mode={settings.mode}
+                difficulty={settings.difficulty}
+                chineseStyle={settings.chineseStyle}
+                programmingLanguage={settings.programmingLanguage}
                 wpm={wpm}
                 cpm={cpm}
                 lpm={lpm}
