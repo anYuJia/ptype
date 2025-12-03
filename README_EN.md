@@ -1,409 +1,206 @@
 <div align="center">
 
+<img src="./public/logo.png" alt="PType Logo" width="120" height="120" style="margin-bottom: 20px;">
+
 # ⚡ PType
 
-### 🚀 Next-Generation Typing Practice Platform
+**The Ultimate Typing Practice Platform for Developers**
 
-_Master your typing skills with AI-powered, multi-language support_
+[简体中文](./README.md) | [English](./README_EN.md)
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/github/license/anYuJia/ptype?style=flat-square&color=blue)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=flat-square&color=yellow)](https://github.com/anYuJia/ptype/stargazers)
 
-**[🇨🇳 简体中文](README.md) | [🇺🇸 English](README_EN.md)**
+<br/>
 
-[✨ Features](#-features) • [🎯 Demo](#-demo) • [🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation)
-
----
-
-![PType Demo](https://via.placeholder.com/800x400/1a1a2e/16a085?text=PType+Typing+Practice)
+**[Live Demo](#) · [Report Bug](https://github.com/anYuJia/ptype/issues) · [Request Feature](https://github.com/anYuJia/ptype/issues)**
 
 </div>
 
 ---
 
-## 🌟 Why PType?
+## 📖 Table of Contents
 
-<table>
-<tr>
-<td width="33%" align="center">
-  
-### 🎨 Beautiful UI
-Modern glassmorphism design with smooth animations
-  
-</td>
-<td width="33%" align="center">
-  
-### 🌍 Multi-Language
-English, Chinese, Code in 12+ programming languages
-  
-</td>
-<td width="33%" align="center">
-  
-### 📊 Real-time Analytics
-Live WPM, CPM, LPM tracking with detailed charts
-  
-</td>
-</tr>
-</table>
+- [✨ Highlights](#-highlights)
+- [📸 Screenshots](#-screenshots)
+- [🚀 Core Features](#-core-features)
+- [🛠️ Tech Stack](#-tech-stack)
+- [💻 Code Library](#-code-library)
+- [🏁 Quick Start](#-quick-start)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🌟 Star History](#-star-history)
 
 ---
 
-## ✨ Features
+## ✨ Highlights
 
-### 🎯 Core Features
+PType is not just a typing tool; it's a training ground designed to **boost developer productivity**.
 
-```mermaid
-graph LR
-    A[PType] --> B[English Mode]
-    A --> C[Chinese Mode]
-    A --> D[Coder Mode]
-    
-    B --> B1[Case Sensitive]
-    B --> B2[Ignore Punctuation]
-    
-    C --> C1[Modern Text]
-    C --> C2[Classical Text]
-    
-    D --> D1[12 Languages]
-    D --> D2[Real Code Snippets]
-```
+- 🎯 **Ultimate Experience**: Silky smooth animations and responsive design built with React 18 and Framer Motion.
+- 🌍 **Multi-language Support**: Supports English, Chinese (Modern/Classical), and natively supports **10+ programming languages**.
+- 📊 **Professional Analysis**: Provides multi-dimensional data analysis like WPM, CPM, LPM to monitor your growth curve in real-time.
+- 🎨 **Highly Customizable**: Supports various themes, fonts, and sound effects to create your exclusive practice environment.
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="./screenshots/code-mode.png" alt="Code Mode" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <p><i>Coder Mode - Immersive Code Practice Experience</i></p>
+</div>
 
 <details>
-<summary><b>🔥 Advanced Features</b></summary>
-
-- ⚡ **Real-time Speed Metrics**
-  - WPM (Words Per Minute) for English
-  - CPM (Characters Per Minute) for Chinese
-  - LPM (Lines Per Minute) for Code
-
-- 🎨 **Visual Feedback**
-  - ✅ Green highlighting for correct characters
-  - ❌ Red highlighting for errors
-  - 📊 Live accuracy percentage
-
-- 🌐 **Multi-Language Support**
-  - **English**: 30+ practice texts across 3 difficulty levels
-  - **Chinese**: Modern & Classical Chinese support
-  - **Code**: Python, JavaScript, Java, Go, C++, and more!
-
-- 🎯 **Smart Difficulty System**
-  - 🟢 Easy: Basic vocabulary and syntax
-  - 🟡 Medium: Intermediate complexity
-  - 🔴 Hard: Advanced patterns and structures
-
-- 💻 **Code Mode Specifics**
-  - Tab key support for indentation
-  - Line-by-line command practice (Bash/PowerShell)
-  - 145+ unique code snippets
-  - Syntax from real-world projects
-
+<summary><b>View More Screenshots</b></summary>
+<br>
+<table width="100%">
+  <tr>
+    <td width="50%" align="center"><b>English Mode</b><br><img src="./screenshots/english-mode.png" alt="English Mode"></td>
+    <td width="50%" align="center"><b>Chinese Mode</b><br><img src="./screenshots/chinese-mode.png" alt="Chinese Mode"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><b>Detailed Statistics Panel</b><br><img src="./screenshots/result.png" alt="Statistics"></td>
+  </tr>
+</table>
 </details>
 
 ---
 
-## 🎨 Screenshots
+## 🚀 Core Features
 
-<div align="center">
+### 1. Three Practice Modes
 
-### English Mode
-![English Mode](https://via.placeholder.com/600x300/2d3748/48bb78?text=English+Typing+Practice)
+| Mode | Description | Use Case |
+| :--- | :--- | :--- |
+| **📝 English Mode** | Classic word practice, supports punctuation and case sensitivity | Improve daily English typing speed |
+| **🇨🇳 Chinese Mode** | Modern text, Classical text (Analects, Tao Te Ching) | Experience Chinese culture, improve Chinese typing |
+| **💻 Coder Mode** | Real code snippets, Linux commands, algorithms | **Must-have for developers**, boost coding efficiency |
 
-### Chinese Mode
-![Chinese Mode](https://via.placeholder.com/600x300/2d3748/4299e1?text=Chinese+Typing+Practice)
+### 2. Smart Data Analysis
 
-### Code Mode
-![Code Mode](https://via.placeholder.com/600x300/2d3748/ed8936?text=Code+Typing+Practice)
-
-### Results Dashboard
-![Results](https://via.placeholder.com/600x300/2d3748/9f7aea?text=Detailed+Analytics)
-
-</div>
+- **WPM (Words Per Minute)**: Standard for English typing speed.
+- **CPM (Characters Per Minute)**: Standard for Chinese typing speed.
+- **LPM (Lines Per Minute)**: Lines of code input, fits programming scenarios better.
+- **Accuracy Heatmap**: Identify your high-frequency error keys.
 
 ---
 
 ## 🛠️ Tech Stack
 
+Built with a modern frontend tech stack to ensure high performance and maintainability.
+
+| Category | Technology |
+| :--- | :--- |
+| **Core Framework** | ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
+| **Styling & Animation** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
+| **State Management** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **Visualization** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
+| **Build Tool** | ![Turbopack](https://img.shields.io/badge/-Turbopack-EF4444?logo=vercel&logoColor=white) |
+
+---
+
+## 💻 Code Library
+
+PType comes with a rich code practice library covering mainstream languages and tools:
+
 <div align="center">
 
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | React 18, Next.js 14, TypeScript |
-| **Styling** | TailwindCSS, Framer Motion |
-| **State Management** | Zustand |
-| **Charts** | Recharts |
-| **Icons** | Lucide React |
-| **Build Tool** | Turbopack |
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Java](https://img.shields.io/badge/-Java-007396?logo=java&logoColor=white)
+![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
+![C++](https://img.shields.io/badge/-C++-00599C?logo=c%2B%2B&logoColor=white)
+![Rust](https://img.shields.io/badge/-Rust-000000?logo=rust&logoColor=white)
+![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white)
+![PowerShell](https://img.shields.io/badge/-PowerShell-5391FE?logo=powershell&logoColor=white)
+![Bash](https://img.shields.io/badge/-Bash-4EAA25?logo=gnu-bash&logoColor=white)
 
 </div>
 
+> **Featured Content**: Includes popular LeetCode algorithms (Two Sum, LRU Cache, etc.) and real-world system operation commands.
+
 ---
 
-## 🚀 Quick Start
+## 🏁 Quick Start
 
 ### Prerequisites
 
-```bash
-node >= 18.0.0
-npm >= 9.0.0
-```
+- **Node.js**: >= 18.0.0
+- **npm**: >= 9.0.0
 
 ### Installation
 
+1. **Clone the repository**
+
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/ptype.git
+git clone https://github.com/anYuJia/ptype.git
+```
 
-# Navigate to the project
+2. **Enter project directory**
+
+```bash
 cd ptype/frontend
+```
 
-# Install dependencies
+3. **Install dependencies**
+
+```bash
 npm install
+# Or use pnpm / yarn
+pnpm install
+```
 
-# Start development server
+4. **Start development server**
+
+```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000` 🎉
-
----
-
-## 📖 Documentation
-
-### Project Structure
-
-```
-ptype/
-├── frontend/
-│   ├── src/
-│   │   ├── app/                 # Next.js app directory
-│   │   ├── components/          # Reusable UI components
-│   │   ├── features/            # Feature modules
-│   │   │   ├── settings/        # Settings panel
-│   │   │   └── typing-test/    # Core typing test logic
-│   │   ├── lib/                 # Utilities and constants
-│   │   │   ├── constants.ts     # App constants
-│   │   │   └── utils/           # Utility functions
-│   │   └── styles/              # Global styles
-│   ├── public/                  # Static assets
-│   └── package.json
-└── README.md
-```
-
-### Available Modes
-
-#### 📝 English Mode
-- **Difficulty Levels**: Easy, Medium, Hard
-- **Options**: 
-  - Case Sensitive
-  - Ignore Punctuation
-- **Metrics**: WPM + CPM
-
-#### 🇨🇳 Chinese Mode
-- **Text Types**:
-  - Modern Chinese (现代文)
-  - Classical Chinese (文言文): Confucian Analects, Mencius, Tao Te Ching, etc.
-- **Metrics**: CPM
-
-#### 💻 Coder Mode
-- **Supported Languages**:
-  ```
-  Python  JavaScript  TypeScript  Java  C++  C  Go  Dart
-  HTML    CSS         Bash        PowerShell
-  ```
-- **Features**:
-  - Tab key support
-  - Real code snippets
-  - Line-by-line commands (Bash/PowerShell)
-- **Metrics**: LPM + CPM
-
----
-
-## 🎯 Usage Examples
-
-### English Practice
-```typescript
-// Select English mode
-mode: 'english'
-difficulty: 'medium'
-options: {
-  caseSensitive: true,
-  ignorePunctuation: false
-}
-```
-
-### Chinese Practice
-```typescript
-// Select Chinese mode
-mode: 'chinese'
-style: 'modern'  // or 'classical'
-difficulty: 'hard'
-```
-
-### Code Practice
-```typescript
-// Select Coder mode
-mode: 'coder'
-language: 'python'
-difficulty: 'medium'
-```
-
----
-
-## 📊 Performance Metrics
-
-### Speed Calculations
-
-| Mode | Primary Metric | Formula |
-|------|---------------|---------|
-| **English** | WPM | `(correct_chars / 5) / minutes` |
-| **Chinese** | CPM | `correct_chars / minutes` |
-| **Coder** | LPM | `(total_lines × completion_rate) / minutes` |
-
-All modes track:
-- ✅ Accuracy percentage
-- ⚡ Real-time speed updates
-- 📈 Historical performance charts
-
----
-
-## 🎨 Content Library
-
-### 🌍 Multilingual Text Database
-
-#### English Texts (30 pieces)
-- **Easy**: Basic phrases, daily vocabulary
-- **Medium**: Complete paragraphs, common expressions
-- **Hard**: Complex sentences, famous quotes
-
-#### Chinese Texts (36 pieces)
-**Modern Chinese (18 pieces)**
-- Easy: Daily life descriptions
-- Medium: Essays, story fragments
-- Hard: Philosophical thinking, in-depth articles
-
-**Classical Chinese (18 pieces)**
-- Easy: Confucian Analects quotes
-- Medium: Mencius, poetry
-- Hard: The Great Learning, Tao Te Ching
-
-#### Code Library (145+ snippets)
-**Language Coverage**:
-- Python (22 snippets)
-- JavaScript (18 snippets)
-- Java (12 snippets)
-- Go (10 snippets)
-- Bash commands (35 snippets)
-- PowerShell commands (32 snippets)
-- Others (16 snippets)
-
-### 🎯 Smart Features
-
-- **Auto Difficulty Recognition**: Automatically categorize by text complexity
-- **Random Text Generation**: Non-repetitive practice content each time
-- **Smart Character Matching**: Unicode normalization processing
-- **Real-time Error Prompts**: Instant visual feedback
+Open your browser and visit [http://localhost:3000](http://localhost:3000) to start!
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions from the community! Whether it's fixing bugs, adding new features, or enriching the code practice library.
 
-1. 🍴 Fork the repository
-2. 🌿 Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
-5. 🎉 Open a Pull Request
+1. **Fork** the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a **Pull Request**
 
-### Development Guidelines
+### How to add new practice code?
 
-- ✅ Follow TypeScript best practices
-- 📝 Write meaningful commit messages
-- 🧪 Test your changes thoroughly
-- 📚 Update documentation if needed
+All code library files are located at `/frontend/src/lib/code-libraries/`.
+You can refer to the existing `python.ts` or `java.ts` format, create a new language file, and export it in `index.ts`.
 
 ---
 
-## 🗺️ Roadmap
+## 📄 License
 
-- [ ] 🌐 Multi-player competition mode
-- [ ] 🏆 Leaderboard system
-- [ ] 📱 Mobile responsive design
-- [ ] 🎮 Gamification elements
-- [ ] 🔊 Sound effects
-- [ ] 🌙 Dark/Light theme toggle
-- [ ] 📊 Advanced analytics dashboard
-- [ ] 🔗 Social sharing features
-- [ ] 🎯 Custom text import
-- [ ] 🤖 AI-generated practice texts
-- [ ] 🎵 Background music/white noise
-- [ ] 🏅 Achievement system
-- [ ] 📈 Long-term progress tracking
-- [ ] 👥 User account system
+This project is open-sourced under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 💡 Technical Highlights
-
-### Performance Optimization
-- ⚡ Zustand for efficient state management
-- 🚀 Next.js 14 App Router for fast routing
-- 💨 TailwindCSS JIT compilation for optimized CSS
-- 🎯 Code splitting and lazy loading
-
-### User Experience
-- 🎨 Framer Motion for smooth animations
-- ⌨️ Complete keyboard event handling
-- 🎯 Real-time visual feedback
-- 📊 Interactive data visualization
-
-### Code Quality
-- 📘 Full TypeScript type definitions
-- 🧩 Modular component design
-- 🔧 Extensible architecture
-- 📝 Detailed code comments
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- 🎨 Design inspiration from [MonkeyType](https://monkeytype.com)
-- 📚 Text content from public domain sources
-- 💻 Built with amazing open-source technologies
-
----
-
-## 📧 Contact
+## 🌟 Star History
 
 <div align="center">
-
-**Have questions or suggestions?**
-
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?style=for-the-badge&logo=github)](https://github.com/yourusername/ptype/issues)
-[![Email](https://img.shields.io/badge/Email-Contact-blue?style=for-the-badge&logo=gmail)](mailto:your.email@example.com)
-
+  <a href="https://star-history.com/#anYuJia/ptype&Date">
+    <img src="https://api.star-history.com/svg?repos=anYuJia/ptype&type=Date" alt="Star History Chart">
+  </a>
 </div>
 
----
+<br/>
 
 <div align="center">
-
-### ⭐ Star this repo if you find it helpful!
-
-**Made with ❤️**
-
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/ptype?style=social)](https://github.com/yourusername/ptype/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/ptype?style=social)](https://github.com/yourusername/ptype/network/members)
-
-[⬆ Back to Top](#-ptype)
-
+  <b>If PType helps you, please give it a ⭐️ Star!</b>
+  <br/>
+  <sub>Made with ❤️ by <a href="https://github.com/anYuJia">anYuJia</a></sub>
 </div>

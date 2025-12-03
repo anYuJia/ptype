@@ -1,211 +1,206 @@
 <div align="center">
 
+<img src="./public/logo.png" alt="PType Logo" width="120" height="120" style="margin-bottom: 20px;">
+
 # ⚡ PType
 
-### 🚀 专业的打字练习平台
+**专为开发者打造的终极打字练习平台**
 
-_提升你的打字速度和准确性 - 支持多语言和编程语言_
+[English](./README_EN.md) | [简体中文](./README.md)
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/github/license/anYuJia/ptype?style=flat-square&color=blue)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=flat-square&color=yellow)](https://github.com/anYuJia/ptype/stargazers)
 
-**[在线演示](#) | [快速开始](#-快速开始) | [功能介绍](#-功能特性)**
+<br/>
 
----
-
-## ✨ 功能特性
-
-### 🌍 三种练习模式
-
-<table>
-<tr>
-<td width="33%" align="center">
-
-#### 📝 英文模式
-- 简单、中等、困难三个难度
-- 大小写敏感选项
-- 标点符号练习
-- WPM（每分钟单词数）统计
-
-</td>
-<td width="33%" align="center">
-
-#### 🇨🇳 中文模式
-- **现代文**：日常、文学、哲理
-- **古文**：论语、孟子、道德经
-- 简体中文优化
-- CPM（每分钟字符数）统计
-
-</td>
-<td width="33%" align="center">
-
-#### 💻 程序员模式
-- **10+编程语言**支持
-- **105+Linux命令**练习
-- Tab/Enter 键支持
-- LPM（每分钟行数）统计
-
-</td>
-</tr>
-</table>
-
----
-
-## 🎯 支持的编程语言
-
-<div align="center">
-
-| 类别 | 语言/工具 | 题目数量 |
-|------|-----------|----------|
-| **编程语言** | Python, JavaScript, TypeScript, Java, Go | 15-20 题/语言 |
-| **系统命令** | Bash/Linux 命令 | 105 条命令 |
-| **特色** | 算法题库（LeetCode 常见题） | Easy/Medium/Hard |
+**[在线演示](#) · [报告 Bug](https://github.com/anYuJia/ptype/issues) · [请求功能](https://github.com/anYuJia/ptype/issues)**
 
 </div>
 
-### 💡 代码库亮点
+---
 
-- ✅ **真实算法题**：包含 LeetCode 经典题目（两数之和、最长回文子串、LRU缓存等）
-- 🏷️ **智能标签**：每道题都有标签（数组、哈希表、动态规划等）
-- ⭐ **LeetCode 题号**：方便参考官方题解
-- 🔧 **实用命令**：Git、Docker、系统管理、网络诊断等真实场景命令
+## 📖 目录
+
+- [✨ 项目亮点](#-项目亮点)
+- [📸 界面预览](#-界面预览)
+- [🚀 核心特性](#-核心特性)
+- [🛠️ 技术栈](#-技术栈)
+- [💻 代码库支持](#-代码库支持)
+- [🏁 快速开始](#-快速开始)
+- [🤝 参与贡献](#-参与贡献)
+- [📄 许可证](#-许可证)
+- [🌟 Star History](#-star-history)
 
 ---
 
-## 📊 实时统计与反馈
+## ✨ 项目亮点
 
-<table>
-<tr>
-<td width="50%">
+PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产力**而生的训练场。
 
-### 速度指标
-- ⚡ **WPM** - 英文模式每分钟单词数
-- 📝 **CPM** - 中文模式每分钟字符数
-- 💻 **LPM** - 代码模式每分钟行数
-- 📈 **实时更新** - 动态速度曲线图
+- 🎯 **极致体验**：基于 React 18 和 Framer Motion 打造的丝滑动画与响应式设计。
+- 🌍 **多语言支持**：不仅支持英文、中文（现代/文言），更原生支持 10+ 种编程语言。
+- 📊 **专业分析**：提供 WPM、CPM、LPM 等多维度数据分析，实时监控你的成长曲线。
+- 🎨 **高度定制**：支持多种主题、字体、音效设置，打造你的专属练习环境。
 
-</td>
-<td width="50%">
+---
 
-### 准确性分析
-- ✅ **准确率** - 实时百分比显示
-- 🎯 **错误统计** - 详细错误分析
-- 🔥 **连击提示** - 连续正确反馈
-- 📉 **曲线图表** - WPM/CPM 趋势
+## 📸 界面预览
 
-</td>
-</tr>
+<div align="center">
+  <img src="./screenshots/code-mode.png" alt="Code Mode" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <p><i>程序员模式 - 沉浸式代码练习体验</i></p>
+</div>
+
+<details>
+<summary><b>查看更多截图</b></summary>
+<br>
+<table width="100%">
+  <tr>
+    <td width="50%" align="center"><b>英文模式</b><br><img src="./screenshots/english-mode.png" alt="English Mode"></td>
+    <td width="50%" align="center"><b>中文模式</b><br><img src="./screenshots/chinese-mode.png" alt="Chinese Mode"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><b>详细统计面板</b><br><img src="./screenshots/result.png" alt="Statistics"></td>
+  </tr>
 </table>
+</details>
 
 ---
 
-## 🎨 界面预览
+## 🚀 核心特性
 
-### 英文模式
-![英文打字练习](./screenshots/english-mode.png)
+### 1. 三大练习模式
 
-### 中文模式
-![中文打字练习](./screenshots/chinese-mode.png)
+| 模式 | 描述 | 适用场景 |
+| :--- | :--- | :--- |
+| **📝 英文模式** | 经典单词练习，支持标点、大小写敏感 | 提升日常英文输入速度 |
+| **🇨🇳 中文模式** | 现代文、古文（论语、道德经） | 体验中华文化，提升中文打字 |
+| **💻 程序员模式** | 真实代码片段、Linux 命令、算法题 | **开发者必备**，提升 Coding 效率 |
 
-### 程序员模式
-![代码打字练习](./screenshots/code-mode.png)
+### 2. 智能数据分析
 
-### 统计面板
-![详细统计](./screenshots/result.png)
-
----
-
-## 🚀 快速开始
-
-### 环境要求
-- Node.js >= 18.0.0
-- npm >= 9.0.0
-
-### 安装步骤
-
-```bash
-# 克隆仓库
-git clone https://github.com/anYuJia/ptype.git
-
-# 进入前端目录
-cd ptype/frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-```
-
-访问 `http://localhost:3000` 开始使用！ 🎉
+- **WPM (Words Per Minute)**: 英文输入速度标准。
+- **CPM (Characters Per Minute)**: 中文输入速度标准。
+- **LPM (Lines Per Minute)**: 代码输入行数，更符合编程场景。
+- **准确率热力图**: 识别你的高频错误按键。
 
 ---
 
-## 🎮 使用指南
+## �️ 技术栈
 
-### 基础操作
+本项目采用现代化的前端技术栈构建，确保高性能与可维护性。
 
-1. **选择模式**：英文 / 中文 / 代码
-2. **选择难度**：简单 / 中等 / 困难
-3. **�始打字**：点击输入框或直接开始输入
-4. **查看结果**：完成后查看详细统计
-
-
-## 🛠️ 技术栈
-
-- **前端框架**：React 18 + Next.js 14
-- **语言**：TypeScript
-- **样式**：TailwindCSS + Framer Motion
-- **状态管理**：Zustand
-- **图表**：Recharts
-- **构建工具**：Turbopack
+| 领域 | 技术选型 |
+| :--- | :--- |
+| **核心框架** | ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
+| **样式与动画** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
+| **状态管理** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **图表可视化** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
+| **构建工具** | ![Turbopack](https://img.shields.io/badge/-Turbopack-EF4444?logo=vercel&logoColor=white) |
 
 ---
 
-## 🤝 贡献
+## 💻 代码库支持
 
-欢迎贡献代码、添加新的练习内容或报告问题！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m '添加某个功能'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-### 添加新内容
-
-- **添加新语言代码**：编辑 `/frontend/src/lib/code-libraries/` 中的对应文件
-- **添加新文本**：编辑 `english.ts` 或 `chinese.ts`
-- **贡献算法题**：欢迎添加更多 LeetCode 题目
-
-查看 [CODE_LIBRARY.md](./CODE_LIBRARY.md) 了解详细的代码库组织说明。
-
----
-
-## 📝 许可证
-
-本项目基于 MIT 许可证开源 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
----
-
-## 🙏 致谢
-
-- 设计灵感：[MonkeyType](https://monkeytype.com)
-- 算法题目：[LeetCode](https://leetcode.com)
-- 依赖的开源项目
-
----
+PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 
 <div align="center">
 
-### ⭐ 如果这个项目对你有帮助，请给个星标！
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Java](https://img.shields.io/badge/-Java-007396?logo=java&logoColor=white)
+![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
+![C++](https://img.shields.io/badge/-C++-00599C?logo=c%2B%2B&logoColor=white)
+![Rust](https://img.shields.io/badge/-Rust-000000?logo=rust&logoColor=white)
+![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white)
+![PowerShell](https://img.shields.io/badge/-PowerShell-5391FE?logo=powershell&logoColor=white)
+![Bash](https://img.shields.io/badge/-Bash-4EAA25?logo=gnu-bash&logoColor=white)
 
-**用 ❤️ 制作**
+</div>
 
-[![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=social)](https://github.com/anYuJia/ptype/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/anYuJia/ptype?style=social)](https://github.com/anYuJia/ptype/network/members)
+> **特色内容**：包含 LeetCode 热门算法题（两数之和、LRU 缓存等）和真实场景的系统运维命令。
 
-[⬆ 回到顶部](#-ptype)
+---
 
+## 🏁 快速开始
+
+### 环境要求
+
+- **Node.js**: >= 18.0.0
+- **npm**: >= 9.0.0
+
+### 安装步骤
+
+1. **克隆仓库**
+
+```bash
+git clone https://github.com/anYuJia/ptype.git
+```
+
+2. **进入项目目录**
+
+```bash
+cd ptype/frontend
+```
+
+3. **安装依赖**
+
+```bash
+npm install
+# 或者使用 pnpm / yarn
+pnpm install
+```
+
+4. **启动开发服务器**
+
+```bash
+npm run dev
+```
+
+打开浏览器访问 [http://localhost:3000](http://localhost:3000) 即可开始体验！
+
+---
+
+## 🤝 参与贡献
+
+我们非常欢迎社区的贡献！无论是修复 Bug、添加新功能，还是丰富代码练习库。
+
+1. **Fork** 本仓库
+2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启一个 **Pull Request**
+
+### 如何添加新的练习代码？
+
+所有代码库文件位于 `/frontend/src/lib/code-libraries/`。
+你可以参考现有的 `python.ts` 或 `java.ts` 格式，创建一个新的语言文件并在 `index.ts` 中导出。
+
+---
+
+## � 许可证
+
+本项目基于 **MIT 许可证** 开源。详情请参阅 [LICENSE](LICENSE) 文件。
+
+---
+
+## 🌟 Star History
+
+<div align="center">
+  <a href="https://star-history.com/#anYuJia/ptype&Date">
+    <img src="https://api.star-history.com/svg?repos=anYuJia/ptype&type=Date" alt="Star History Chart">
+  </a>
+</div>
+
+<br/>
+
+<div align="center">
+  <b>如果觉得 PType 对你有帮助，请给个 ⭐️ Star 支持一下！</b>
+  <br/>
+  <sub>Made with ❤️ by <a href="https://github.com/anYuJia">anYuJia</a></sub>
 </div>
