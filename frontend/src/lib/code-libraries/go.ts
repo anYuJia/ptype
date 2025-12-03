@@ -23,6 +23,18 @@ export const goLibrary: CodeLibrary = {
             title: '查找最大值',
             tags: ['数组'],
         },
+        {
+            code: cleanCode(`nums := []int{1, 2, 3}\nnums = append(nums, 4, 5)\nfmt.Println(nums)`),
+            difficulty: 'easy',
+            title: '切片操作',
+            tags: ['基础'],
+        },
+        {
+            code: cleanCode(`m := map[string]int{"a": 1, "b": 2}\nfor k, v := range m {\n\tfmt.Printf("%s: %d\\n", k, v)\n}`),
+            difficulty: 'easy',
+            title: 'Map 遍历',
+            tags: ['基础'],
+        },
     ],
 
     medium: [
@@ -45,6 +57,18 @@ export const goLibrary: CodeLibrary = {
             title: '栈实现',
             tags: ['数据结构', '栈'],
         },
+        {
+            code: cleanCode(`func worker(id int, jobs <-chan int, results chan<- int) {\n\tfor j := range jobs {\n\t\tfmt.Println("worker", id, "processing job", j)\n\t\tresults <- j * 2\n\t}\n}`),
+            difficulty: 'medium',
+            title: 'Worker Pool',
+            tags: ['并发'],
+        },
+        {
+            code: cleanCode(`type Shape interface {\n\tArea() float64\n}\ntype Circle struct { Radius float64 }\nfunc (c Circle) Area() float64 { return 3.14 * c.Radius * c.Radius }`),
+            difficulty: 'medium',
+            title: 'Interface',
+            tags: ['接口'],
+        },
     ],
 
     hard: [
@@ -61,6 +85,24 @@ export const goLibrary: CodeLibrary = {
             title: 'LRU缓存',
             leetcodeId: 146,
             tags: ['设计', '哈希表', '链表'],
+        },
+        {
+            code: cleanCode(`ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)\ndefer cancel()\nselect {\ncase <-time.After(1 * time.Second):\n\tfmt.Println("overslept")\ncase <-ctx.Done():\n\tfmt.Println(ctx.Err())\n}`),
+            difficulty: 'hard',
+            title: 'Context 超时',
+            tags: ['并发'],
+        },
+        {
+            code: cleanCode(`func loggingMiddleware(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tlog.Println(r.RequestURI)\n\t\tnext.ServeHTTP(w, r)\n\t})\n}`),
+            difficulty: 'hard',
+            title: 'Middleware',
+            tags: ['Web'],
+        },
+        {
+            code: cleanCode(`func printFields(i interface{}) {\n\tt := reflect.TypeOf(i)\n\tv := reflect.ValueOf(i)\n\tfor i := 0; i < t.NumField(); i++ {\n\t\tfmt.Printf("%s: %v\\n", t.Field(i).Name, v.Field(i).Interface())\n\t}\n}`),
+            difficulty: 'hard',
+            title: '反射',
+            tags: ['反射'],
         },
     ],
 };

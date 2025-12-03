@@ -19,9 +19,8 @@ export type ProgrammingLanguage =
     | 'cpp'
     | 'java'
     | 'go'
-    | 'dart'
+    | 'rust'
     | 'html'
-    | 'css'
     | 'powershell'
     | 'bash';
 
@@ -60,9 +59,8 @@ export const PROGRAMMING_LANGUAGE_OPTIONS: ProgrammingLanguage[] = [
     'cpp',
     'c',
     'go',
-    'dart',
+    'rust',
     'html',
-    'css',
     'bash',
     'powershell',
 ];
@@ -76,9 +74,8 @@ export const PROGRAMMING_LANGUAGE_LABELS: Record<ProgrammingLanguage, string> = 
     cpp: 'C++',
     c: 'C',
     go: 'Go',
-    dart: 'Dart',
+    rust: 'Rust',
     html: 'HTML',
-    css: 'CSS',
     bash: 'Bash/Linux',
     powershell: 'PowerShell',
 };

@@ -55,6 +55,31 @@ export const englishLibrary: TextLibrary = {
             difficulty: 'easy',
             category: '日常',
         },
+        {
+            text: "Good morning! How are you doing today?",
+            difficulty: 'easy',
+            category: '日常',
+        },
+        {
+            text: "Can you please help me find my keys?",
+            difficulty: 'easy',
+            category: '日常',
+        },
+        {
+            text: "I would like to order a cup of coffee.",
+            difficulty: 'easy',
+            category: '日常',
+        },
+        {
+            text: "The weather is very nice outside.",
+            difficulty: 'easy',
+            category: '日常',
+        },
+        {
+            text: "Let's go for a walk in the park.",
+            difficulty: 'easy',
+            category: '日常',
+        },
     ],
 
     medium: [
@@ -108,6 +133,31 @@ export const englishLibrary: TextLibrary = {
             difficulty: 'medium',
             category: '艺术',
         },
+        {
+            text: "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.",
+            difficulty: 'medium',
+            category: '名言',
+        },
+        {
+            text: "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle.",
+            difficulty: 'medium',
+            category: '名言',
+        },
+        {
+            text: "Life is what happens when you're busy making other plans.",
+            difficulty: 'medium',
+            category: '名言',
+        },
+        {
+            text: "In the end, it's not the years in your life that count. It's the life in your years.",
+            difficulty: 'medium',
+            category: '名言',
+        },
+        {
+            text: "Believe you can and you're halfway there.",
+            difficulty: 'medium',
+            category: '名言',
+        },
     ],
 
     hard: [
@@ -160,6 +210,26 @@ export const englishLibrary: TextLibrary = {
             text: "Success is not final, failure is not fatal; it is the courage to continue that truly counts.",
             difficulty: 'hard',
             category: '励志',
+        },
+        {
+            text: "To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, Or to take arms against a sea of troubles And by opposing end them.",
+            difficulty: 'hard',
+            category: '文学',
+        },
+        {
+            text: "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity.",
+            difficulty: 'hard',
+            category: '文学',
+        },
+        {
+            text: "Two roads diverged in a wood, and I—I took the one less traveled by, And that has made all the difference.",
+            difficulty: 'hard',
+            category: '文学',
+        },
+        {
+            text: "I have a dream that one day this nation will rise up and live out the true meaning of its creed: 'We hold these truths to be self-evident, that all men are created equal.'",
+            difficulty: 'hard',
+            category: '演讲',
         },
     ],
 };

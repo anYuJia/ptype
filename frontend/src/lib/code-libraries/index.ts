@@ -12,9 +12,9 @@ export * from './bash';
 export * from './english';
 export * from './chinese';
 
-// 未来可以继续添加：
-// export * from './cpp';
-// export * from './rust';
-// export * from './powershell';
-// export * from './html';
-// export * from './css';
+export * from './cpp';
+export * from './c';
+export * from './rust';
+export * from './html';
+export * from './powershell';
+// export * from './css'; // User requested to remove/not create CSS library

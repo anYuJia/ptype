@@ -23,6 +23,18 @@ export const typescriptLibrary: CodeLibrary = {
             title: '反转字符串',
             tags: ['字符串'],
         },
+        {
+            code: cleanCode(`const numbers: number[] = [1, 2, 3];\nconst names: Array<string> = ["Alice", "Bob"];`),
+            difficulty: 'easy',
+            title: '数组类型',
+            tags: ['基础'],
+        },
+        {
+            code: cleanCode(`enum Direction {\n\tUp,\n\tDown,\n\tLeft,\n\tRight\n}\nconst move: Direction = Direction.Up;`),
+            difficulty: 'easy',
+            title: '枚举',
+            tags: ['基础'],
+        },
     ],
 
     medium: [
@@ -44,6 +56,18 @@ export const typescriptLibrary: CodeLibrary = {
             title: '类型安全的事件发射器',
             tags: ['类', '泛型', '事件'],
         },
+        {
+            code: cleanCode(`interface Lengthwise {\n\tlength: number;\n}\nfunction loggingIdentity<T extends Lengthwise>(arg: T): T {\n\tconsole.log(arg.length);\n\treturn arg;\n}`),
+            difficulty: 'medium',
+            title: '泛型约束',
+            tags: ['泛型'],
+        },
+        {
+            code: cleanCode(`interface Colorful {\n\tcolor: string;\n}\ninterface Circle {\n\tradius: number;\n}\ntype ColorfulCircle = Colorful & Circle;\nconst cc: ColorfulCircle = {\n\tcolor: "red",\n\tradius: 42\n};`),
+            difficulty: 'medium',
+            title: '交叉类型',
+            tags: ['类型'],
+        },
     ],
 
     hard: [
@@ -58,6 +82,24 @@ export const typescriptLibrary: CodeLibrary = {
             difficulty: 'hard',
             title: '类型安全的记忆化函数',
             tags: ['高阶函数', '泛型'],
+        },
+        {
+            code: cleanCode(`type IsString<T> = T extends string ? true : false;\ntype A = IsString<string>; // true\ntype B = IsString<number>; // false`),
+            difficulty: 'hard',
+            title: '条件类型',
+            tags: ['高级类型'],
+        },
+        {
+            code: cleanCode(`type EventName<T extends string> = \`on\${Capitalize<T>}\`;\ntype ClickEvent = EventName<"click">; // "onClick"`),
+            difficulty: 'hard',
+            title: '模板字面量类型',
+            tags: ['高级类型'],
+        },
+        {
+            code: cleanCode(`type MyPick<T, K extends keyof T> = {\n\t[P in K]: T[P];\n};\ntype MyOmit<T, K extends keyof T> = {\n\t[P in Exclude<keyof T, K>]: T[P];\n};`),
+            difficulty: 'hard',
+            title: 'Pick 和 Omit 实现',
+            tags: ['工具类型'],
         },
     ],
 };

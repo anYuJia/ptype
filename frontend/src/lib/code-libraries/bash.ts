@@ -126,6 +126,18 @@ export const bashLibrary: CodeLibrary = {
             title: '查看命令手册',
             tags: ['帮助'],
         },
+        {
+            code: cleanCode(`env | grep PATH`),
+            difficulty: 'easy',
+            title: '查看环境变量',
+            tags: ['环境'],
+        },
+        {
+            code: cleanCode(`alias ll='ls -la'`),
+            difficulty: 'easy',
+            title: '设置别名',
+            tags: ['配置'],
+        },
     ],
 
     medium: [
@@ -420,6 +432,18 @@ export const bashLibrary: CodeLibrary = {
             title: 'CSV列提取',
             tags: ['文本处理', 'CSV'],
         },
+        {
+            code: cleanCode(`for file in *.txt; do\n\tmv "$file" "\${file%.txt}.bak"\ndone`),
+            difficulty: 'medium',
+            title: '批量重命名',
+            tags: ['循环', '文件操作'],
+        },
+        {
+            code: cleanCode(`function backup() {\n\ttar -czf "backup_$(date +%F).tar.gz" $1\n}`),
+            difficulty: 'medium',
+            title: '函数定义',
+            tags: ['脚本'],
+        },
     ],
 
     hard: [
@@ -587,6 +611,24 @@ export const bashLibrary: CodeLibrary = {
             difficulty: 'hard',
             title: 'CPU使用率监控',
             tags: ['监控', 'CPU'],
+        },
+        {
+            code: cleanCode(`awk -F: '{ if ($3 >= 1000) print $1 }' /etc/passwd`),
+            difficulty: 'hard',
+            title: '列出普通用户',
+            tags: ['awk', '系统管理'],
+        },
+        {
+            code: cleanCode(`sed -i 's/foo/bar/g' *.conf`),
+            difficulty: 'hard',
+            title: '批量替换文件内容',
+            tags: ['sed', '文本处理'],
+        },
+        {
+            code: cleanCode(`find . -name "*.jpg" -print0 | xargs -0 -P 4 -I {} convert {} -resize 50% {}.small`),
+            difficulty: 'hard',
+            title: '并行处理图片',
+            tags: ['xargs', '并行'],
         },
     ],
 };

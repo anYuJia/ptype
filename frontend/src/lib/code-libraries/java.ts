@@ -23,6 +23,18 @@ export const javaLibrary: CodeLibrary = {
             title: '回文判断',
             tags: ['字符串', '双指针'],
         },
+        {
+            code: cleanCode(`public String reverseString(String s) {\n\treturn new StringBuilder(s).reverse().toString();\n}`),
+            difficulty: 'easy',
+            title: '字符串反转',
+            tags: ['字符串'],
+        },
+        {
+            code: cleanCode(`public int sumArray(int[] arr) {\n\tint sum = 0;\n\tfor (int num : arr) sum += num;\n\treturn sum;\n}`),
+            difficulty: 'easy',
+            title: '数组求和',
+            tags: ['数组'],
+        },
     ],
 
     medium: [
@@ -46,6 +58,18 @@ export const javaLibrary: CodeLibrary = {
             leetcodeId: 20,
             tags: ['栈', '字符串'],
         },
+        {
+            code: cleanCode(`List<String> filtered = list.stream()\n\t.filter(s -> s.startsWith("A"))\n\t.map(String::toUpperCase)\n\t.collect(Collectors.toList());`),
+            difficulty: 'medium',
+            title: 'Stream API',
+            tags: ['Java 8'],
+        },
+        {
+            code: cleanCode(`Optional<String> optional = Optional.ofNullable(getValue());\nString result = optional.orElse("Default");`),
+            difficulty: 'medium',
+            title: 'Optional',
+            tags: ['Java 8'],
+        },
     ],
 
     hard: [
@@ -62,6 +86,24 @@ export const javaLibrary: CodeLibrary = {
             title: 'LRU缓存',
             leetcodeId: 146,
             tags: ['设计', '哈希表', '链表'],
+        },
+        {
+            code: cleanCode(`CompletableFuture.supplyAsync(() -> "Hello")\n\t.thenApply(s -> s + " World")\n\t.thenAccept(System.out::println);`),
+            difficulty: 'hard',
+            title: 'CompletableFuture',
+            tags: ['并发'],
+        },
+        {
+            code: cleanCode(`@Retention(RetentionPolicy.RUNTIME)\n@Target(ElementType.METHOD)\npublic @interface MyAnnotation {\n\tString value();\n}`),
+            difficulty: 'hard',
+            title: '自定义注解',
+            tags: ['反射'],
+        },
+        {
+            code: cleanCode(`InvocationHandler handler = (proxy, method, args) -> {\n\tSystem.out.println("Before");\n\treturn method.invoke(target, args);\n};\nMyInterface proxy = (MyInterface) Proxy.newProxyInstance(\n\tloader, new Class[]{MyInterface.class}, handler);`),
+            difficulty: 'hard',
+            title: '动态代理',
+            tags: ['反射', '设计模式'],
         },
     ],
 };

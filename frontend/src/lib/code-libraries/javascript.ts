@@ -47,6 +47,18 @@ export const javascriptLibrary: CodeLibrary = {
             title: 'Hello World',
             tags: ['基础'],
         },
+        {
+            code: cleanCode(`const name = "World";\nconsole.log(\`Hello \${name}!\`);`),
+            difficulty: 'easy',
+            title: '模板字符串',
+            tags: ['ES6'],
+        },
+        {
+            code: cleanCode(`const user = { name: "John", age: 30 };\nconst { name, age } = user;\nconsole.log(name, age);`),
+            difficulty: 'easy',
+            title: '解构赋值',
+            tags: ['ES6'],
+        },
     ],
 
     medium: [
@@ -96,6 +108,18 @@ export const javascriptLibrary: CodeLibrary = {
             title: '防抖函数',
             tags: ['高阶函数', '实用工具'],
         },
+        {
+            code: cleanCode(`const myPromise = new Promise((resolve, reject) => {\n\tsetTimeout(() => {\n\t\tresolve("Success!");\n\t}, 1000);\n});\n\nmyPromise.then(value => console.log(value));`),
+            difficulty: 'medium',
+            title: 'Promise',
+            tags: ['异步'],
+        },
+        {
+            code: cleanCode(`async function fetchData() {\n\ttry {\n\t\tconst response = await fetch('https://api.example.com/data');\n\t\tconst data = await response.json();\n\t\tconsole.log(data);\n\t} catch (error) {\n\t\tconsole.error(error);\n\t}\n}`),
+            difficulty: 'medium',
+            title: 'Async/Await & Fetch',
+            tags: ['异步', '网络'],
+        },
     ],
 
     hard: [
@@ -126,6 +150,24 @@ export const javascriptLibrary: CodeLibrary = {
             title: '最小窗口子串',
             leetcodeId: 76,
             tags: ['字符串', '滑动窗口'],
+        },
+        {
+            code: cleanCode(`function Animal(name) {\n\tthis.name = name;\n}\nAnimal.prototype.speak = function() {\n\tconsole.log(this.name + ' makes a noise.');\n};\n\nfunction Dog(name) {\n\tAnimal.call(this, name);\n}\nDog.prototype = Object.create(Animal.prototype);\nDog.prototype.constructor = Dog;`),
+            difficulty: 'hard',
+            title: '原型链继承',
+            tags: ['面向对象'],
+        },
+        {
+            code: cleanCode(`const handler = {\n\tget: function(obj, prop) {\n\t\treturn prop in obj ? obj[prop] : 37;\n\t}\n};\nconst p = new Proxy({}, handler);\np.a = 1;\nconsole.log(p.a, p.b); // 1, 37`),
+            difficulty: 'hard',
+            title: 'Proxy',
+            tags: ['元编程'],
+        },
+        {
+            code: cleanCode(`function* idMaker() {\n\tlet index = 0;\n\twhile (true) {\n\t\tyield index++;\n\t}\n}\nconst gen = idMaker();\nconsole.log(gen.next().value); // 0`),
+            difficulty: 'hard',
+            title: 'Generator',
+            tags: ['ES6'],
         },
     ],
 };

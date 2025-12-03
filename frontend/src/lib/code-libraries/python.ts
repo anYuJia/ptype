@@ -53,6 +53,18 @@ export const pythonLibrary: CodeLibrary = {
             title: 'Hello World',
             tags: ['基础'],
         },
+        {
+            code: cleanCode(`squares = [x**2 for x in range(10)]\nprint(squares)`),
+            difficulty: 'easy',
+            title: '列表推导式',
+            tags: ['基础'],
+        },
+        {
+            code: cleanCode(`student = {'name': 'John', 'age': 25}\nprint(student.get('name'))`),
+            difficulty: 'easy',
+            title: '字典操作',
+            tags: ['基础'],
+        },
     ],
 
     medium: [
@@ -102,6 +114,24 @@ export const pythonLibrary: CodeLibrary = {
             title: '斐波那契数（动态规划）',
             tags: ['动态规划'],
         },
+        {
+            code: cleanCode(`from flask import Flask\napp = Flask(__name__)\n\n@app.route('/')\ndef hello_world():\n\treturn 'Hello, World!'`),
+            difficulty: 'medium',
+            title: 'Flask Hello World',
+            tags: ['Web'],
+        },
+        {
+            code: cleanCode(`import pandas as pd\ndf = pd.read_csv('data.csv')\nprint(df.head())`),
+            difficulty: 'medium',
+            title: 'Pandas 读取 CSV',
+            tags: ['数据分析'],
+        },
+        {
+            code: cleanCode(`def my_decorator(func):\n\tdef wrapper():\n\t\tprint("Something is happening before the function is called.")\n\t\tfunc()\n\t\tprint("Something is happening after the function is called.")\n\treturn wrapper`),
+            difficulty: 'medium',
+            title: '装饰器',
+            tags: ['高级特性'],
+        },
     ],
 
     hard: [
@@ -138,6 +168,18 @@ export const pythonLibrary: CodeLibrary = {
             difficulty: 'hard',
             title: '序列化二叉树',
             tags: ['树', '递归'],
+        },
+        {
+            code: cleanCode(`import asyncio\n\nasync def main():\n\tprint('Hello')\n\tawait asyncio.sleep(1)\n\tprint('World')\n\nasyncio.run(main())`),
+            difficulty: 'hard',
+            title: '异步编程',
+            tags: ['异步'],
+        },
+        {
+            code: cleanCode(`class Meta(type):\n\tdef __new__(cls, name, bases, dct):\n\t\tx = super().__new__(cls, name, bases, dct)\n\t\tx.attr = 100\n\t\treturn x\n\nclass MyClass(metaclass=Meta):\n\tpass`),
+            difficulty: 'hard',
+            title: '元类',
+            tags: ['元编程'],
         },
     ],
 };
