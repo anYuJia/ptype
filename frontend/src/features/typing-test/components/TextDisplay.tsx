@@ -143,6 +143,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
 
       // 检查第一行后面是否有换行符（只要不是最后一行就有）
       const line1HasNewline = currentLineIndex < lines.length - 1;
+      const line2HasNewline = currentLineIndex + 1 < lines.length - 1;
 
       const result = {
         line1,
@@ -150,6 +151,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         line1Start,
         line2Start: line1Start + line1.length + (line1HasNewline ? 1 : 0),
         line1HasNewline,
+        line2HasNewline,
       };
 
       return result;
@@ -269,6 +271,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         line1Start: line1.startIndex,
         line2Start: line2Start, // 使用实际计算出的 startIndex
         line1HasNewline: line1.hasNewline,
+        line2HasNewline: line2.hasNewline,
       };
     }
   }, [displayText, typedText, mode]);
@@ -372,10 +375,10 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
           <motion.div
             key={`line1-${displayLines.line1Start}`}
             className="min-h-[2.5rem] w-full break-words"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
             {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
           </motion.div>
@@ -383,13 +386,13 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
           {/* 第二行 */}
           <motion.div
             key={`line2-${displayLines.line2Start}`}
-            className="min-h-[2.5rem] w-full break-words text-gray-500"
-            initial={{ y: 20, opacity: 0.3 }}
-            animate={{ y: 0, opacity: 0.7 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="min-h-[2.5rem] w-full break-words"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            {renderLine(displayLines.line2, displayLines.line2Start, false)}
+            {renderLine(displayLines.line2, displayLines.line2Start, displayLines.line2HasNewline || false)}
           </motion.div>
         </AnimatePresence>
       </div>

@@ -196,6 +196,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
     // 检查是否会删除到上一行（防止跨行删除）
     const charToDelete = typedText[typedText.length - 1];
+
     // 如果要删除的是换行符，说明会返回上一行，阻止删除
     if (charToDelete === '\n') return;
 
@@ -286,11 +287,12 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
     set({ settings: updatedSettings });
 
-    // 如果更改了模式、难度、文体或语言，重新生成文本
+    // 如果更改了模式、难度、文体、语言或时长，重新生成文本
     if ((newSettings.mode && newSettings.mode !== settings.mode) ||
       (newSettings.difficulty && newSettings.difficulty !== settings.difficulty) ||
       (newSettings.chineseStyle && newSettings.chineseStyle !== settings.chineseStyle) ||
-      (newSettings.programmingLanguage && newSettings.programmingLanguage !== settings.programmingLanguage)) {
+      (newSettings.programmingLanguage && newSettings.programmingLanguage !== settings.programmingLanguage) ||
+      (newSettings.duration && newSettings.duration !== settings.duration)) {
       get().initTest();
     } else if (newSettings.englishOptions && settings.mode === 'english') {
       // 如果只是英文选项改变，重新处理文本
@@ -302,8 +304,6 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         errors: 0,
         accuracy: 100,
       });
-    } else if (newSettings.duration) {
-      set({ timeLeft: newSettings.duration });
     }
   },
 }));

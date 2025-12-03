@@ -218,6 +218,16 @@ export function useTypingEngine() {
       // 处理 Backspace
       if (e.key === 'Backspace') {
         e.preventDefault();
+
+        // 获取最新状态进行检查
+        const state = useTypingStore.getState();
+        const { typedText, settings } = state;
+
+        // 如果最后一个字符是换行符，禁止删除（防止回到上一行）
+        if (typedText.endsWith('\n')) {
+          return;
+        }
+
         handleBackspace();
         const target = e.target as HTMLInputElement;
         target.value = '';

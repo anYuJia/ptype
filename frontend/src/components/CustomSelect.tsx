@@ -47,8 +47,8 @@ export function CustomSelect<T extends string>({
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 disabled={disabled}
                 className={`
-          w-full px-3 py-2 rounded-lg
-          bg-gray-900/50 border border-gray-700
+          w-full px-1 py-2 rounded-none
+          bg-transparent border-b border-gray-700
           text-white text-sm
           flex items-center justify-between gap-2
           transition-colors
