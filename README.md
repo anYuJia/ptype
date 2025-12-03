@@ -2,161 +2,139 @@
 
 # ⚡ PType
 
-### 🚀 下一代打字练习平台
+### 🚀 专业的打字练习平台
 
-_通过AI驱动的多语言支持，掌握您的打字技能_
+_提升你的打字速度和准确性 - 支持多语言和编程语言_
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-**[🇨🇳 简体中文](README.md) | [🇺🇸 English](README_EN.md)**
-
-[✨ 特性](#-特性) • [🎯 演示](#-演示) • [🚀 快速开始](#-快速开始) • [📖 文档](#-文档)
+**[在线演示](#) | [快速开始](#-快速开始) | [功能介绍](#-功能特性)**
 
 ---
 
-![PType Demo](https://via.placeholder.com/800x400/1a1a2e/16a085?text=PType+打字练习平台)
+![PType 演示](./screenshots/demo.png)
 
 </div>
 
 ---
 
-## 🌟 为什么选择 PType？
+## ✨ 功能特性
+
+### 🌍 三种练习模式
 
 <table>
 <tr>
 <td width="33%" align="center">
-  
-### 🎨 精美界面
-现代化玻璃态设计，流畅动画效果
-  
+
+#### 📝 英文模式
+- 简单、中等、困难三个难度
+- 大小写敏感选项
+- 标点符号练习
+- WPM（每分钟单词数）统计
+
 </td>
 <td width="33%" align="center">
-  
-### 🌍 多语言支持
-英文、中文、12种以上编程语言代码
-  
+
+#### 🇨🇳 中文模式
+- **现代文**：日常、文学、哲理
+- **古文**：论语、孟子、道德经
+- 简体中文优化
+- CPM（每分钟字符数）统计
+
 </td>
 <td width="33%" align="center">
-  
-### 📊 实时分析
-实时WPM、CPM、LPM追踪，详细图表展示
-  
+
+#### 💻 程序员模式
+- **10+编程语言**支持
+- **105+Linux命令**练习
+- Tab/Enter 键支持
+- LPM（每分钟行数）统计
+
 </td>
 </tr>
 </table>
 
 ---
 
-## ✨ 特性
+## 🎯 支持的编程语言
 
-### 🎯 核心功能
+<div align="center">
 
-```mermaid
-graph LR
-    A[PType] --> B[英文模式]
-    A --> C[中文模式]
-    A --> D[代码模式]
-    
-    B --> B1[区分大小写]
-    B --> B2[忽略标点]
-    
-    C --> C1[现代文]
-    C --> C2[文言文]
-    
-    D --> D1[12种语言]
-    D --> D2[真实代码片段]
-```
+| 类别 | 语言/工具 | 题目数量 |
+|------|-----------|----------|
+| **编程语言** | Python, JavaScript, TypeScript, Java, Go | 15-20 题/语言 |
+| **系统命令** | Bash/Linux 命令 | 105 条命令 |
+| **特色** | 算法题库（LeetCode 常见题） | Easy/Medium/Hard |
 
-<details>
-<summary><b>🔥 高级功能</b></summary>
+</div>
 
-- ⚡ **实时速度指标**
-  - WPM（每分钟字数）- 英文模式
-  - CPM（每分钟字符数）- 中文模式
-  - LPM（每分钟行数）- 代码模式
+### 💡 代码库亮点
 
-- 🎨 **视觉反馈**
-  - ✅ 正确字符绿色高亮
-  - ❌ 错误字符红色高亮
-  - 📊 实时准确率百分比
-
-- 🌐 **多语言支持**
-  - **英文**：3个难度等级，30+练习文本
-  - **中文**：现代文 & 文言文支持
-  - **代码**：Python、JavaScript、Java、Go、C++等！
-
-- 🎯 **智能难度系统**
-  - 🟢 简单：基础词汇和语法
-  - 🟡 中等：中级复杂度
-  - 🔴 困难：高级模式和结构
-
-- 💻 **代码模式专属功能**
-  - Tab键支持缩进
-  - 逐行命令练习（Bash/PowerShell）
-  - 145+独特代码片段
-  - 来自真实项目的语法
-
-</details>
+- ✅ **真实算法题**：包含 LeetCode 经典题目（两数之和、最长回文子串、LRU缓存等）
+- 🏷️ **智能标签**：每道题都有标签（数组、哈希表、动态规划等）
+- ⭐ **LeetCode 题号**：方便参考官方题解
+- 🔧 **实用命令**：Git、Docker、系统管理、网络诊断等真实场景命令
 
 ---
 
-## 🎨 截图展示
+## 📊 实时统计与反馈
 
-<div align="center">
+<table>
+<tr>
+<td width="50%">
+
+### 速度指标
+- ⚡ **WPM** - 英文模式每分钟单词数
+- 📝 **CPM** - 中文模式每分钟字符数
+- 💻 **LPM** - 代码模式每分钟行数
+- 📈 **实时更新** - 动态速度曲线图
+
+</td>
+<td width="50%">
+
+### 准确性分析
+- ✅ **准确率** - 实时百分比显示
+- 🎯 **错误统计** - 详细错误分析
+- 🔥 **连击提示** - 连续正确反馈
+- 📉 **曲线图表** - WPM/CPM 趋势
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎨 界面预览
 
 ### 英文模式
-![English Mode](https://via.placeholder.com/600x300/2d3748/48bb78?text=英文打字练习)
+![英文打字练习](./screenshots/english-mode.png)
 
 ### 中文模式
-![Chinese Mode](https://via.placeholder.com/600x300/2d3748/4299e1?text=中文打字练习)
+![中文打字练习](./screenshots/chinese-mode.png)
 
-### 代码模式
-![Code Mode](https://via.placeholder.com/600x300/2d3748/ed8936?text=代码打字练习)
+### 程序员模式
+![代码打字练习](./screenshots/code-mode.png)
 
-### 结果面板
-![Results](https://via.placeholder.com/600x300/2d3748/9f7aea?text=详细分析统计)
-
-</div>
-
----
-
-## 🛠️ 技术栈
-
-<div align="center">
-
-| 类别 | 技术 |
-|----------|-------------|
-| **前端框架** | React 18, Next.js 14, TypeScript |
-| **样式** | TailwindCSS, Framer Motion |
-| **状态管理** | Zustand |
-| **图表** | Recharts |
-| **图标** | Lucide React |
-| **构建工具** | Turbopack |
-
-</div>
+### 统计面板
+![详细统计](./screenshots/result.png)
 
 ---
 
 ## 🚀 快速开始
 
 ### 环境要求
-
-```bash
-node >= 18.0.0
-npm >= 9.0.0
-```
+- Node.js >= 18.0.0
+- npm >= 9.0.0
 
 ### 安装步骤
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/ptype.git
+git clone https://github.com/anYuJia/ptype.git
 
-# 进入项目目录
+# 进入前端目录
 cd ptype/frontend
 
 # 安装依赖
@@ -166,243 +144,160 @@ npm install
 npm run dev
 ```
 
-访问 `http://localhost:3000` 🎉
+访问 `http://localhost:3000` 开始使用！ 🎉
 
 ---
 
-## 📖 文档
+## 🎮 使用指南
 
-### 项目结构
+### 基础操作
+
+1. **选择模式**：英文 / 中文 / 代码
+2. **选择难度**：简单 / 中等 / 困难
+3. **�始打字**：点击输入框或直接开始输入
+4. **查看结果**：完成后查看详细统计
+
+### 快捷键
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Tab` | 代码模式下的缩进 |
+| `Enter` | 代码模式下的换行 |
+| `Esc` | 重新开始 |
+| `Backspace` | 删除字符 |
+
+---
+
+## 🎯 特色功能
+
+### 程序员模式增强
+
+- ✨ **可见特殊字符**
+  - Tab 显示为 `→`
+  - 换行符显示为 `↵`
+  - 便于准确输入
+
+- 🔧 **真实代码场景**
+  - 函数定义与实现
+  - 类与接口
+  - 算法实现
+
+- 📚 **算法题库**
+  - 数据结构：数组、链表、树、图
+  - 算法技巧：双指针、滑动窗口、动态规划
+  - 经典题目：二分查找、两数之和、LRU缓存
+
+### Linux 命令库
+
+分为三个难度等级，包含：
+
+- **基础命令**（Easy）：ls, cd, mkdir, cp, mv, rm, cat, grep 等
+- **中级命令**（Medium）：find, tar, git, docker, systemctl, sed, awk 等
+- **高级命令**（Hard）：复杂管道、网络诊断、性能分析、数据库操作等
+
+涵盖场景：
+- 📁 文件管理
+- 🔧 系统管理
+- 🌐 网络工具
+- 🐳 Docker 容器
+- 📊 性能监控
+- 🔍 日志分析
+
+---
+
+## 🛠️ 技术栈
+
+- **前端框架**：React 18 + Next.js 14
+- **语言**：TypeScript
+- **样式**：TailwindCSS + Framer Motion
+- **状态管理**：Zustand
+- **图表**：Recharts
+- **构建工具**：Turbopack
+
+---
+
+## 🗂️ 代码库组织
+
+代码库采用模块化设计，每个语言独立文件：
 
 ```
-ptype/
-├── frontend/
-│   ├── src/
-│   │   ├── app/                 # Next.js 应用目录
-│   │   ├── components/          # 可复用UI组件
-│   │   ├── features/            # 功能模块
-│   │   │   ├── settings/        # 设置面板
-│   │   │   └── typing-test/    # 核心打字测试逻辑
-│   │   ├── lib/                 # 工具类和常量
-│   │   │   ├── constants.ts     # 应用常量
-│   │   │   └── utils/           # 工具函数
-│   │   └── styles/              # 全局样式
-│   ├── public/                  # 静态资源
-│   └── package.json
-└── README.md
+frontend/src/lib/code-libraries/
+├── types.ts          # 类型定义
+├── index.ts          # 统一导出
+├── python.ts         # Python 算法题
+├── javascript.ts     # JavaScript 算法题
+├── typescript.ts     # TypeScript 特色代码
+├── java.ts           # Java 算法题
+├── go.ts             # Go 算法题
+├── bash.ts           # Linux 命令（105条）
+├── english.ts        # 英文文本
+└── chinese.ts        # 中文文本
 ```
 
-### 可用模式
-
-#### 📝 英文模式
-- **难度等级**：简单、中等、困难
-- **选项**： 
-  - 区分大小写
-  - 忽略标点符号
-- **指标**：WPM + CPM
-
-#### 🇨🇳 中文模式
-- **文体类型**：
-  - 现代文
-  - 文言文（论语、孟子、道德经等）
-- **指标**：CPM
-
-#### 💻 代码模式
-- **支持语言**：
-  ```
-  Python  JavaScript  TypeScript  Java  C++  C  Go  Dart
-  HTML    CSS         Bash        PowerShell
-  ```
-- **功能特性**：
-  - Tab键支持
-  - 真实代码片段
-  - 逐行命令（Bash/PowerShell）
-- **指标**：LPM + CPM
+**易于扩展**：添加新语言只需创建新文件并导出即可。
 
 ---
 
-## 🎯 使用示例
-
-### 英文练习
-```typescript
-// 选择英文模式
-mode: 'english'
-difficulty: 'medium'
-options: {
-  caseSensitive: true,
-  ignorePunctuation: false
-}
-```
-
-### 中文练习
-```typescript
-// 选择中文模式
-mode: 'chinese'
-style: 'modern'  // 或 'classical'
-difficulty: 'hard'
-```
-
-### 代码练习
-```typescript
-// 选择代码模式
-mode: 'coder'
-language: 'python'
-difficulty: 'medium'
-```
-
----
-
-## 📊 性能指标
-
-### 速度计算
-
-| 模式 | 主要指标 | 计算公式 |
-|------|---------------|---------|
-| **英文** | WPM | `(正确字符数 / 5) / 分钟数` |
-| **中文** | CPM | `正确字符数 / 分钟数` |
-| **代码** | LPM | `(总行数 × 完成率) / 分钟数` |
-
-所有模式都追踪：
-- ✅ 准确率百分比
-- ⚡ 实时速度更新
-- 📈 历史性能图表
-
----
-
-## 🎨 核心功能详解
-
-### 🌍 多语言文本库
-
-#### 英文文本（30篇）
-- **简单**：基础短句，日常用语
-- **中等**：完整段落，常见表达
-- **困难**：复杂句式，名言警句
-
-#### 中文文本（36篇）
-**现代文（18篇）**
-- 简单：生活日常描述
-- 中等：散文、故事片段
-- 困难：哲学思考、深度文章
-
-**文言文（18篇）**
-- 简单：论语名句
-- 中等：孟子、诗词
-- 困难：大学、道德经
-
-#### 代码库（145+片段）
-**覆盖语言**：
-- Python（22个）
-- JavaScript（18个）
-- Java（12个）
-- Go（10个）
-- Bash命令（35个）
-- PowerShell命令（32个）
-- 其他（16个）
-
-### 🎯 智能特性
-
-- **自动难度识别**：根据文本复杂度自动分类
-- **随机文本生成**：每次练习内容不重复
-- **智能字符匹配**：Unicode标准化处理
-- **实时错误提示**：即时视觉反馈
-
----
-
-## 🤝 贡献指南
-
-我们欢迎各种形式的贡献！以下是参与方式：
-
-1. 🍴 Fork 本仓库
-2. 🌿 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 💾 提交更改 (`git commit -m '添加某个很棒的功能'`)
-4. 📤 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 🎉 开启 Pull Request
-
-### 开发规范
-
-- ✅ 遵循 TypeScript 最佳实践
-- 📝 编写有意义的提交信息
-- 🧪 充分测试您的更改
-- 📚 必要时更新文档
-
----
-
-## 🗺️ 开发路线图
-
-- [ ] 🌐 多人竞技模式
-- [ ] 🏆 排行榜系统
-- [ ] 📱 移动端响应式设计
-- [ ] 🎮 游戏化元素
-- [ ] 🔊 音效反馈
-- [ ] 🌙 深色/浅色主题切换
-- [ ] 📊 高级分析仪表板
-- [ ] � 社交分享功能
-- [ ] 🎯 自定义文本导入
-- [ ] 🤖 AI生成练习文本
-- [ ] 🎵 背景音乐/白噪音
-- [ ] 🏅 成就系统
-- [ ] 📈 长期进步追踪
-- [ ] 👥 用户账户系统
-
----
-
-## 💡 技术亮点
-
-### 性能优化
-- ⚡ 使用 Zustand 进行高效状态管理
-- 🚀 Next.js 14 App Router 实现快速路由
-- 💨 TailwindCSS JIT 编译优化CSS
-- 🎯 代码分割和懒加载
-
-### 用户体验
-- 🎨 Framer Motion 实现流畅动画
-- ⌨️ 完整的键盘事件处理
-- 🎯 实时视觉反馈
-- 📊 交互式数据可视化
-
-### 代码质量
-- � 完整的 TypeScript 类型定义
-- 🧩 模块化组件设计
-- 🔧 可扩展的架构
-- 📝 详细的代码注释
-
----
-
-## 📝 许可证
-
-本项目基于 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
----
-
-## 🙏 致谢
-
-- 🎨 设计灵感来自 [MonkeyType](https://monkeytype.com)
-- 📚 文本内容来自公共领域资源
-- 💻 使用优秀的开源技术构建
-
----
-
-## 📧 联系方式
+## 📈 统计数据
 
 <div align="center">
 
-**有问题或建议？**
-
-[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-red?style=for-the-badge&logo=github)](https://github.com/yourusername/ptype/issues)
-[![Email](https://img.shields.io/badge/Email-联系我们-blue?style=for-the-badge&logo=gmail)](mailto:your.email@example.com)
+| 类别 | 数量 |
+|------|------|
+| **英文文本** | 30 篇 |
+| **中文现代文** | 10 篇 |
+| **中文古文** | 10 篇 |
+| **Python 题目** | 23 道 |
+| **JavaScript 题目** | 19 道 |
+| **Linux 命令** | 105 条 |
+| **总代码片段** | 200+ |
 
 </div>
 
 ---
 
+## 🤝 贡献
+
+欢迎贡献代码、添加新的练习内容或报告问题！
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m '添加某个功能'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+### 添加新内容
+
+- **添加新语言代码**：编辑 `/frontend/src/lib/code-libraries/` 中的对应文件
+- **添加新文本**：编辑 `english.ts` 或 `chinese.ts`
+- **贡献算法题**：欢迎添加更多 LeetCode 题目
+
+查看 [CODE_LIBRARY.md](./CODE_LIBRARY.md) 了解详细的代码库组织说明。
+
+---
+
+## 📝 许可证
+
+本项目基于 MIT 许可证开源 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+---
+
+## 🙏 致谢
+
+- 设计灵感：[MonkeyType](https://monkeytype.com)
+- 算法题目：[LeetCode](https://leetcode.com)
+- 依赖的开源项目
+
+---
+
 <div align="center">
 
-### ⭐ 如果觉得有帮助，请给个星标！
+### ⭐ 如果这个项目对你有帮助，请给个星标！
 
 **用 ❤️ 制作**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/ptype?style=social)](https://github.com/yourusername/ptype/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/ptype?style=social)](https://github.com/yourusername/ptype/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=social)](https://github.com/anYuJia/ptype/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/anYuJia/ptype?style=social)](https://github.com/anYuJia/ptype/network/members)
 
 [⬆ 回到顶部](#-ptype)
 
