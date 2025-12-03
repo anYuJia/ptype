@@ -30,7 +30,7 @@ export const goLibrary: CodeLibrary = {
             tags: ['基础'],
         },
         {
-            code: cleanCode(`m := map[string]int{"a": 1, "b": 2}\nfor k, v := range m {\n\tfmt.Printf("%s: %d\\n", k, v)\n}`),
+            code: cleanCode(`m := map[string]int{"a": 1, "b": 2}\nfor k, v := range m {\n\tfmt.Printf("%s: %d\n", k, v)\n}`),
             difficulty: 'easy',
             title: 'Map 遍历',
             tags: ['基础'],
@@ -99,7 +99,7 @@ export const goLibrary: CodeLibrary = {
             tags: ['Web'],
         },
         {
-            code: cleanCode(`func printFields(i interface{}) {\n\tt := reflect.TypeOf(i)\n\tv := reflect.ValueOf(i)\n\tfor i := 0; i < t.NumField(); i++ {\n\t\tfmt.Printf("%s: %v\\n", t.Field(i).Name, v.Field(i).Interface())\n\t}\n}`),
+            code: cleanCode(`func printFields(i interface{}) {\n\tt := reflect.TypeOf(i)\n\tv := reflect.ValueOf(i)\n\tfor i := 0; i < t.NumField(); i++ {\n\t\tfmt.Printf("%s: %v\n", t.Field(i).Name, v.Field(i).Interface())\n\t}\n}`),
             difficulty: 'hard',
             title: '反射',
             tags: ['反射'],

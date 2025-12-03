@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { normalizeSpecialChars } from '../utils/wpmCalculator';
 
 interface TextDisplayProps {
@@ -50,8 +50,13 @@ const Character = memo(function Character({
     <motion.span
       className={`${baseClass} ${statusClasses[status]} ${isSpecial ? 'opacity-50 font-bold' : ''}`}
       initial={status === 'correct' ? { scale: 1.1 } : false}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.1 }}
+      animate={{
+        scale: status === 'current' ? [1, 1.05, 1] : 1,
+      }}
+      transition={{
+        duration: status === 'current' ? 0.6 : 0.1,
+        repeat: status === 'current' ? Infinity : 0,
+      }}
     >
       {displayChar}
     </motion.span>
@@ -272,7 +277,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       return (
         <span key={globalIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
           <Character
-            char={char}
+            char={charData.char}
             status={charData.status}
             index={globalIndex}
           />
@@ -290,7 +295,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         result.push(
           <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
             <Character
-              char="\n"
+              char={newlineData.char}
               status={newlineData.status}
               index={newlineIndex}
             />
@@ -351,15 +356,31 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         `}
         onClick={() => inputRef.current?.focus()}
       >
-        {/* 第一行 */}
-        <div className="min-h-[2.5rem] w-full break-words">
-          {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
-        </div>
+        <AnimatePresence mode="popLayout">
+          {/* 第一行 */}
+          <motion.div
+            key={`line1-${displayLines.line1Start}`}
+            className="min-h-[2.5rem] w-full break-words"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
+          </motion.div>
 
-        {/* 第二行 */}
-        <div className="min-h-[2.5rem] w-full break-words text-gray-500">
-          {renderLine(displayLines.line2, displayLines.line2Start, false)}
-        </div>
+          {/* 第二行 */}
+          <motion.div
+            key={`line2-${displayLines.line2Start}`}
+            className="min-h-[2.5rem] w-full break-words text-gray-500"
+            initial={{ y: 20, opacity: 0.3 }}
+            animate={{ y: 0, opacity: 0.7 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
+            {renderLine(displayLines.line2, displayLines.line2Start, false)}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* 模式提示 */}

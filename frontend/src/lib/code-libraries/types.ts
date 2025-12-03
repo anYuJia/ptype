@@ -47,7 +47,13 @@ export interface TextLibrary {
  * 工具函数：移除空行并清理代码
  */
 export function cleanCode(code: string): string {
-    return code
+    // 使用 split 和 join 来替换字面字符串，避免正则转义问题
+    // 将字面上的 \n 和 \t 转换为真正的换行符和制表符
+    let normalized = code.split('\\n').join('\n');  // 替换字面的 \n
+    normalized = normalized.split('\\t').join('\t');  // 替换字面的 \t
+
+    // 然后清理空行
+    return normalized
         .split('\n')
         .filter(line => line.trim().length > 0)
         .join('\n')

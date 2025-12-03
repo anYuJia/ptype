@@ -89,10 +89,17 @@ export function generateText(
   programmingLanguage?: ProgrammingLanguage
 ): string {
   const textPool = getTextPool(mode, difficulty, chineseStyle, programmingLanguage);
-  const shuffled = shuffleArray(textPool);
+
+  // 打乱数组
+  let shuffled = shuffleArray(textPool);
+
+  // 随机选择一个起始位置，这样即使文本池相同，每次生成的文本也不同
+  const startIndex = Math.floor(Math.random() * shuffled.length);
+
+  // 从起始位置开始重新排列数组
+  shuffled = [...shuffled.slice(startIndex), ...shuffled.slice(0, startIndex)];
 
   // 统一使用换行符作为分隔符，这样每句话/每个代码块都会独占一行
-  // 这符合用户“参考code的方式”的要求，也解决了中文模式下句子不换行的问题
   const separator = '\n';
 
   let result = '';
@@ -106,8 +113,11 @@ export function generateText(
     index++;
   }
 
-  // 如果遍历完了还不够长，重新开始
+  // 如果遍历完了还不够长，重新打乱并继续
   while (result.length < minLength) {
+    // 每次循环都重新打乱，增加随机性
+    shuffled = shuffleArray(textPool);
+
     if (result.length > 0) {
       result += separator;
     }

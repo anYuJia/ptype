@@ -6,7 +6,7 @@ import { CodeLibrary, cleanCode } from './types';
 export const cLibrary: CodeLibrary = {
     easy: [
         {
-            code: cleanCode(`#include <stdio.h>\n\nint main() {\n\tprintf("Hello, World!\\n");\n\treturn 0;\n}`),
+            code: cleanCode(`#include <stdio.h>\n\nint main() {\n\tprintf("Hello, World!\n");\n\treturn 0;\n}`),
             difficulty: 'easy',
             title: 'Hello World',
             tags: ['基础'],
