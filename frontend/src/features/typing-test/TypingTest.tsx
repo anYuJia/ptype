@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 import { TextDisplay } from '@/features/typing-test/components/TextDisplay';
@@ -64,27 +65,40 @@ export function TypingTest() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-200 flex flex-col">
       {/* 头部 */}
-      <header className="py-4 px-4">
-        <motion.h1
-          className="text-2xl font-bold text-center text-teal-400"
+      <header className="pt-8 pb-2 px-4 max-w-5xl mx-auto w-full">
+        <motion.div
+          className="flex items-center justify-start gap-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          PType
-        </motion.h1>
-        <motion.p
-          className="text-center text-gray-500 text-sm mt-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          Test your typing speed
-        </motion.p>
+          <div className="relative w-20 h-20">
+            <Image
+              src="/logo.png"
+              alt="PType Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-6xl font-bold text-teal-400 tracking-tight leading-none">
+              PType
+            </h1>
+            <motion.p
+              className="text-gray-500 text-lg mt-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Test your typing speed
+            </motion.p>
+          </div>
+        </motion.div>
       </header>
 
       {/* 主内容区 */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
-        <div className="w-full max-w-4xl">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-12 pb-8 flex flex-col gap-6">
+        <div className="w-full">
           <AnimatePresence mode="wait">
             {status === 'finished' ? (
               <ResultsCard

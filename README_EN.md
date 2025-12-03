@@ -1,10 +1,12 @@
 <div align="center">
 
-<img src="./public/logo.png" alt="PType Logo" width="120" height="120" style="margin-bottom: 20px;">
-
-# ⚡ PType
-
-**The Ultimate Typing Practice Platform for Developers**
+<h1 align="center">
+  <img src="./frontend/public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
+  PType
+</h1>
+<p align="center">
+  <strong>The Ultimate Typing Practice Platform for Developers</strong>
+</p>
 
 [简体中文](./README.md) | [English](./README_EN.md)
 

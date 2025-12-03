@@ -1,10 +1,12 @@
 <div align="center">
 
-<img src="./public/logo.png" alt="PType Logo" width="120" height="120" style="margin-bottom: 20px;">
-
-# ⚡ PType
-
-**专为开发者打造的终极打字练习平台**
+<h1 align="center">
+  <img src="./frontend/public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
+  PType
+</h1>
+<p align="center">
+  <strong>专为开发者打造的终极打字练习平台</strong>
+</p>
 
 [English](./README_EN.md) | [简体中文](./README.md)
 
