@@ -41,6 +41,32 @@ export function TypingTest() {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Title typing animation
+  const [displayedTitle, setDisplayedTitle] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    const targetTitle = 'PType';
+    let currentIndex = 0;
+
+    // Initial delay before typing starts
+    const startTimeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        if (currentIndex < targetTitle.length) {
+          setDisplayedTitle(targetTitle.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          setShowCursor(false);
+          clearInterval(interval);
+        }
+      }, 500);
+
+      return () => clearInterval(interval);
+    }, 500);
+
+    return () => clearTimeout(startTimeout);
+  }, []);
+
   // 自动聚焦到隐藏的 input
   useEffect(() => {
     if (inputRef.current && status !== 'finished') {
@@ -86,8 +112,18 @@ export function TypingTest() {
               />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-6xl font-bold text-teal-400 tracking-tight leading-none">
-                PType
+              <h1 className="text-6xl font-bold text-teal-400 tracking-tight leading-none min-h-[60px] flex items-center">
+                {displayedTitle}
+                {showCursor && (
+                  <motion.span
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                    className="inline-block ml-1 -translate-y-1"
+                  >
+                    |
+                  </motion.span>
+                )}
               </h1>
               <motion.p
                 className="text-gray-500 text-lg mt-1"
