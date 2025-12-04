@@ -7,9 +7,13 @@ import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 import { TextDisplay } from '@/features/typing-test/components/TextDisplay';
 import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay';
 import { ResultsCard } from '@/features/typing-test/components/ResultsCard';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { AuthModal } from '@/features/auth/components/AuthModal';
+
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
 
 export function TypingTest() {
+  const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
   const {
     status,
     targetText,
@@ -111,25 +115,55 @@ export function TypingTest() {
               </svg>
             </motion.a>
 
-            <div className="flex items-center gap-1">
-              <motion.button
-                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                登录
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
-              </motion.button>
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-4">
+                <motion.div
+                  className="flex items-center gap-3 px-2 py-1.5 rounded-full hover:bg-gray-900/30 transition-colors cursor-default"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <motion.div
+                    className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-emerald-400 flex items-center justify-center text-gray-950 font-bold text-sm shadow-lg shadow-teal-500/20"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                  >
+                    {user.username.charAt(0).toUpperCase()}
+                  </motion.div>
+                  <span className="text-sm font-semibold text-gray-200">{user.username}</span>
+                </motion.div>
+                <motion.button
+                  onClick={logout}
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-red-400 transition-colors duration-300 relative group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  退出
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-500 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
+                </motion.button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <motion.button
+                  onClick={() => openAuthModal('login')}
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  登录
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
+                </motion.button>
 
-              <motion.button
-                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                注册
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
-              </motion.button>
-            </div>
+                <motion.button
+                  onClick={() => openAuthModal('register')}
+                  className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  注册
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
+                </motion.button>
+              </div>
+            )}
           </div>
         </motion.div>
       </header>
@@ -227,6 +261,7 @@ export function TypingTest() {
       <footer className="py-4 text-center text-gray-600 text-sm">
         <p>由 Next.js, Tailwind CSS & Framer Motion 驱动</p>
       </footer>
+      <AuthModal />
     </div>
   );
 }
