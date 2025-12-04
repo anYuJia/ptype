@@ -20,11 +20,16 @@ export async function POST(request: Request) {
             );
         }
 
-        const { email, password } = validationResult.data;
+        const { identifier, password } = validationResult.data;
 
-        // Find user
-        const user = await prisma.user.findUnique({
-            where: { email }
+        // Find user by email or username
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: identifier },
+                    { username: identifier }
+                ]
+            }
         });
 
         if (!user) {

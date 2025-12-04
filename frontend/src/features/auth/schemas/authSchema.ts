@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-    email: z.string().email('请输入有效的电子邮箱地址'),
+    identifier: z.string().min(1, '请输入用户名或邮箱'),
     password: z.string().min(6, '密码长度至少为 6 位'),
 });
 

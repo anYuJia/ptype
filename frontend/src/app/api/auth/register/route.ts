@@ -22,18 +22,22 @@ export async function POST(request: Request) {
 
         const { email, username, password } = validationResult.data;
 
-        // Check if user exists
-        const existingUser = await prisma.user.findFirst({
-            where: {
-                OR: [
-                    { email },
-                    { username }
-                ]
-            }
+        // Check if email exists
+        const existingEmail = await prisma.user.findUnique({
+            where: { email }
         });
 
-        if (existingUser) {
-            return NextResponse.json({ error: 'User already exists' }, { status: 409 });
+        if (existingEmail) {
+            return NextResponse.json({ error: '该邮箱已被注册' }, { status: 400 });
+        }
+
+        // Check if username exists
+        const existingUsername = await prisma.user.findUnique({
+            where: { username }
+        });
+
+        if (existingUsername) {
+            return NextResponse.json({ error: '该用户名已被使用' }, { status: 400 });
         }
 
         // Hash password

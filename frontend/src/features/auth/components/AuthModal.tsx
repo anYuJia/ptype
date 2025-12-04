@@ -4,6 +4,15 @@ import { useAuthStore } from '../store/authStore';
 import { AuthInput } from './AuthInput';
 import { authService } from '../services/authService';
 
+function RequirementItem({ met, text }: { met: boolean; text: string }) {
+    return (
+        <div className={`flex items-center gap-1.5 transition-colors duration-200 ${met ? 'text-green-400' : 'text-gray-500'}`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-green-400' : 'bg-gray-600'}`} />
+            <span>{text}</span>
+        </div>
+    );
+}
+
 export function AuthModal() {
     const {
         isAuthModalOpen,
@@ -22,13 +31,56 @@ export function AuthModal() {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
 
+    const [emailStatus, setEmailStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
+    const [usernameStatus, setUsernameStatus] = useState<'checking' | 'available' | 'taken' | null>(null);
+
     // Reset state when view changes
     useEffect(() => {
         setError(null);
         setEmail('');
         setPassword('');
         setUsername('');
+        setEmailStatus(null);
+        setUsernameStatus(null);
     }, [authModalView, setError]);
+
+    // Debounced check availability
+    useEffect(() => {
+        if (authModalView !== 'register' || !email) {
+            setEmailStatus(null);
+            return;
+        }
+
+        // Simple email regex for basic check before API call
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            setEmailStatus('checking');
+            const available = await authService.checkAvailability('email', email);
+            setEmailStatus(available ? 'available' : 'taken');
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [email, authModalView]);
+
+    useEffect(() => {
+        if (authModalView !== 'register' || !username) {
+            setUsernameStatus(null);
+            return;
+        }
+
+        if (username.length < 2) return;
+
+        const timer = setTimeout(async () => {
+            setUsernameStatus('checking');
+            const available = await authService.checkAvailability('username', username);
+            setUsernameStatus(available ? 'available' : 'taken');
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [username, authModalView]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,8 +90,12 @@ export function AuthModal() {
         try {
             let user;
             if (authModalView === 'login') {
-                user = await authService.login({ email, password });
+                // For login, we use the email state as the identifier (username or email)
+                user = await authService.login({ identifier: email, password });
             } else {
+                if (emailStatus === 'taken' || usernameStatus === 'taken') {
+                    throw new Error('请修正表单中的错误');
+                }
                 user = await authService.register({ email, password, username: username || email.split('@')[0] });
             }
 
@@ -104,6 +160,8 @@ export function AuthModal() {
 
     const variants = useMemo(() => getAnimationVariants(), [triggerPosition]);
 
+
+
     return (
         <AnimatePresence mode="wait">
             {isAuthModalOpen && (
@@ -156,16 +214,18 @@ export function AuthModal() {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         required
+                                        checkStatus={usernameStatus}
                                     />
                                 )}
 
                                 <AuthInput
-                                    label="电子邮箱"
-                                    type="email"
-                                    placeholder="name@example.com"
+                                    label={authModalView === 'login' ? "用户名或邮箱" : "电子邮箱"}
+                                    type={authModalView === 'login' ? "text" : "email"}
+                                    placeholder={authModalView === 'login' ? "请输入用户名或邮箱" : "name@example.com"}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
+                                    checkStatus={authModalView === 'register' ? emailStatus : null}
                                 />
 
                                 <AuthInput
@@ -175,7 +235,15 @@ export function AuthModal() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
+                                    passwordRequirements={authModalView === 'register' ? {
+                                        length: password.length >= 8,
+                                        uppercase: /[A-Z]/.test(password),
+                                        lowercase: /[a-z]/.test(password),
+                                        number: /[0-9]/.test(password)
+                                    } : undefined}
                                 />
+
+
 
                                 {error && (
                                     <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-center">
@@ -187,7 +255,7 @@ export function AuthModal() {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
-                                    disabled={isLoading}
+                                    disabled={isLoading || (authModalView === 'register' && (emailStatus === 'taken' || usernameStatus === 'taken' || emailStatus === 'checking' || usernameStatus === 'checking'))}
                                     className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-6"
                                 >
                                     {isLoading ? (

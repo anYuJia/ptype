@@ -11,7 +11,7 @@ export const authService = {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Login failed');
+            throw new Error(data.error || '登录失败');
         }
 
         return data.user;
@@ -27,10 +27,22 @@ export const authService = {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Registration failed');
+            throw new Error(data.error || '注册失败');
         }
 
         return data.user;
+    },
+
+    async checkAvailability(field: 'email' | 'username', value: string): Promise<boolean> {
+        const response = await fetch('/api/auth/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ field, value }),
+        });
+
+        if (!response.ok) return false;
+        const data = await response.json();
+        return data.available;
     },
 
     async logout(): Promise<void> {
