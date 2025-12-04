@@ -19,7 +19,7 @@ interface StatsDisplayProps {
 // 定义一个统一的、平滑的缓动动画，用于所有相关的动画效果
 const transition = {
   duration: 0.4,
-  ease: 'easeInOut',
+  ease: 'easeInOut' as const,
 };
 
 export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, actionButton }: StatsDisplayProps) {
@@ -76,9 +76,8 @@ export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, 
         <motion.div layout transition={transition} className="text-center">
           <AnimatedNumber
             value={timeLeft}
-            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${
-              timeLeft <= 10 && status === 'running' ? 'text-red-400' : 'text-white'
-            }`}
+            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${timeLeft <= 10 && status === 'running' ? 'text-red-400' : 'text-white'
+              }`}
           />
           <div className="text-xs text-gray-400 mt-1">SEC</div>
           <div className="text-xs text-gray-500">秒</div>
@@ -87,9 +86,8 @@ export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, 
         <motion.div layout transition={transition} className="text-center">
           <AnimatedNumber
             value={accuracy}
-            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${
-              accuracy < 90 ? 'text-yellow-400' : 'text-emerald-400'
-            }`}
+            className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${accuracy < 90 ? 'text-yellow-400' : 'text-emerald-400'
+              }`}
           />
           <div className="text-xs text-gray-400 mt-1">ACC%</div>
           <div className="text-xs text-gray-500">准确率</div>
