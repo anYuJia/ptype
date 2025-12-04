@@ -17,6 +17,7 @@ import {
 } from '@/lib/constants';
 import { generateText } from '@/lib/utils/textGenerator';
 import { analyzeTyping, calculateWPM, calculateCPM, calculateLPM, calculateAccuracy } from '../utils/wpmCalculator';
+import { isLineStart } from '../utils/lineUtils';
 
 // WPM 历史记录点（用于绘制曲线图）
 export interface WpmHistoryPoint {
@@ -186,7 +187,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   },
 
   // 处理退格
-  handleBackspace: () => {
+  handleBackspace: () => { // Fixed object literal syntax
     const { status, typedText, displayText, settings } = get();
 
     // 检查是否允许删除
@@ -195,10 +196,10 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     if (status === 'finished' || typedText.length === 0) return;
 
     // 检查是否会删除到上一行（防止跨行删除）
-    const charToDelete = typedText[typedText.length - 1];
-
-    // 如果要删除的是换行符，说明会返回上一行，阻止删除
-    if (charToDelete === '\n') return;
+    // 使用 isLineStart 工具函数检测当前位置是否是某行的开头
+    if (isLineStart(displayText, typedText, settings.mode)) {
+      return;
+    }
 
     const newTypedText = typedText.slice(0, -1);
     const analysis = analyzeTyping(displayText, newTypedText);

@@ -3,6 +3,7 @@
 import { memo, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { normalizeSpecialChars } from '../utils/wpmCalculator';
+import { calculateLines } from '../utils/lineUtils';
 
 interface TextDisplayProps {
   targetText: string;
@@ -47,10 +48,14 @@ const Character = memo(function Character({
   if (char === '\t') displayChar = '→'; // Tab 显示为箭头
 
   const isSpecial = char === '\n' || char === '\t';
+  const isSpace = char === ' ';
+
+  // 错误空格的特殊样式
+  const incorrectSpaceClass = (status === 'incorrect' && isSpace) ? 'bg-red-500/30' : '';
 
   return (
     <motion.span
-      className={`${baseClass} ${statusClasses[status]} ${isSpecial ? 'opacity-50 font-bold' : ''}`}
+      className={`${baseClass} ${statusClasses[status]} ${isSpecial ? 'opacity-50 font-bold' : ''} ${incorrectSpaceClass}`}
       initial={status === 'correct' ? { scale: 1.1 } : false}
       animate={{ scale: 1 }}
       transition={{ duration: 0.1 }}
@@ -83,13 +88,11 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
     }
   }, [status, inputRef]);
 
-  // 计算每个字符的状态 - 使用 displayText 进行比较
+  // 计算每个字符的状态
   const characters = useMemo(() => {
-    // 1. 特殊字符标准化 - 确保符号正确匹配
     let normalizedDisplay = normalizeSpecialChars(displayText);
     let normalizedTyped = normalizeSpecialChars(typedText);
 
-    // 2. Unicode 标准化 - 确保中文字符比较正确
     normalizedDisplay = normalizedDisplay.normalize('NFC');
     normalizedTyped = normalizedTyped.normalize('NFC');
 
@@ -97,13 +100,10 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       let charStatus: 'pending' | 'correct' | 'incorrect' | 'current';
 
       if (index < normalizedTyped.length) {
-        // 已输入的字符
         charStatus = normalizedTyped[index] === char ? 'correct' : 'incorrect';
       } else if (index === normalizedTyped.length && status !== 'finished') {
-        // 当前待输入的字符
         charStatus = 'current';
       } else {
-        // 未输入的字符
         charStatus = 'pending';
       }
 
@@ -113,171 +113,54 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
     return result;
   }, [displayText, typedText, status]);
 
-  // 计算当前应该显示的两行内容（优化版：真正的两行滚动）
+  // 计算显示行
   const displayLines = useMemo(() => {
-    if (mode === 'coder') {
-      // 程序员模式：显示两行代码 - 使用 displayText
-      const lines = displayText.split('\n');
-      let charCount = 0;
-      let currentLineIndex = 0;
-
-      // 找到当前输入位置所在的行
-      for (let i = 0; i < lines.length; i++) {
-        const lineLength = lines[i].length + (i < lines.length - 1 ? 1 : 0); // +1 for \n
-
-        if (charCount + lineLength > typedText.length) {
-          currentLineIndex = i;
-          break;
-        }
-        charCount += lineLength;
-      }
-
-      // 显示当前行和下一行
-      const line1 = lines[currentLineIndex] || '';
-      const line2 = lines[currentLineIndex + 1] || '';
-
-      let line1Start = 0;
-      for (let i = 0; i < currentLineIndex; i++) {
-        line1Start += lines[i].length + 1; // +1 for \n
-      }
-
-      // 检查第一行后面是否有换行符（只要不是最后一行就有）
-      const line1HasNewline = currentLineIndex < lines.length - 1;
-      const line2HasNewline = currentLineIndex + 1 < lines.length - 1;
-
-      const result = {
-        line1,
-        line2,
-        line1Start,
-        line2Start: line1Start + line1.length + (line1HasNewline ? 1 : 0),
-        line1HasNewline,
-        line2HasNewline,
-      };
-
-      return result;
-    } else {
-      // 英文和中文模式：两行滚动显示，单词不截断 - 使用 displayText
-      // 1. 生成单词数组，保留换行符
-      let words: string[] = [];
-      if (mode === 'english') {
-        // 英文模式：按换行符分割，再按空格分割，保留换行符作为独立项
-        const lines = displayText.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].length > 0) {
-            words.push(...lines[i].split(' '));
-          }
-          // 如果不是最后一行，添加换行符
-          if (i < lines.length - 1) {
-            words.push('\n');
-          }
-        }
-      } else {
-        // 中文模式：按字符分割
-        words = displayText.split('');
-      }
-
-      const separator = mode === 'english' ? ' ' : '';
-      const maxCharsPerLine = mode === 'english' ? 55 : 35;
-
-      // 将所有单词分成多行（每行不超过最大字符数）
-      const allLines: { text: string; startIndex: number; hasNewline: boolean }[] = [];
-      let currentLine: string[] = [];
-      let currentLineLength = 0;
-      let charIndex = 0;
-
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-
-        // 处理换行符 (所有模式)
-        if (word === '\n') {
-          // 保存当前行，并标记有换行符
-          const lineStartIndex = charIndex - currentLineLength;
-          allLines.push({
-            text: currentLine.join(separator),
-            startIndex: lineStartIndex,
-            hasNewline: true
-          });
-
-          // 重置当前行
-          currentLine = [];
-          currentLineLength = 0;
-          charIndex += 1; // 换行符占一个字符位置
-          continue;
-        }
-
-        // 计算单词长度（包含分隔符）
-        // 英文模式下，如果下一个词是换行符，或者这是最后一个词，就不加空格
-        const nextWord = words[i + 1];
-        const shouldAddSeparator = mode === 'english' && nextWord !== '\n' && i < words.length - 1;
-        const wordWithSeparator = word + (shouldAddSeparator ? separator : '');
-        const wordLength = wordWithSeparator.length;
-
-        // 检查是否需要自动换行（长度限制）
-        if (currentLine.length > 0 && currentLineLength + wordLength > maxCharsPerLine) {
-          // 保存当前行
-          const lineStartIndex = charIndex - currentLineLength;
-          allLines.push({
-            text: currentLine.join(separator),
-            startIndex: lineStartIndex,
-            hasNewline: false // 自动换行，没有硬换行符
-          });
-
-          // 开始新行
-          currentLine = [word];
-          currentLineLength = wordLength;
-        } else {
-          // 继续当前行
-          currentLine.push(word);
-          currentLineLength += wordLength;
-        }
-
-        charIndex += wordLength;
-      }
-
-      // 添加最后一行
-      if (currentLine.length > 0) {
-        const lineStartIndex = charIndex - currentLineLength;
-        allLines.push({
-          text: currentLine.join(separator),
-          startIndex: lineStartIndex,
-          hasNewline: false
-        });
-      }
-
-      // 找到当前输入位置所在的行
-      let currentLineIndex = 0;
-      for (let i = 0; i < allLines.length; i++) {
-        const line = allLines[i];
-        // 行结束位置 = 下一行的开始位置，如果不存在下一行，则为当前行的结束位置
-        const nextLine = allLines[i + 1];
-        const lineEndIndex = nextLine ? nextLine.startIndex : (line.startIndex + line.text.length + (line.hasNewline ? 1 : 0));
-
-        if (typedText.length < lineEndIndex) {
-          currentLineIndex = i;
-          break;
-        }
-      }
-
-      // 返回当前行和下一行
-      const line1 = allLines[currentLineIndex] || { text: '', startIndex: 0, hasNewline: false };
-      const line2 = allLines[currentLineIndex + 1] || { text: '', startIndex: 0, hasNewline: false }; // startIndex will be calculated if needed, but usually we just render text
-
-      // 修正 line2Start 的计算，如果 line2 不存在，或者我们需要根据 line1 推算
-      const line2Start = line2.text ? line2.startIndex : (line1.startIndex + line1.text.length + (line1.hasNewline ? 1 : 0) + (mode === 'english' && !line1.hasNewline ? 1 : 0));
-
-      return {
-        line1: line1.text,
-        line2: line2.text,
-        line1Start: line1.startIndex,
-        line2Start: line2Start, // 使用实际计算出的 startIndex
-        line1HasNewline: line1.hasNewline,
-        line2HasNewline: line2.hasNewline,
-      };
-    }
+    return calculateLines(displayText, typedText, mode);
   }, [displayText, typedText, mode]);
 
-  // 为两行中的每个字符添加状态
-  const renderLine = (lineText: string, startOffset: number, hasNewline: boolean = false) => {
+  // 构建渲染列表
+  const linesToRender = useMemo(() => {
+    const lines = [];
+
+    // 只有当 prevLine 有效且不与 currentLine 重叠（针对第一行的情况）时才添加
+    // 通过比较 startIndex 来判断
+    if (displayLines.prevLineStart !== displayLines.currentLineStart) {
+      lines.push({
+        id: displayLines.prevLineStart,
+        text: displayLines.prevLine,
+        start: displayLines.prevLineStart,
+        hasNewline: displayLines.prevLineHasNewline,
+        type: 'prev' as const
+      });
+    }
+
+    lines.push({
+      id: displayLines.currentLineStart,
+      text: displayLines.currentLine,
+      start: displayLines.currentLineStart,
+      hasNewline: displayLines.currentLineHasNewline,
+      type: 'current' as const
+    });
+
+    // 只有当 nextLine 存在（内容不为空或者有换行符，或者它是最后一行但还没结束）时才添加
+    // 简单判断：只要 startIndex 不等于 currentLineStart，就说明是下一行
+    // 注意：如果只有一行，calculateLines 可能会返回空 nextLine，我们需要根据实际逻辑判断
+    if (displayLines.nextLineStart > displayLines.currentLineStart) {
+      lines.push({
+        id: displayLines.nextLineStart,
+        text: displayLines.nextLine,
+        start: displayLines.nextLineStart,
+        hasNewline: displayLines.nextLineHasNewline,
+        type: 'next' as const
+      });
+    }
+
+    return lines;
+  }, [displayLines]);
+
+  const renderLineContent = (lineText: string, startOffset: number, hasNewline: boolean) => {
+    if (!lineText && !hasNewline) return <span className="inline-block w-full">&nbsp;</span>; // 保持空行高度
+
     const chars = lineText.split('');
     const result = chars.map((char, i) => {
       const globalIndex = startOffset + i;
@@ -298,7 +181,6 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       );
     });
 
-    // 如果这一行后面有换行符，也要渲染它 (支持所有模式)
     if (hasNewline) {
       const newlineIndex = startOffset + chars.length;
       const newlineData = characters[newlineIndex];
@@ -323,7 +205,6 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
 
   return (
     <div className="relative">
-      {/* 提示文字 */}
       {status === 'idle' && (
         <motion.div
           className="absolute -top-8 left-0 text-sm text-gray-400"
@@ -335,7 +216,6 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         </motion.div>
       )}
 
-      {/* 隐藏input - 定位在当前光标处 */}
       <input
         ref={inputRef}
         type="text"
@@ -355,49 +235,55 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         {...inputHandlers}
       />
 
-      {/* 文本显示区域 - 固定两行 */}
       <div
         ref={containerRef}
         className={`
           relative
-          flex flex-col gap-2
+          flex flex-col gap-1
           font-mono leading-relaxed
           p-6 rounded-xl
           bg-gray-900/50 backdrop-blur-sm
           border border-gray-800
           select-none
-          ${mode === 'coder' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}
+          min-h-[160px] justify-center
         `}
         onClick={() => inputRef.current?.focus()}
       >
-        <AnimatePresence mode="popLayout">
-          {/* 第一行 */}
-          <motion.div
-            key={`line1-${displayLines.line1Start}`}
-            className="min-h-[2.5rem] w-full break-words"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderLine(displayLines.line1, displayLines.line1Start, displayLines.line1HasNewline || false)}
-          </motion.div>
+        <AnimatePresence mode="popLayout" initial={false}>
+          {linesToRender.map((line) => {
+            const isCurrent = line.type === 'current';
+            const isPrev = line.type === 'prev';
 
-          {/* 第二行 */}
-          <motion.div
-            key={`line2-${displayLines.line2Start}`}
-            className="min-h-[2.5rem] w-full break-words"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderLine(displayLines.line2, displayLines.line2Start, displayLines.line2HasNewline || false)}
-          </motion.div>
+            return (
+              <motion.div
+                key={`line-${line.id}`}
+                layout
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{
+                  opacity: isCurrent ? 1 : 0.5,
+                  y: 0,
+                  scale: isCurrent ? 1 : 0.9,
+                  originX: 0
+                }}
+                exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                  mass: 1
+                }}
+                className={`w-full break-words ${isCurrent
+                    ? (mode === 'coder' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl')
+                    : 'text-base'
+                  } min-h-[1.5em]`}
+              >
+                {renderLineContent(line.text, line.start, line.hasNewline)}
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
       </div>
 
-      {/* 模式提示 */}
       <div className="mt-2 text-xs text-gray-600 text-center">
         {mode === 'coder' && '程序员模式：每行是一行代码'}
         {mode === 'english' && '英文模式：单词不会被截断'}
