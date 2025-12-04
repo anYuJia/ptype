@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { AuthState, User } from '../types';
 
 interface AuthStore extends AuthState {
+    triggerPosition: { x: number; y: number } | null;
     // Actions
-    openAuthModal: (view?: 'login' | 'register') => void;
+    openAuthModal: (view?: 'login' | 'register', position?: { x: number; y: number } | null) => void;
     closeAuthModal: () => void;
     setAuthModalView: (view: 'login' | 'register') => void;
     login: (user: User) => void;
@@ -19,9 +20,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
     error: null,
     isAuthModalOpen: false,
     authModalView: 'login',
+    triggerPosition: null,
 
-    openAuthModal: (view = 'login') => set({ isAuthModalOpen: true, authModalView: view, error: null }),
-    closeAuthModal: () => set({ isAuthModalOpen: false, error: null }),
+    openAuthModal: (view = 'login', position = null) => set({ isAuthModalOpen: true, authModalView: view, error: null, triggerPosition: position }),
+    closeAuthModal: () => set({ isAuthModalOpen: false, error: null }), // Don't clear triggerPosition here to allow exit animation
     setAuthModalView: (view) => set({ authModalView: view, error: null }),
 
     login: (user) => set({ user, isAuthenticated: true, error: null }),

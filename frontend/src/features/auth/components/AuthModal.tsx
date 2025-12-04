@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { AuthInput } from './AuthInput';
@@ -14,7 +14,8 @@ export function AuthModal() {
         setLoading,
         isLoading,
         error,
-        setError
+        setError,
+        triggerPosition
     } = useAuthStore();
 
     const [email, setEmail] = useState('');
@@ -51,27 +52,86 @@ export function AuthModal() {
         }
     };
 
-    if (!isAuthModalOpen) return null;
+    // Calculate animation origin based on trigger position
+    const getAnimationVariants = () => {
+        if (!triggerPosition) {
+            // Fallback if no position (e.g. direct open)
+            return {
+                initial: { opacity: 0, scale: 0.9, y: 20, filter: "blur(10px)" },
+                animate: { opacity: 1, scale: 1, x: "-50%", y: "-50%", filter: "blur(0px)" },
+                exit: { opacity: 0, scale: 0.9, y: 20, filter: "blur(10px)" }
+            };
+        }
+
+        // Calculate offset from center of screen (where modal lives) to the trigger button
+        // Modal is fixed at left-1/2 top-1/2, so (0,0) relative to it is the center of screen.
+        // We need to find the vector from Center to Trigger.
+        // Trigger (tx, ty)
+        // Center (cx, cy) = (window.innerWidth / 2, window.innerHeight / 2)
+        // Offset = (tx - cx, ty - cy)
+
+        // Note: Since we are in SSR context initially, we should be careful, but this runs on client.
+        const cx = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+        const cy = typeof window !== 'undefined' ? window.innerHeight / 2 : 0;
+
+        const x = triggerPosition.x - cx;
+        const y = triggerPosition.y - cy;
+
+        return {
+            initial: {
+                opacity: 0,
+                scale: 0.1,
+                x: `calc(${x}px - 50%)`,
+                y: `calc(${y}px - 50%)`,
+                filter: "blur(10px)"
+            },
+            animate: {
+                opacity: 1,
+                scale: 1,
+                x: "-50%",
+                y: "-50%",
+                filter: "blur(0px)"
+            },
+            exit: {
+                opacity: 0,
+                scale: 0.1,
+                x: `calc(${x}px - 50%)`,
+                y: `calc(${y}px - 50%)`,
+                filter: "blur(10px)"
+            }
+        };
+    };
+
+    const variants = useMemo(() => getAnimationVariants(), [triggerPosition]);
 
     return (
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
             {isAuthModalOpen && (
                 <>
                     {/* Backdrop */}
                     <motion.div
+                        key="auth-backdrop"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                         onClick={closeAuthModal}
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
                     />
 
                     {/* Modal */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50"
+                        key="auth-modal"
+                        initial={variants.initial}
+                        animate={variants.animate}
+                        exit={variants.exit}
+                        transition={{
+                            type: "spring",
+                            damping: 25,
+                            stiffness: 250,
+                            mass: 0.8
+                        }}
+                        className="fixed left-1/2 top-1/2 w-full max-w-md z-50 origin-center"
                     >
                         <div className="bg-gray-950 border border-gray-800 rounded-2xl p-8 shadow-2xl shadow-black/50 overflow-hidden relative">
                             {/* Decorative gradient */}

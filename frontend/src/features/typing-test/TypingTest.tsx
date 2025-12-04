@@ -144,7 +144,10 @@ export function TypingTest() {
             ) : (
               <div className="flex items-center gap-1">
                 <motion.button
-                  onClick={() => openAuthModal('login')}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    openAuthModal('login', { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+                  }}
                   className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -154,7 +157,10 @@ export function TypingTest() {
                 </motion.button>
 
                 <motion.button
-                  onClick={() => openAuthModal('register')}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    openAuthModal('register', { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+                  }}
                   className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300 relative group"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
