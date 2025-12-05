@@ -175,7 +175,13 @@ JWT_SECRET="your-secret-key"
 
 5. **Initialize Database**
 
+> **Tip**: If you encounter issues downloading the Prisma engine, please set the mirror before installing dependencies:
+> ```bash
+> export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+> ```
+
 ```bash
+npx prisma generate
 npx prisma db push
 ```
 

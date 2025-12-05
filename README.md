@@ -175,7 +175,13 @@ JWT_SECRET="your-secret-key"
 
 5. **初始化数据库**
 
+> **提示**：如果遇到 Prisma 引擎下载失败，请在安装依赖前设置镜像：
+> ```bash
+> export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+> ```
+
 ```bash
+npx prisma generate
 npx prisma db push
 ```
 
