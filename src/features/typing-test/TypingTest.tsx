@@ -92,17 +92,28 @@ export function TypingTest() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');
+
+  const tabs = [
+    { id: 'practice', label: '练习' },
+    { id: 'leaderboard', label: '排行' },
+    { id: 'history', label: '历史' },
+    { id: 'profile', label: '我的' },
+  ] as const;
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-200 flex flex-col">
       {/* 头部 */}
-      <header className="pt-8 pb-2 px-4 max-w-5xl mx-auto w-full">
+      <header className="pt-8 pb-2 px-4 max-w-6xl mx-auto w-full">
         <motion.div
           className="flex items-center justify-between"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center gap-4">
-            <div className="relative w-20 h-20">
+          {/* Logo & Title */}
+          <div className="flex items-center gap-4 w-[240px]">
+            <div className="relative w-16 h-16">
               <Image
                 src="/logo.png"
                 alt="PType Logo"
@@ -112,31 +123,47 @@ export function TypingTest() {
               />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-6xl font-bold text-teal-400 tracking-tight leading-none min-h-[60px] flex items-center">
+              <h1 className="text-4xl font-bold text-teal-400 tracking-tight leading-none min-h-[40px] flex items-center">
                 {displayedTitle}
                 {showCursor && (
                   <motion.span
                     initial={{ opacity: 1 }}
                     animate={{ opacity: 0 }}
                     transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                    className="inline-block ml-1 -translate-y-1"
+                    className="inline-block ml-1 -translate-y-0.5"
                   >
                     |
                   </motion.span>
                 )}
               </h1>
-              <motion.p
-                className="text-gray-500 text-lg mt-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                Test your typing speed
-              </motion.p>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          {/* Tab Navigation */}
+          <div className="flex items-center gap-8 relative">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  relative py-2 text-base font-medium transition-colors duration-300
+                  ${activeTab === tab.id ? 'text-teal-400' : 'text-gray-500 hover:text-gray-300'}
+                `}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.5)]"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* User & Actions */}
+          <div className="flex items-center justify-end gap-6 w-[240px]">
             <motion.a
               href="https://github.com/anYuJia/ptype/"
               target="_blank"
@@ -214,85 +241,105 @@ export function TypingTest() {
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 pt-12 pb-8 flex flex-col gap-6">
         <div className="w-full">
           <AnimatePresence mode="wait">
-            {status === 'finished' ? (
-              <ResultsCard
-                key="results"
-                mode={settings.mode}
-                difficulty={settings.difficulty}
-                chineseStyle={settings.chineseStyle}
-                programmingLanguage={settings.programmingLanguage}
-                wpm={wpm}
-                cpm={cpm}
-                lpm={lpm}
-                accuracy={accuracy}
-                correctChars={correctChars}
-                errors={errors}
-                wpmHistory={wpmHistory}
-                duration={settings.duration}
-                onRestart={restart}
-              />
-            ) : (
-              <motion.div
-                key="typing"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-8"
-              >
-                {/* 设置面板 */}
-                <SettingsPanel
-                  duration={settings.duration}
+            {activeTab === 'practice' ? (
+              status === 'finished' ? (
+                <ResultsCard
+                  key="results"
                   mode={settings.mode}
                   difficulty={settings.difficulty}
                   chineseStyle={settings.chineseStyle}
                   programmingLanguage={settings.programmingLanguage}
-                  englishOptions={settings.englishOptions}
-                  typingOptions={settings.typingOptions}
-                  status={status}
-                  onDurationChange={setDuration}
-                  onModeChange={setMode}
-                  onDifficultyChange={setDifficulty}
-                  onChineseStyleChange={setChineseStyle}
-                  onProgrammingLanguageChange={setProgrammingLanguage}
-                  onEnglishOptionsChange={setEnglishOptions}
-                  onTypingOptionsChange={setTypingOptions}
-                  onRestart={restart}
-                  disabled={false}
-                />
-
-                {/* 统计显示 */}
-                <StatsDisplay
-                  mode={settings.mode}
                   wpm={wpm}
                   cpm={cpm}
                   lpm={lpm}
                   accuracy={accuracy}
-                  timeLeft={timeLeft}
-                  status={status}
-                  actionButton={
-                    status === 'running' ? (
-                      <motion.button
-                        onClick={restart}
-                        className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        停止并重新开始
-                      </motion.button>
-                    ) : null
-                  }
+                  correctChars={correctChars}
+                  errors={errors}
+                  wpmHistory={wpmHistory}
+                  duration={settings.duration}
+                  onRestart={restart}
                 />
+              ) : (
+                <motion.div
+                  key="typing"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-8"
+                >
+                  {/* 设置面板 */}
+                  <SettingsPanel
+                    duration={settings.duration}
+                    mode={settings.mode}
+                    difficulty={settings.difficulty}
+                    chineseStyle={settings.chineseStyle}
+                    programmingLanguage={settings.programmingLanguage}
+                    englishOptions={settings.englishOptions}
+                    typingOptions={settings.typingOptions}
+                    status={status}
+                    onDurationChange={setDuration}
+                    onModeChange={setMode}
+                    onDifficultyChange={setDifficulty}
+                    onChineseStyleChange={setChineseStyle}
+                    onProgrammingLanguageChange={setProgrammingLanguage}
+                    onEnglishOptionsChange={setEnglishOptions}
+                    onTypingOptionsChange={setTypingOptions}
+                    onRestart={restart}
+                    disabled={false}
+                  />
 
-                {/* 文本显示 - 包含输入框 */}
-                <TextDisplay
-                  targetText={targetText}
-                  displayText={displayText}
-                  typedText={typedText}
-                  status={status}
-                  mode={settings.mode}
-                  inputRef={inputRef}
-                  inputHandlers={inputHandlers}
-                />
+                  {/* 统计显示 */}
+                  <StatsDisplay
+                    mode={settings.mode}
+                    wpm={wpm}
+                    cpm={cpm}
+                    lpm={lpm}
+                    accuracy={accuracy}
+                    timeLeft={timeLeft}
+                    status={status}
+                    actionButton={
+                      status === 'running' ? (
+                        <motion.button
+                          onClick={restart}
+                          className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          停止并重新开始
+                        </motion.button>
+                      ) : null
+                    }
+                  />
+
+                  {/* 文本显示 - 包含输入框 */}
+                  <TextDisplay
+                    targetText={targetText}
+                    displayText={displayText}
+                    typedText={typedText}
+                    status={status}
+                    mode={settings.mode}
+                    inputRef={inputRef}
+                    inputHandlers={inputHandlers}
+                  />
+                </motion.div>
+              )
+            ) : (
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex flex-col items-center justify-center min-h-[400px] text-gray-500"
+              >
+                <div className="w-16 h-16 mb-4 rounded-full bg-gray-900/50 flex items-center justify-center">
+                  <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                  {tabs.find(t => t.id === activeTab)?.label} 模块开发中
+                </h3>
+                <p className="text-sm">敬请期待更多精彩功能</p>
               </motion.div>
             )}
           </AnimatePresence>
