@@ -243,29 +243,9 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     const lastCorrectChars = get().lastCorrectChars || 0;
     const charsDelta = correctChars - lastCorrectChars;
 
-    // 瞬时 WPM (假设 tick 是 1 秒一次)
-    // 英文：charsDelta / 5 * 60
-    // 中文：charsDelta * 60
-    // 代码：行数比较难算瞬时，暂时用 charsDelta / 平均行长 * 60 或者直接用 charsDelta * 60 (CPM)
-    // 为了统一，图表最好显示 CPM 或 WPM。
-
-    let instantaneousSpeed = 0;
-    if (settings.mode === 'english') {
-      instantaneousSpeed = (charsDelta / 5) * 60;
-    } else if (settings.mode === 'chinese') {
-      instantaneousSpeed = charsDelta * 60;
-    } else {
-      // Coder mode: use CPM for chart or estimate LPM? 
-      // Let's use CPM for chart consistency or WPM equivalent
-      instantaneousSpeed = (charsDelta / 5) * 60;
-    }
-
-    // 平滑处理：如果瞬时速度波动太大，可以考虑简单的移动平均，但这里先直接用
-    // 实际上 1 秒的采样可能波动很大（0 或 60+），可以考虑加个简单的平滑
-    // 或者，我们可以保留 cumulative average for the chart if the user prefers smooth curves, 
-    // but usually "WPM over time" implies instantaneous or short-window average.
-    // Let's try a simple weighted average with previous point if exists to smooth it slightly?
-    // No, let's stick to raw instantaneous first.
+    // 统一使用 CPM (Characters Per Minute) 作为图表数据
+    // 瞬时 CPM = 这一秒的字符数 * 60
+    const instantaneousSpeed = charsDelta * 60;
 
     const wpmHistory = [...get().wpmHistory, {
       time: Math.floor(elapsedSeconds),

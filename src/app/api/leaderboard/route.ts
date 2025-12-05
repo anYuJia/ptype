@@ -52,7 +52,7 @@ export async function GET(request: Request) {
             id: entry.id,
             rank: index + 1,
             username: entry.user.username,
-            wpm: entry.wpm,
+            cpm: entry.wpm,
             accuracy: entry.accuracy,
             date: entry.createdAt.toISOString(), // Or format as needed
             avatar: entry.user.avatarUrl,

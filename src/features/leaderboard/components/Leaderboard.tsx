@@ -22,13 +22,23 @@ const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
     hard: '困难',
 };
 
+interface LeaderboardEntry {
+    id: string;
+    rank: number;
+    username: string;
+    cpm: number;
+    accuracy: number;
+    date: string;
+    avatar: string | null;
+}
+
 export function Leaderboard() {
     const [activeMode, setActiveMode] = useState<Mode>('english');
     const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
     const [chineseStyle, setChineseStyle] = useState<ChineseStyle>('modern');
     const [programmingLanguage, setProgrammingLanguage] = useState<ProgrammingLanguage>('python');
 
-    const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+    const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -179,7 +189,7 @@ export function Leaderboard() {
                     </div>
                     <div className="text-center">
                         <div className="font-bold text-gray-200 mb-1">{data[1]?.username}</div>
-                        <div className="text-teal-400 font-mono text-xl">{data[1]?.wpm} <span className="text-xs text-gray-500">WPM</span></div>
+                        <div className="text-teal-400 font-mono text-xl">{data[1]?.cpm} <span className="text-xs text-gray-500">CPM</span></div>
                     </div>
                 </div>
 
@@ -196,7 +206,7 @@ export function Leaderboard() {
                     </div>
                     <div className="text-center">
                         <div className="font-bold text-white text-lg mb-1">{data[0]?.username}</div>
-                        <div className="text-teal-400 font-mono text-3xl font-bold">{data[0]?.wpm} <span className="text-sm text-gray-500 font-normal">WPM</span></div>
+                        <div className="text-teal-400 font-mono text-3xl font-bold">{data[0]?.cpm} <span className="text-sm text-gray-500 font-normal">CPM</span></div>
                         <div className="text-xs text-gray-500 mt-1">{data[0]?.accuracy}% Accuracy</div>
                     </div>
                 </div>
@@ -211,7 +221,7 @@ export function Leaderboard() {
                     </div>
                     <div className="text-center">
                         <div className="font-bold text-gray-200 mb-1">{data[2]?.username}</div>
-                        <div className="text-teal-400 font-mono text-xl">{data[2]?.wpm} <span className="text-xs text-gray-500">WPM</span></div>
+                        <div className="text-teal-400 font-mono text-xl">{data[2]?.cpm} <span className="text-xs text-gray-500">CPM</span></div>
                     </div>
                 </div>
             </div>
@@ -222,7 +232,7 @@ export function Leaderboard() {
                 <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div className="col-span-1">Rank</div>
                     <div className="col-span-5">User</div>
-                    <div className="col-span-2 text-right">WPM</div>
+                    <div className="col-span-2 text-right">CPM</div>
                     <div className="col-span-2 text-right">Accuracy</div>
                     <div className="col-span-2 text-right">Date</div>
                 </div>
@@ -249,7 +259,7 @@ export function Leaderboard() {
                                 </span>
                             </div>
                             <div className="col-span-2 text-right font-mono text-teal-400 font-bold">
-                                {item.wpm}
+                                {item.cpm}
                             </div>
                             <div className="col-span-2 text-right font-mono text-gray-400">
                                 {item.accuracy}%

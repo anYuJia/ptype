@@ -151,8 +151,12 @@ export function Profile() {
                     {/* Quick Stats */}
                     <div className="flex gap-8 border-l border-white/10 pl-8">
                         <div className="text-center">
+                            <div className="text-2xl font-bold text-white">{stats.avgWpm}</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">平均 CPM</div>
+                        </div>
+                        <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.bestWpm}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">Best WPM</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">最高 CPM</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.totalTests}</div>

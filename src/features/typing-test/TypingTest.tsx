@@ -107,7 +107,7 @@ export function TypingTest() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              wpm,
+              wpm: cpm, // Unify to CPM (Characters Per Minute) as requested
               accuracy,
               mode: settings.mode,
               subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
@@ -128,7 +128,7 @@ export function TypingTest() {
       };
       saveResult();
     }
-  }, [status, isAuthenticated, user, wpm, accuracy, settings]);
+  }, [status, isAuthenticated, user, wpm, cpm, accuracy, settings]);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');

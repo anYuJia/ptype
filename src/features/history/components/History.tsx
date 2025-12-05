@@ -59,7 +59,7 @@ export function History() {
                             hour12: false
                         }),
                         // Ensure numeric values for chart
-                        wpm: Number(item.wpm),
+                        cpm: Number(item.wpm),
                         accuracy: Number(item.accuracy),
                     })).reverse(); // Reverse to make it Chronological (Oldest first)
                     setHistoryData(formattedHistory);
@@ -101,8 +101,8 @@ export function History() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     { label: '总测试数', value: stats.totalTests, icon: '📝' },
-                    { label: '平均速度', value: stats.avgWpm, unit: 'WPM', icon: '⚡' },
-                    { label: '最高速度', value: stats.bestWpm, unit: 'WPM', icon: '🏆' },
+                    { label: '平均速度', value: stats.avgWpm, unit: 'CPM', icon: '⚡' },
+                    { label: '最高速度', value: stats.bestWpm, unit: 'CPM', icon: '🏆' },
                     { label: '总练习时长', value: stats.totalTime, icon: '⏱️' },
                 ].map((stat, index) => (
                     <motion.div
@@ -131,11 +131,11 @@ export function History() {
                 transition={{ delay: 0.2 }}
                 className="bg-gray-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm h-[300px] relative"
             >
-                <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">WPM 趋势</h3>
+                <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">CPM 趋势</h3>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={historyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
-                            <linearGradient id="colorWpm" x1="0" y1="0" x2="0" y2="1">
+                            <linearGradient id="colorCpm" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
                                 <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
                             </linearGradient>
@@ -170,11 +170,11 @@ export function History() {
                         />
                         <Area
                             type="monotone"
-                            dataKey="wpm"
+                            dataKey="cpm"
                             stroke="#14b8a6"
                             strokeWidth={2}
                             fillOpacity={1}
-                            fill="url(#colorWpm)"
+                            fill="url(#colorCpm)"
                             activeDot={{ r: 4, strokeWidth: 0, fill: '#fff' }}
                         />
                     </AreaChart>
@@ -191,7 +191,7 @@ export function History() {
                         <div className="col-span-3">Mode</div>
                         <div className="col-span-2 text-center">Difficulty</div>
                         <div className="col-span-1 text-center">Time</div>
-                        <div className="col-span-2 text-center">WPM</div>
+                        <div className="col-span-2 text-center">CPM</div>
                         <div className="col-span-2 text-center">Accuracy</div>
                     </div>
 
@@ -239,7 +239,7 @@ text - xs font - medium
                                     {item.duration}s
                                 </div>
                                 <div className="col-span-2 text-center font-mono font-bold text-teal-400">
-                                    {item.wpm}
+                                    {item.cpm}
                                 </div>
                                 <div className="col-span-2 text-center font-mono text-gray-400">
                                     {Math.floor(item.accuracy)}%

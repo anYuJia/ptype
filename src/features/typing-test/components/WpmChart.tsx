@@ -54,7 +54,7 @@ export function WpmChart({ data }: WpmChartProps) {
             labelFormatter={(value) => `Time: ${value}s`}
             formatter={(value: number, name: string) => [
               value,
-              name === 'wpm' ? 'WPM' : 'Accuracy %',
+              name === 'wpm' ? 'CPM' : 'Accuracy %',
             ]}
           />
           <Area
