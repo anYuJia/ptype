@@ -94,6 +94,42 @@ export function TypingTest() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Save result when test finishes
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (status === 'running') {
+      savedRef.current = false;
+    } else if (status === 'finished' && !savedRef.current && isAuthenticated && user) {
+      const saveResult = async () => {
+        try {
+          console.log('Saving result from TypingTest...');
+          const res = await fetch('/api/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              wpm,
+              accuracy,
+              mode: settings.mode,
+              subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
+              difficulty: settings.difficulty,
+              duration: settings.duration,
+            }),
+          });
+
+          if (res.ok) {
+            console.log('Result saved successfully');
+            savedRef.current = true;
+          } else {
+            console.error('Failed to save result:', await res.text());
+          }
+        } catch (error) {
+          console.error('Failed to save result:', error);
+        }
+      };
+      saveResult();
+    }
+  }, [status, isAuthenticated, user, wpm, accuracy, settings]);
+
   // Tab state
   const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');
 

@@ -27,7 +27,7 @@ export function WpmChart({ data }: WpmChartProps) {
   }
 
   return (
-    <div className="h-48 w-full">
+    <div className="h-48 w-full min-h-[192px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>

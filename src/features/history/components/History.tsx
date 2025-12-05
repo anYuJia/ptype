@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
     LineChart,
@@ -21,44 +21,63 @@ import {
     PROGRAMMING_LANGUAGE_OPTIONS
 } from '@/lib/constants';
 
-// Mock Data
-const MOCK_HISTORY_DATA = Array.from({ length: 20 }).map((_, i) => {
-    const mode = ['english', 'chinese', 'coder'][Math.floor(Math.random() * 3)] as TypingMode;
-    let subMode: string | null = null;
-
-    if (mode === 'chinese') {
-        subMode = CHINESE_STYLE_OPTIONS[Math.floor(Math.random() * CHINESE_STYLE_OPTIONS.length)];
-    } else if (mode === 'coder') {
-        subMode = PROGRAMMING_LANGUAGE_OPTIONS[Math.floor(Math.random() * PROGRAMMING_LANGUAGE_OPTIONS.length)];
-    }
-
-    return {
-        id: i,
-        date: new Date(Date.now() - (20 - i) * 24 * 60 * 60 * 1000 - Math.random() * 1000 * 60 * 60 * 5).toLocaleString('zh-CN', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        }),
-        wpm: Math.floor(60 + Math.random() * 40 + i * 2), // Trending up
-        accuracy: 90 + Math.random() * 10,
-        mode,
-        subMode,
-        difficulty: ['easy', 'medium', 'hard'][Math.floor(Math.random() * 3)] as 'easy' | 'medium' | 'hard',
-        duration: [15, 30, 60][Math.floor(Math.random() * 3)],
-    };
-});
-
-const STATS = {
-    totalTests: 142,
-    avgWpm: 86,
-    bestWpm: 124,
-    totalTime: '4h 12m'
-};
-
 export function History() {
+    const [historyData, setHistoryData] = useState<any[]>([]);
+    const [stats, setStats] = useState({
+        totalTests: 0,
+        avgWpm: 0,
+        bestWpm: 0,
+        totalTime: '0m'
+    });
+    const [loading, setLoading] = useState(true);
     const [hoveredData, setHoveredData] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [historyRes, profileRes] = await Promise.all([
+                    fetch('/api/history'),
+                    fetch('/api/profile')
+                ]);
+
+                if (historyRes.ok) {
+                    const history = await historyRes.json();
+                    // Format history for chart and table.
+                    // Assuming API returns chronological (oldest first) or we sort it.
+                    // Recharts typically expects chronological data.
+                    // API returns newest first (desc).
+                    // For Chart, we want Oldest -> Newest (Chronological).
+                    // For List, we want Newest -> Oldest (Reverse Chronological).
+                    // So we reverse the API response to store it as Chronological in state.
+                    const formattedHistory = history.map((item: any) => ({
+                        ...item,
+                        date: new Date(item.createdAt).toLocaleString('zh-CN', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        }),
+                        // Ensure numeric values for chart
+                        wpm: Number(item.wpm),
+                        accuracy: Number(item.accuracy),
+                    })).reverse(); // Reverse to make it Chronological (Oldest first)
+                    setHistoryData(formattedHistory);
+                }
+
+                if (profileRes.ok) {
+                    const profile = await profileRes.json();
+                    setStats(profile.stats);
+                }
+            } catch (error) {
+                console.error('Failed to fetch history data', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const getSubModeLabel = (mode: TypingMode, subMode: string | null) => {
         if (!subMode) return null;
@@ -66,6 +85,10 @@ export function History() {
         if (mode === 'coder') return PROGRAMMING_LANGUAGE_LABELS[subMode as ProgrammingLanguage];
         return subMode;
     };
+
+    if (loading) {
+        return <div className="text-center text-gray-500 py-20">Loading history...</div>;
+    }
 
     return (
         <motion.div
@@ -77,10 +100,10 @@ export function History() {
             {/* Stats Overview Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: '总测试数', value: STATS.totalTests, icon: '📝' },
-                    { label: '平均速度', value: STATS.avgWpm, unit: 'WPM', icon: '⚡' },
-                    { label: '最高速度', value: STATS.bestWpm, unit: 'WPM', icon: '🏆' },
-                    { label: '总练习时长', value: STATS.totalTime, icon: '⏱️' },
+                    { label: '总测试数', value: stats.totalTests, icon: '📝' },
+                    { label: '平均速度', value: stats.avgWpm, unit: 'WPM', icon: '⚡' },
+                    { label: '最高速度', value: stats.bestWpm, unit: 'WPM', icon: '🏆' },
+                    { label: '总练习时长', value: stats.totalTime, icon: '⏱️' },
                 ].map((stat, index) => (
                     <motion.div
                         key={stat.label}
@@ -110,7 +133,7 @@ export function History() {
             >
                 <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">WPM 趋势</h3>
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={MOCK_HISTORY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <AreaChart data={historyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
                             <linearGradient id="colorWpm" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
@@ -174,7 +197,7 @@ export function History() {
 
                     {/* Rows */}
                     <div className="divide-y divide-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
-                        {MOCK_HISTORY_DATA.slice().reverse().map((item, index) => (
+                        {historyData.slice().reverse().map((item, index) => (
                             <motion.div
                                 key={item.id}
                                 initial={{ opacity: 0, x: -10 }}
@@ -187,11 +210,12 @@ export function History() {
                                 </div>
                                 <div className="col-span-3 flex items-center gap-2">
                                     <span className={`
-                    px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border
+px - 2 py - 0.5 rounded text - [10px] uppercase font - bold tracking - wider border
                     ${item.mode === 'english' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                                             item.mode === 'chinese' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                'bg-purple-500/10 text-purple-400 border-purple-500/20'}
-                  `}>
+                                                'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                                        }
+`}>
                                         {item.mode}
                                     </span>
                                     {item.subMode && (
@@ -202,11 +226,12 @@ export function History() {
                                 </div>
                                 <div className="col-span-2 text-center">
                                     <span className={`
-                    text-xs font-medium
+text - xs font - medium
                     ${item.difficulty === 'easy' ? 'text-green-400' :
                                             item.difficulty === 'medium' ? 'text-yellow-400' :
-                                                'text-red-400'}
-                  `}>
+                                                'text-red-400'
+                                        }
+`}>
                                         {item.difficulty === 'easy' ? '简单' : item.difficulty === 'medium' ? '中等' : '困难'}
                                     </span>
                                 </div>
@@ -227,3 +252,4 @@ export function History() {
         </motion.div>
     );
 }
+

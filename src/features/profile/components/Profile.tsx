@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import Image from 'next/image';
@@ -9,19 +9,57 @@ export function Profile() {
 
     const [editUsername, setEditUsername] = useState(user?.username || '');
 
-    // Mock User Stats
-    const stats = {
-        joinDate: '2023-12-01',
-        totalTests: 142,
-        avgWpm: 86,
-        bestWpm: 124,
-        timeSpent: '4h 12m',
-    };
+    const [stats, setStats] = useState({
+        joinDate: '-',
+        totalTests: 0,
+        avgWpm: 0,
+        bestWpm: 0,
+        timeSpent: '0m',
+    });
+    const [loading, setLoading] = useState(true);
 
-    const handleSaveProfile = () => {
-        // TODO: Implement API call to update profile
-        // For now just toggle editing off
-        setIsEditing(false);
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch('/api/profile');
+                if (res.ok) {
+                    const data = await res.json();
+                    setStats(data.stats);
+                    // Optionally update user in auth store if needed, but we rely on authStore for user info
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    const handleSaveProfile = async () => {
+        try {
+            const res = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: editUsername }),
+            });
+
+            if (res.ok) {
+                // Ideally update the global auth store user here
+                // For now we just close edit mode as the UI will reflect the input value if we updated the store
+                // But since we don't have updateStore method easily available here without checking authStore, 
+                // we might need to reload or just assume success.
+                // Let's assume we need to trigger a re-fetch or update local user object if possible.
+                // Since `user` comes from `useAuthStore`, we should probably update it there.
+                // Assuming `login` or a `setUser` exists. If not, we might see stale data.
+                // For this step, let's just close editing.
+                setIsEditing(false);
+                window.location.reload(); // Simple way to refresh user data in store
+            }
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+        }
     };
 
     if (!user) {

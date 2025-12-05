@@ -59,6 +59,7 @@ export interface TypingState {
 
   // WPM 历史（用于图表）
   wpmHistory: WpmHistoryPoint[];
+  lastCorrectChars?: number; // 上一次 tick 的正确字符数，用于计算瞬时速度
 
   // 设置
   settings: TypingSettings;
@@ -144,6 +145,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       timeLeft: settings.duration,
       startTime: null,
       wpmHistory: [],
+      lastCorrectChars: 0,
     });
   },
 
@@ -237,17 +239,37 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       ? calculateLPM(targetText, correctChars, elapsedSeconds)
       : 0;
 
-    // 记录速度历史（根据模式使用不同的值）
-    // 英文模式用WPM，中文模式用CPM，代码模式用LPM
-    const speedValue = settings.mode === 'english'
-      ? currentWpm
-      : settings.mode === 'chinese'
-        ? currentCpm
-        : currentLpm;
+    // 计算瞬时速度（用于图表）
+    const lastCorrectChars = get().lastCorrectChars || 0;
+    const charsDelta = correctChars - lastCorrectChars;
+
+    // 瞬时 WPM (假设 tick 是 1 秒一次)
+    // 英文：charsDelta / 5 * 60
+    // 中文：charsDelta * 60
+    // 代码：行数比较难算瞬时，暂时用 charsDelta / 平均行长 * 60 或者直接用 charsDelta * 60 (CPM)
+    // 为了统一，图表最好显示 CPM 或 WPM。
+
+    let instantaneousSpeed = 0;
+    if (settings.mode === 'english') {
+      instantaneousSpeed = (charsDelta / 5) * 60;
+    } else if (settings.mode === 'chinese') {
+      instantaneousSpeed = charsDelta * 60;
+    } else {
+      // Coder mode: use CPM for chart or estimate LPM? 
+      // Let's use CPM for chart consistency or WPM equivalent
+      instantaneousSpeed = (charsDelta / 5) * 60;
+    }
+
+    // 平滑处理：如果瞬时速度波动太大，可以考虑简单的移动平均，但这里先直接用
+    // 实际上 1 秒的采样可能波动很大（0 或 60+），可以考虑加个简单的平滑
+    // 或者，我们可以保留 cumulative average for the chart if the user prefers smooth curves, 
+    // but usually "WPM over time" implies instantaneous or short-window average.
+    // Let's try a simple weighted average with previous point if exists to smooth it slightly?
+    // No, let's stick to raw instantaneous first.
 
     const wpmHistory = [...get().wpmHistory, {
       time: Math.floor(elapsedSeconds),
-      wpm: speedValue,  // 实际是速度值，不一定是WPM
+      wpm: Math.max(0, Math.round(instantaneousSpeed)),
       accuracy: currentAccuracy
     }];
 
@@ -257,7 +279,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         wpm: currentWpm,
         cpm: currentCpm,
         lpm: currentLpm,
-        wpmHistory
+        wpmHistory,
+        lastCorrectChars: correctChars // Update for next tick (though finished)
       });
       get().finishTest();
     } else {
@@ -266,7 +289,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         wpm: currentWpm,
         cpm: currentCpm,
         lpm: currentLpm,
-        wpmHistory
+        wpmHistory,
+        lastCorrectChars: correctChars // Update for next tick
       });
     }
   },

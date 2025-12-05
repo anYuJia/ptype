@@ -26,6 +26,8 @@ model TypingResult {
   wpm         Int
   accuracy    Float
   mode        String   // 'english', 'chinese', 'coder'
+  subMode     String?  // 'modern', 'classical' or 'python', 'javascript', etc.
+  difficulty  String   // 'easy', 'medium', 'hard'
   duration    Int      // seconds
   createdAt   DateTime @default(now())
 }

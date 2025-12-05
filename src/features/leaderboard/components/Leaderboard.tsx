@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { CustomSelect } from '@/components/CustomSelect';
@@ -12,33 +13,6 @@ import {
     PROGRAMMING_LANGUAGE_LABELS,
     CHINESE_STYLE_LABELS
 } from '@/lib/constants';
-
-// Mock Data
-const MOCK_DATA = {
-    english: [
-        { id: '1', rank: 1, username: 'SpeedDemon', wpm: 156, accuracy: 99.5, date: '2h ago', avatar: null },
-        { id: '2', rank: 2, username: 'TypingMaster', wpm: 142, accuracy: 98.2, date: '5h ago', avatar: null },
-        { id: '3', rank: 3, username: 'KeyboardWarrior', wpm: 138, accuracy: 97.8, date: '1d ago', avatar: null },
-        { id: '4', rank: 4, username: 'CodeNinja', wpm: 125, accuracy: 96.5, date: '2d ago', avatar: null },
-        { id: '5', rank: 5, username: 'PixelPerfect', wpm: 118, accuracy: 98.0, date: '3d ago', avatar: null },
-        { id: '6', rank: 6, username: 'ByteMe', wpm: 112, accuracy: 95.5, date: '1w ago', avatar: null },
-        { id: '7', rank: 7, username: 'NullPointer', wpm: 105, accuracy: 94.2, date: '1w ago', avatar: null },
-    ],
-    chinese: [
-        { id: '1', rank: 1, username: '打字机神', wpm: 220, accuracy: 99.8, date: '1h ago', avatar: null },
-        { id: '2', rank: 2, username: '键道中人', wpm: 198, accuracy: 98.5, date: '3h ago', avatar: null },
-        { id: '3', rank: 3, username: '极速蜗牛', wpm: 185, accuracy: 97.2, date: '1d ago', avatar: null },
-        { id: '4', rank: 4, username: '指尖飞舞', wpm: 170, accuracy: 96.8, date: '2d ago', avatar: null },
-        { id: '5', rank: 5, username: '键盘侠', wpm: 165, accuracy: 95.0, date: '4d ago', avatar: null },
-    ],
-    coder: [
-        { id: '1', rank: 1, username: 'VimUser', wpm: 98, accuracy: 99.0, date: '30m ago', avatar: null },
-        { id: '2', rank: 2, username: 'FullStack', wpm: 85, accuracy: 97.5, date: '2h ago', avatar: null },
-        { id: '3', rank: 3, username: 'BugHunter', wpm: 82, accuracy: 96.8, date: '5h ago', avatar: null },
-        { id: '4', rank: 4, username: 'DevOps', wpm: 78, accuracy: 95.5, date: '1d ago', avatar: null },
-        { id: '5', rank: 5, username: 'GitPush', wpm: 75, accuracy: 98.2, date: '3d ago', avatar: null },
-    ]
-};
 
 type Mode = 'english' | 'chinese' | 'coder';
 
@@ -54,7 +28,40 @@ export function Leaderboard() {
     const [chineseStyle, setChineseStyle] = useState<ChineseStyle>('modern');
     const [programmingLanguage, setProgrammingLanguage] = useState<ProgrammingLanguage>('python');
 
-    const data = MOCK_DATA[activeMode];
+    const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams({
+                    mode: activeMode,
+                    difficulty,
+                });
+
+                if (activeMode === 'chinese') {
+                    params.append('subMode', chineseStyle);
+                } else if (activeMode === 'coder') {
+                    params.append('subMode', programmingLanguage);
+                }
+
+                const res = await fetch(`/api/leaderboard?${params.toString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setLeaderboardData(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch leaderboard:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLeaderboard();
+    }, [activeMode, difficulty, chineseStyle, programmingLanguage]);
+
+    const data = leaderboardData;
 
     return (
         <motion.div
