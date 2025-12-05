@@ -9,8 +9,8 @@ import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay';
 import { ResultsCard } from '@/features/typing-test/components/ResultsCard';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { AuthModal } from '@/features/auth/components/AuthModal';
-
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
+import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
@@ -323,6 +323,8 @@ export function TypingTest() {
                   />
                 </motion.div>
               )
+            ) : activeTab === 'leaderboard' ? (
+              <Leaderboard key="leaderboard" />
             ) : (
               <motion.div
                 key={activeTab}

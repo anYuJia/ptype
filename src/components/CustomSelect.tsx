@@ -50,7 +50,7 @@ export function CustomSelect<T extends string>({
           w-full px-1 py-2 rounded-none
           bg-transparent border-b border-gray-700
           text-white text-sm
-          flex items-center justify-between gap-2
+          flex items-center justify-center gap-2
           transition-colors
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-teal-500'}
         `}
