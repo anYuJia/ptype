@@ -12,6 +12,7 @@ import { AuthModal } from '@/features/auth/components/AuthModal';
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
 import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
 import { History } from '@/features/history/components/History';
+import { Profile } from '@/features/profile/components/Profile';
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
@@ -328,6 +329,8 @@ export function TypingTest() {
               <Leaderboard key="leaderboard" />
             ) : activeTab === 'history' ? (
               <History key="history" />
+            ) : activeTab === 'profile' ? (
+              <Profile key="profile" />
             ) : (
               <motion.div
                 key={activeTab}
