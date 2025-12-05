@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1 align="center">
-  <img src="./frontend/public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
+  <img src="./public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
   PType
 </h1>
 <p align="center">
@@ -12,8 +12,8 @@
 
 [![License](https://img.shields.io/github/license/anYuJia/ptype?style=flat-square&color=blue)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=flat-square&color=yellow)](https://github.com/anYuJia/ptype/stargazers)
 
@@ -45,7 +45,8 @@ PType is not just a typing tool; it's a training ground designed to **boost deve
 
 - 🎯 **Ultimate Experience**: Silky smooth animations and responsive design built with React 18 and Framer Motion.
 - 🌍 **Multi-language Support**: Supports English, Chinese (Modern/Classical), and natively supports **10+ programming languages**.
-- 📊 **Professional Analysis**: Provides multi-dimensional data analysis like WPM, CPM, LPM to monitor your growth curve in real-time.
+- 📊 **Professional Analysis**: Unified CPM (Characters Per Minute) as the core metric, providing multi-dimensional analysis including WPM and accuracy heatmaps.
+- 🏆 **Competitive Leaderboard**: Built-in global leaderboard and personal history to track your growth curve in real-time.
 - 🎨 **Highly Customizable**: Supports various themes, fonts, and sound effects to create your exclusive practice environment.
 
 ---
@@ -85,10 +86,15 @@ PType is not just a typing tool; it's a training ground designed to **boost deve
 
 ### 2. Smart Data Analysis
 
-- **WPM (Words Per Minute)**: Standard for English typing speed.
-- **CPM (Characters Per Minute)**: Standard for Chinese typing speed.
-- **LPM (Lines Per Minute)**: Lines of code input, fits programming scenarios better.
+- **CPM (Characters Per Minute)**: Core global speed metric, unifying English, Chinese, and code typing efficiency.
+- **WPM (Words Per Minute)**: Auxiliary reference metric for English mode.
 - **Accuracy Heatmap**: Identify your high-frequency error keys.
+- **History Tracking**: Complete practice history and trend analysis.
+
+### 3. User & Social
+
+- **User System**: Complete registration and login flow, with cloud data storage.
+- **Leaderboard**: Real-time global speed rankings to motivate practice.
 
 ---
 
@@ -98,11 +104,10 @@ Built with a modern frontend tech stack to ensure high performance and maintaina
 
 | Category | Technology |
 | :--- | :--- |
-| **Core Framework** | ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
-| **Styling & Animation** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
-| **State Management** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **Core Framework** | ![React](https://img.shields.io/badge/-React_19-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js_16-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
+| **Styling & Animation** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
+| **Backend & Data** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
 | **Visualization** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
-| **Build Tool** | ![Turbopack](https://img.shields.io/badge/-Turbopack-EF4444?logo=vercel&logoColor=white) |
 
 ---
 
@@ -144,10 +149,8 @@ PType comes with a rich code practice library covering mainstream languages and 
 git clone https://github.com/anYuJia/ptype.git
 ```
 
-2. **Enter project directory**
-
 ```bash
-cd ptype/frontend
+cd ptype
 ```
 
 3. **Install dependencies**
@@ -158,7 +161,25 @@ npm install
 pnpm install
 ```
 
-4. **Start development server**
+4. **Configure Environment Variables**
+
+Create a `.env` file in the project root and add the following:
+
+```env
+# PostgreSQL connection string
+DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+
+# JWT Secret (Optional, uses fallback if not provided)
+JWT_SECRET="your-secret-key"
+```
+
+5. **Initialize Database**
+
+```bash
+npx prisma db push
+```
+
+6. **Start Development Server**
 
 ```bash
 npm run dev

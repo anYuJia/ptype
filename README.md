@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1 align="center">
-  <img src="./frontend/public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
+  <img src="./public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
   PType
 </h1>
 <p align="center">
@@ -12,8 +12,8 @@
 
 [![License](https://img.shields.io/github/license/anYuJia/ptype?style=flat-square&color=blue)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=flat-square&color=yellow)](https://github.com/anYuJia/ptype/stargazers)
 
@@ -45,7 +45,8 @@ PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产
 
 - 🎯 **极致体验**：基于 React 18 和 Framer Motion 打造的丝滑动画与响应式设计。
 - 🌍 **多语言支持**：不仅支持英文、中文（现代/文言），更原生支持 10+ 种编程语言。
-- 📊 **专业分析**：提供 WPM、CPM、LPM 等多维度数据分析，实时监控你的成长曲线。
+- 📊 **专业分析**：统一使用 CPM (Characters Per Minute) 作为核心指标，提供 WPM、准确率热力图等多维度数据分析。
+- 🏆 **竞技排行**：内置全球排行榜与个人历史记录，实时监控你的成长曲线。
 - 🎨 **高度定制**：支持多种主题、字体、音效设置，打造你的专属练习环境。
 
 ---
@@ -85,10 +86,15 @@ PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产
 
 ### 2. 智能数据分析
 
-- **WPM (Words Per Minute)**: 英文输入速度标准。
-- **CPM (Characters Per Minute)**: 中文输入速度标准。
-- **LPM (Lines Per Minute)**: 代码输入行数，更符合编程场景。
+- **CPM (Characters Per Minute)**: 全局核心速度指标，统一衡量中英文及代码输入效率。
+- **WPM (Words Per Minute)**: 英文模式辅助参考指标。
 - **准确率热力图**: 识别你的高频错误按键。
+- **历史回溯**: 完整的练习历史记录与趋势分析。
+
+### 3. 用户与社交
+
+- **账号系统**: 完整的注册登录流程，数据云端存储。
+- **排行榜**: 实时更新的全球速度排行，激发练习动力。
 
 ---
 
@@ -98,11 +104,10 @@ PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产
 
 | 领域 | 技术选型 |
 | :--- | :--- |
-| **核心框架** | ![React](https://img.shields.io/badge/-React-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
-| **样式与动画** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
-| **状态管理** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **核心框架** | ![React](https://img.shields.io/badge/-React_19-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js_16-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
+| **样式与动画** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
+| **后端与数据** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
 | **图表可视化** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
-| **构建工具** | ![Turbopack](https://img.shields.io/badge/-Turbopack-EF4444?logo=vercel&logoColor=white) |
 
 ---
 
@@ -144,10 +149,8 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 git clone https://github.com/anYuJia/ptype.git
 ```
 
-2. **进入项目目录**
-
 ```bash
-cd ptype/frontend
+cd ptype
 ```
 
 3. **安装依赖**
@@ -158,7 +161,25 @@ npm install
 pnpm install
 ```
 
-4. **启动开发服务器**
+4. **配置环境变量**
+
+在项目根目录下创建 `.env` 文件，并添加以下内容：
+
+```env
+# PostgreSQL 数据库连接字符串
+DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+
+# JWT 密钥 (可选，默认使用 fallback)
+JWT_SECRET="your-secret-key"
+```
+
+5. **初始化数据库**
+
+```bash
+npx prisma db push
+```
+
+6. **启动开发服务器**
 
 ```bash
 npm run dev
