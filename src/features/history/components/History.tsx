@@ -1,0 +1,229 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Area,
+    AreaChart
+} from 'recharts';
+import {
+    TypingMode,
+    ChineseStyle,
+    ProgrammingLanguage,
+    CHINESE_STYLE_LABELS,
+    PROGRAMMING_LANGUAGE_LABELS,
+    CHINESE_STYLE_OPTIONS,
+    PROGRAMMING_LANGUAGE_OPTIONS
+} from '@/lib/constants';
+
+// Mock Data
+const MOCK_HISTORY_DATA = Array.from({ length: 20 }).map((_, i) => {
+    const mode = ['english', 'chinese', 'coder'][Math.floor(Math.random() * 3)] as TypingMode;
+    let subMode: string | null = null;
+
+    if (mode === 'chinese') {
+        subMode = CHINESE_STYLE_OPTIONS[Math.floor(Math.random() * CHINESE_STYLE_OPTIONS.length)];
+    } else if (mode === 'coder') {
+        subMode = PROGRAMMING_LANGUAGE_OPTIONS[Math.floor(Math.random() * PROGRAMMING_LANGUAGE_OPTIONS.length)];
+    }
+
+    return {
+        id: i,
+        date: new Date(Date.now() - (20 - i) * 24 * 60 * 60 * 1000 - Math.random() * 1000 * 60 * 60 * 5).toLocaleString('zh-CN', {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }),
+        wpm: Math.floor(60 + Math.random() * 40 + i * 2), // Trending up
+        accuracy: 90 + Math.random() * 10,
+        mode,
+        subMode,
+        difficulty: ['easy', 'medium', 'hard'][Math.floor(Math.random() * 3)] as 'easy' | 'medium' | 'hard',
+        duration: [15, 30, 60][Math.floor(Math.random() * 3)],
+    };
+});
+
+const STATS = {
+    totalTests: 142,
+    avgWpm: 86,
+    bestWpm: 124,
+    totalTime: '4h 12m'
+};
+
+export function History() {
+    const [hoveredData, setHoveredData] = useState<any>(null);
+
+    const getSubModeLabel = (mode: TypingMode, subMode: string | null) => {
+        if (!subMode) return null;
+        if (mode === 'chinese') return CHINESE_STYLE_LABELS[subMode as ChineseStyle];
+        if (mode === 'coder') return PROGRAMMING_LANGUAGE_LABELS[subMode as ProgrammingLanguage];
+        return subMode;
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full max-w-5xl mx-auto space-y-8"
+        >
+            {/* Stats Overview Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                    { label: '总测试数', value: STATS.totalTests, icon: '📝' },
+                    { label: '平均速度', value: STATS.avgWpm, unit: 'WPM', icon: '⚡' },
+                    { label: '最高速度', value: STATS.bestWpm, unit: 'WPM', icon: '🏆' },
+                    { label: '总练习时长', value: STATS.totalTime, icon: '⏱️' },
+                ].map((stat, index) => (
+                    <motion.div
+                        key={stat.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-gray-900/50 border border-white/5 p-4 rounded-xl backdrop-blur-sm hover:bg-gray-800/50 transition-colors group"
+                    >
+                        <div className="flex items-start justify-between mb-2">
+                            <span className="text-gray-400 text-xs font-medium">{stat.label}</span>
+                            <span className="text-lg opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0">{stat.icon}</span>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-white">{stat.value}</span>
+                            {stat.unit && <span className="text-xs text-teal-500 font-medium">{stat.unit}</span>}
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Chart Section */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="bg-gray-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm h-[300px] relative"
+            >
+                <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">WPM 趋势</h3>
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={MOCK_HISTORY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                            <linearGradient id="colorWpm" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} opacity={0.3} />
+                        <XAxis
+                            dataKey="date"
+                            stroke="#6b7280"
+                            tick={{ fontSize: 10 }}
+                            tickLine={false}
+                            axisLine={false}
+                            dy={10}
+                        />
+                        <YAxis
+                            stroke="#6b7280"
+                            tick={{ fontSize: 10 }}
+                            tickLine={false}
+                            axisLine={false}
+                            dx={-10}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                                fontSize: '12px',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)'
+                            }}
+                            itemStyle={{ color: '#fff' }}
+                            labelStyle={{ color: '#9ca3af', marginBottom: '4px' }}
+                            cursor={{ stroke: '#14b8a6', strokeWidth: 1, strokeDasharray: '4 4' }}
+                        />
+                        <Area
+                            type="monotone"
+                            dataKey="wpm"
+                            stroke="#14b8a6"
+                            strokeWidth={2}
+                            fillOpacity={1}
+                            fill="url(#colorWpm)"
+                            activeDot={{ r: 4, strokeWidth: 0, fill: '#fff' }}
+                        />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </motion.div>
+
+            {/* Recent Activity List */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-medium text-gray-400 px-1">最近练习</h3>
+                <div className="bg-gray-900/30 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-sm">
+                    {/* Header */}
+                    <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-white/[0.02]">
+                        <div className="col-span-2">Date</div>
+                        <div className="col-span-3">Mode</div>
+                        <div className="col-span-2 text-center">Difficulty</div>
+                        <div className="col-span-1 text-center">Time</div>
+                        <div className="col-span-2 text-center">WPM</div>
+                        <div className="col-span-2 text-center">Accuracy</div>
+                    </div>
+
+                    {/* Rows */}
+                    <div className="divide-y divide-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        {MOCK_HISTORY_DATA.slice().reverse().map((item, index) => (
+                            <motion.div
+                                key={item.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 + index * 0.05 }}
+                                className="grid grid-cols-12 gap-4 px-6 py-3 items-center hover:bg-white/5 transition-colors group text-sm"
+                            >
+                                <div className="col-span-2 text-gray-400 font-mono text-xs">
+                                    {item.date}
+                                </div>
+                                <div className="col-span-3 flex items-center gap-2">
+                                    <span className={`
+                    px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider border
+                    ${item.mode === 'english' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                            item.mode === 'chinese' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                'bg-purple-500/10 text-purple-400 border-purple-500/20'}
+                  `}>
+                                        {item.mode}
+                                    </span>
+                                    {item.subMode && (
+                                        <span className="text-xs text-gray-500 truncate max-w-[100px]" title={getSubModeLabel(item.mode, item.subMode) || ''}>
+                                            {getSubModeLabel(item.mode, item.subMode)}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="col-span-2 text-center">
+                                    <span className={`
+                    text-xs font-medium
+                    ${item.difficulty === 'easy' ? 'text-green-400' :
+                                            item.difficulty === 'medium' ? 'text-yellow-400' :
+                                                'text-red-400'}
+                  `}>
+                                        {item.difficulty === 'easy' ? '简单' : item.difficulty === 'medium' ? '中等' : '困难'}
+                                    </span>
+                                </div>
+                                <div className="col-span-1 text-center text-gray-500 font-mono text-xs">
+                                    {item.duration}s
+                                </div>
+                                <div className="col-span-2 text-center font-mono font-bold text-teal-400">
+                                    {item.wpm}
+                                </div>
+                                <div className="col-span-2 text-center font-mono text-gray-400">
+                                    {Math.floor(item.accuracy)}%
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+}

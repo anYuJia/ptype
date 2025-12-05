@@ -11,6 +11,7 @@ import { useAuthStore } from '@/features/auth/store/authStore';
 import { AuthModal } from '@/features/auth/components/AuthModal';
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
 import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
+import { History } from '@/features/history/components/History';
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
@@ -325,6 +326,8 @@ export function TypingTest() {
               )
             ) : activeTab === 'leaderboard' ? (
               <Leaderboard key="leaderboard" />
+            ) : activeTab === 'history' ? (
+              <History key="history" />
             ) : (
               <motion.div
                 key={activeTab}
