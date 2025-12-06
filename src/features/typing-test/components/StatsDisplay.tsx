@@ -1,18 +1,12 @@
 'use client';
 
-import { TypingMode } from '@/lib/constants';
 import { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
+import { useTypingStore } from '../store/typingStore';
 import { AnimatedNumber } from './AnimatedNumber';
 
 interface StatsDisplayProps {
-  mode: TypingMode;
-  wpm: number;
-  cpm: number;
-  lpm: number;
-  accuracy: number;
-  timeLeft: number;
-  status: 'idle' | 'running' | 'finished';
   actionButton?: ReactNode; // 可选的右侧按钮
 }
 
@@ -22,7 +16,20 @@ const transition = {
   ease: 'easeInOut' as const,
 };
 
-export function StatsDisplay({ mode, wpm, cpm, lpm, accuracy, timeLeft, status, actionButton }: StatsDisplayProps) {
+export function StatsDisplay({ actionButton }: StatsDisplayProps) {
+  // 使用 selector 订阅状态
+  const { mode, wpm, cpm, lpm, accuracy, timeLeft, status } = useTypingStore(
+    useShallow((state) => ({
+      mode: state.settings.mode,
+      wpm: state.wpm,
+      cpm: state.cpm,
+      lpm: state.lpm,
+      accuracy: state.accuracy,
+      timeLeft: state.timeLeft,
+      status: state.status,
+    }))
+  );
+
   // 根据模式决定显示哪些指标
   const getSpeedStats = () => {
     switch (mode) {

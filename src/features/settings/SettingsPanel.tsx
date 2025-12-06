@@ -1,6 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
+import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { Checkbox } from '@/components/ui/Checkbox';
 import {
@@ -12,29 +14,9 @@ import {
   PROGRAMMING_LANGUAGE_LABELS,
   TypingMode,
   DifficultyLevel,
-  ChineseStyle,
-  ProgrammingLanguage,
-  EnglishOptions,
-  TypingOptions,
 } from '@/lib/constants';
 
 interface SettingsPanelProps {
-  duration: number;
-  mode: TypingMode;
-  difficulty: DifficultyLevel;
-  chineseStyle: ChineseStyle;
-  programmingLanguage: ProgrammingLanguage;
-  englishOptions: EnglishOptions;
-  typingOptions: TypingOptions;
-  status: 'idle' | 'running' | 'finished';
-  onDurationChange: (duration: number) => void;
-  onModeChange: (mode: TypingMode) => void;
-  onDifficultyChange: (difficulty: DifficultyLevel) => void;
-  onChineseStyleChange: (style: ChineseStyle) => void;
-  onProgrammingLanguageChange: (lang: ProgrammingLanguage) => void;
-  onEnglishOptionsChange: (options: EnglishOptions) => void;
-  onTypingOptionsChange: (options: TypingOptions) => void;
-  onRestart?: () => void;
   disabled?: boolean;
 }
 
@@ -51,24 +33,33 @@ const difficultyLabels: Record<DifficultyLevel, string> = {
 };
 
 export function SettingsPanel({
-  duration,
-  mode,
-  difficulty,
-  chineseStyle,
-  programmingLanguage,
-  englishOptions,
-  typingOptions,
-  status,
-  onDurationChange,
-  onModeChange,
-  onDifficultyChange,
-  onChineseStyleChange,
-  onProgrammingLanguageChange,
-  onEnglishOptionsChange,
-  onTypingOptionsChange,
-  onRestart,
   disabled = false,
 }: SettingsPanelProps) {
+  // 从 Store 获取设置和 actions
+  const {
+    settings,
+    status,
+    updateSettings,
+    initTest
+  } = useTypingStore(
+    useShallow((state) => ({
+      settings: state.settings,
+      status: state.status,
+      updateSettings: state.updateSettings,
+      initTest: state.initTest,
+    }))
+  );
+
+  const {
+    duration,
+    mode,
+    difficulty,
+    chineseStyle,
+    programmingLanguage,
+    englishOptions,
+    typingOptions,
+  } = settings;
+
   return (
     <div className="space-y-3">
       {/* 第一行：时间、模式、难度 */}
@@ -80,7 +71,7 @@ export function SettingsPanel({
             {DURATION_OPTIONS.map((d) => (
               <motion.button
                 key={d}
-                onClick={() => !disabled && onDurationChange(d)}
+                onClick={() => !disabled && updateSettings({ duration: d })}
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200
@@ -110,7 +101,7 @@ export function SettingsPanel({
             {modes.map((m) => (
               <motion.button
                 key={m.value}
-                onClick={() => !disabled && onModeChange(m.value)}
+                onClick={() => !disabled && updateSettings({ mode: m.value })}
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200 relative
@@ -145,7 +136,7 @@ export function SettingsPanel({
             {DIFFICULTY_OPTIONS.map((d) => (
               <motion.button
                 key={d}
-                onClick={() => !disabled && onDifficultyChange(d)}
+                onClick={() => !disabled && updateSettings({ difficulty: d })}
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200
@@ -174,9 +165,8 @@ export function SettingsPanel({
           <Checkbox
             checked={typingOptions.allowBackspace}
             onChange={(checked) =>
-              onTypingOptionsChange({
-                ...typingOptions,
-                allowBackspace: checked,
+              updateSettings({
+                typingOptions: { ...typingOptions, allowBackspace: checked }
               })
             }
             label="允许删除"
@@ -198,9 +188,8 @@ export function SettingsPanel({
                 <Checkbox
                   checked={englishOptions.caseSensitive}
                   onChange={(checked) =>
-                    onEnglishOptionsChange({
-                      ...englishOptions,
-                      caseSensitive: checked,
+                    updateSettings({
+                      englishOptions: { ...englishOptions, caseSensitive: checked }
                     })
                   }
                   label="区分大小写"
@@ -211,9 +200,8 @@ export function SettingsPanel({
                 <Checkbox
                   checked={englishOptions.ignorePunctuation}
                   onChange={(checked) =>
-                    onEnglishOptionsChange({
-                      ...englishOptions,
-                      ignorePunctuation: checked,
+                    updateSettings({
+                      englishOptions: { ...englishOptions, ignorePunctuation: checked }
                     })
                   }
                   label="忽略标点符号"
@@ -236,7 +224,7 @@ export function SettingsPanel({
                   {CHINESE_STYLE_OPTIONS.map((style) => (
                     <motion.button
                       key={style}
-                      onClick={() => !disabled && onChineseStyleChange(style)}
+                      onClick={() => !disabled && updateSettings({ chineseStyle: style })}
                       className={`
                         px-4 py-1.5 rounded-md text-sm font-medium transition-colors
                         ${chineseStyle === style
@@ -270,7 +258,7 @@ export function SettingsPanel({
                   value={programmingLanguage}
                   options={PROGRAMMING_LANGUAGE_OPTIONS}
                   labels={PROGRAMMING_LANGUAGE_LABELS}
-                  onChange={onProgrammingLanguageChange}
+                  onChange={(lang) => updateSettings({ programmingLanguage: lang })}
                   disabled={disabled}
                   className="w-40"
                 />
@@ -280,9 +268,9 @@ export function SettingsPanel({
         </div>
 
         {/* 右侧：重新生成按钮 */}
-        {status === 'idle' && onRestart && (
+        {status === 'idle' && (
           <motion.button
-            onClick={onRestart}
+            onClick={() => initTest()}
             className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

@@ -1,43 +1,39 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
+import { useTypingStore } from '../store/typingStore';
 import { Button } from '@/components/ui/Button';
 import { WpmChart } from './WpmChart';
-import { WpmHistoryPoint } from '../store/typingStore';
-import { TypingMode, DifficultyLevel, ChineseStyle, ProgrammingLanguage } from '@/lib/constants';
 
-interface ResultsCardProps {
-  mode: TypingMode;
-  difficulty: DifficultyLevel;
-  chineseStyle?: ChineseStyle;
-  programmingLanguage?: ProgrammingLanguage;
-  wpm: number;
-  cpm: number;
-  lpm: number;
-  accuracy: number;
-  correctChars: number;
-  errors: number;
-  wpmHistory: WpmHistoryPoint[];
-  duration: number;
-  onRestart: () => void;
-}
+export function ResultsCard() {
+  // 从 Store 获取结果数据和 restart action
+  const {
+    settings,
+    wpm,
+    cpm,
+    lpm,
+    accuracy,
+    correctChars,
+    errors,
+    wpmHistory,
+    restart,
+  } = useTypingStore(
+    useShallow((state) => ({
+      settings: state.settings,
+      wpm: state.wpm,
+      cpm: state.cpm,
+      lpm: state.lpm,
+      accuracy: state.accuracy,
+      correctChars: state.correctChars,
+      errors: state.errors,
+      wpmHistory: state.wpmHistory,
+      restart: state.resetTest, // restart 对应 resetTest (回到 idle)
+    }))
+  );
 
-export function ResultsCard({
-  mode,
-  difficulty,
-  chineseStyle,
-  programmingLanguage,
-  wpm,
-  cpm,
-  lpm,
-  accuracy,
-  correctChars,
-  errors,
-  wpmHistory,
-  duration,
-  onRestart,
-}: ResultsCardProps) {
+  const { mode, difficulty, chineseStyle, programmingLanguage, duration } = settings;
+
   // 根据模式决定显示哪些速度指标
   const getSpeedStats = () => {
     switch (mode) {
@@ -178,7 +174,7 @@ export function ResultsCard({
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        <Button size="lg" onClick={onRestart}>
+        <Button size="lg" onClick={restart}>
           再来一次
         </Button>
       </motion.div>

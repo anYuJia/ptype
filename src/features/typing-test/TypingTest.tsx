@@ -1,73 +1,33 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
+import { useShallow } from 'zustand/react/shallow';
+import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { TextDisplay } from '@/features/typing-test/components/TextDisplay';
 import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay';
 import { ResultsCard } from '@/features/typing-test/components/ResultsCard';
+import { TypewriterTitle } from '@/features/typing-test/components/TypewriterTitle';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { AuthModal } from '@/features/auth/components/AuthModal';
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
 import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
 import { History } from '@/features/history/components/History';
 import { Profile } from '@/features/profile/components/Profile';
+import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
-  const {
-    status,
-    targetText,
-    displayText,
-    typedText,
-    wpm,
-    cpm,
-    lpm,
-    accuracy,
-    timeLeft,
-    errors,
-    correctChars,
-    wpmHistory,
-    settings,
-    restart,
-    setDuration,
-    setMode,
-    setDifficulty,
-    setEnglishOptions,
-    setChineseStyle,
-    setProgrammingLanguage,
-    setTypingOptions,
-    inputHandlers,
-  } = useTypingEngine();
+
+  // 只获取必要的 action 和 状态
+  // status 用于切换视图
+  // inputHandlers 用于 TextDisplay 输入控制 (保留 useTypingEngine hook 来处理复杂的输入逻辑)
+  const { restart, inputHandlers } = useTypingEngine();
+
+  // 使用 shallow selector 订阅 status，避免频繁重绘
+  const status = useTypingStore(useShallow(state => state.status));
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Title typing animation
-  const [displayedTitle, setDisplayedTitle] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
-
-  useEffect(() => {
-    const targetTitle = 'PType';
-    let currentIndex = 0;
-
-    // Initial delay before typing starts
-    const startTimeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        if (currentIndex < targetTitle.length) {
-          setDisplayedTitle(targetTitle.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          setShowCursor(false);
-          clearInterval(interval);
-        }
-      }, 500);
-
-      return () => clearInterval(interval);
-    }, 500);
-
-    return () => clearTimeout(startTimeout);
-  }, []);
 
   // 自动聚焦到隐藏的 input
   useEffect(() => {
@@ -95,40 +55,59 @@ export function TypingTest() {
   }, [handleKeyDown]);
 
   // Save result when test finishes
+  // 使用 subscribe 避免在 render 中依赖经常变化的 wpm 等状态
   const savedRef = useRef(false);
   useEffect(() => {
+    // 重置 saved 标志
     if (status === 'running') {
       savedRef.current = false;
-    } else if (status === 'finished' && !savedRef.current && isAuthenticated && user) {
-      const saveResult = async () => {
-        try {
-          console.log('Saving result from TypingTest...');
-          const res = await fetch('/api/history', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              wpm: cpm, // Unify to CPM (Characters Per Minute) as requested
-              accuracy,
-              mode: settings.mode,
-              subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
-              difficulty: settings.difficulty,
-              duration: settings.duration,
-            }),
-          });
-
-          if (res.ok) {
-            console.log('Result saved successfully');
-            savedRef.current = true;
-          } else {
-            console.error('Failed to save result:', await res.text());
-          }
-        } catch (error) {
-          console.error('Failed to save result:', error);
-        }
-      };
-      saveResult();
     }
-  }, [status, isAuthenticated, user, wpm, cpm, accuracy, settings]);
+
+    // 订阅 store 变化以检测完成时刻并保存
+    const unsubscribe = useTypingStore.subscribe((state, prevState) => {
+      // 当状态从 !finished 变为 finished 时 (或者就在 finished 状态且还没保存)
+      if (state.status === 'finished' && !savedRef.current) {
+        // 检查用户是否登录
+        // 注意：这里需要从闭包中获取 isAuthenticated 和 user，或者直接从 AuthStore 获取
+        // 由于 AuthStore 是外部 store，我们可以直接用 useAuthStore.getState()
+        const { user, isAuthenticated } = useAuthStore.getState();
+
+        if (isAuthenticated && user) {
+          savedRef.current = true;
+          const { cpm, accuracy, settings } = state;
+
+          const saveResult = async () => {
+            try {
+              console.log('Saving result from TypingTest...');
+              const res = await fetch('/api/history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  wpm: cpm, // Unify to CPM
+                  accuracy,
+                  mode: settings.mode,
+                  subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
+                  difficulty: settings.difficulty,
+                  duration: settings.duration,
+                }),
+              });
+
+              if (res.ok) {
+                console.log('Result saved successfully');
+              } else {
+                console.error('Failed to save result:', await res.text());
+              }
+            } catch (error) {
+              console.error('Failed to save result:', error);
+            }
+          };
+          saveResult();
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [status]); // status 依赖主要是为了重置 savedRef
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');
@@ -149,33 +128,8 @@ export function TypingTest() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {/* Logo & Title */}
-          <div className="flex items-center gap-4 w-[240px]">
-            <div className="relative w-16 h-16">
-              <Image
-                src="/logo.png"
-                alt="PType Logo"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-4xl font-bold text-teal-400 tracking-tight leading-none min-h-[40px] flex items-center">
-                {displayedTitle}
-                {showCursor && (
-                  <motion.span
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: 0 }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                    className="inline-block ml-1 -translate-y-0.5"
-                  >
-                    |
-                  </motion.span>
-                )}
-              </h1>
-            </div>
-          </div>
+          {/* Logo & Title - 提取为组件 */}
+          <TypewriterTitle />
 
           {/* Tab Navigation */}
           <div className="flex items-center gap-8 relative">
@@ -281,22 +235,7 @@ export function TypingTest() {
           <AnimatePresence mode="wait">
             {activeTab === 'practice' ? (
               status === 'finished' ? (
-                <ResultsCard
-                  key="results"
-                  mode={settings.mode}
-                  difficulty={settings.difficulty}
-                  chineseStyle={settings.chineseStyle}
-                  programmingLanguage={settings.programmingLanguage}
-                  wpm={wpm}
-                  cpm={cpm}
-                  lpm={lpm}
-                  accuracy={accuracy}
-                  correctChars={correctChars}
-                  errors={errors}
-                  wpmHistory={wpmHistory}
-                  duration={settings.duration}
-                  onRestart={restart}
-                />
+                <ResultsCard key="results" />
               ) : (
                 <motion.div
                   key="typing"
@@ -305,36 +244,11 @@ export function TypingTest() {
                   exit={{ opacity: 0 }}
                   className="space-y-8"
                 >
-                  {/* 设置面板 */}
-                  <SettingsPanel
-                    duration={settings.duration}
-                    mode={settings.mode}
-                    difficulty={settings.difficulty}
-                    chineseStyle={settings.chineseStyle}
-                    programmingLanguage={settings.programmingLanguage}
-                    englishOptions={settings.englishOptions}
-                    typingOptions={settings.typingOptions}
-                    status={status}
-                    onDurationChange={setDuration}
-                    onModeChange={setMode}
-                    onDifficultyChange={setDifficulty}
-                    onChineseStyleChange={setChineseStyle}
-                    onProgrammingLanguageChange={setProgrammingLanguage}
-                    onEnglishOptionsChange={setEnglishOptions}
-                    onTypingOptionsChange={setTypingOptions}
-                    onRestart={restart}
-                    disabled={false}
-                  />
+                  {/* 设置面板 - 不再需要 props */}
+                  <SettingsPanel />
 
-                  {/* 统计显示 */}
+                  {/* 统计显示 - 传入 actionButton，其他自动获取 */}
                   <StatsDisplay
-                    mode={settings.mode}
-                    wpm={wpm}
-                    cpm={cpm}
-                    lpm={lpm}
-                    accuracy={accuracy}
-                    timeLeft={timeLeft}
-                    status={status}
                     actionButton={
                       status === 'running' ? (
                         <motion.button
@@ -351,11 +265,6 @@ export function TypingTest() {
 
                   {/* 文本显示 - 包含输入框 */}
                   <TextDisplay
-                    targetText={targetText}
-                    displayText={displayText}
-                    typedText={typedText}
-                    status={status}
-                    mode={settings.mode}
                     inputRef={inputRef}
                     inputHandlers={inputHandlers}
                   />

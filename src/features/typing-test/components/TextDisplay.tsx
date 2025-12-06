@@ -2,22 +2,19 @@
 
 import { memo, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
+import { useTypingStore } from '../store/typingStore';
 import { normalizeSpecialChars } from '../utils/wpmCalculator';
 import { calculateLines } from '../utils/lineUtils';
 
 interface TextDisplayProps {
-  targetText: string;
-  displayText: string; // 处理后的文本（用于显示和比较）
-  typedText: string;
-  status: 'idle' | 'running' | 'finished';
-  mode: 'english' | 'chinese' | 'coder';
   inputRef: React.RefObject<HTMLInputElement | null>;
   inputHandlers: {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onCompositionStart: () => void;
     onCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  };
+  }
 }
 
 // 单个字符组件
@@ -77,9 +74,22 @@ const Character = memo(function Character({
   );
 });
 
-export function TextDisplay({ targetText, displayText, typedText, status, mode, inputRef, inputHandlers }: TextDisplayProps) {
+export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
+
+  // 使用 selector 只订阅需要的状态
+  const { displayText, typedText, status, mode, targetText } = useTypingStore(
+    useShallow((state) => ({
+      displayText: state.displayText,
+      typedText: state.typedText,
+      status: state.status,
+      // 注意：mode 嵌套在 settings 中，直接获取可能会有问题如果 settings 更新
+      // 但 store.settings 是一个对象，我们应该具体订阅
+      mode: state.settings.mode,
+      targetText: state.targetText,
+    }))
+  );
 
   // 自动聚焦并定位input
   useEffect(() => {
@@ -123,7 +133,6 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
     const lines = [];
 
     // 只有当 prevLine 有效且不与 currentLine 重叠（针对第一行的情况）时才添加
-    // 通过比较 startIndex 来判断
     if (displayLines.prevLineStart !== displayLines.currentLineStart) {
       lines.push({
         id: displayLines.prevLineStart,
@@ -142,9 +151,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
       type: 'current' as const
     });
 
-    // 只有当 nextLine 存在（内容不为空或者有换行符，或者它是最后一行但还没结束）时才添加
-    // 简单判断：只要 startIndex 不等于 currentLineStart，就说明是下一行
-    // 注意：如果只有一行，calculateLines 可能会返回空 nextLine，我们需要根据实际逻辑判断
+    // 只有当 nextLine 存在时才添加
     if (displayLines.nextLineStart > displayLines.currentLineStart) {
       lines.push({
         id: displayLines.nextLineStart,
@@ -165,6 +172,7 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
     const result = chars.map((char, i) => {
       const globalIndex = startOffset + i;
       const charData = characters[globalIndex];
+      // 如果没有 charData，说明在这个范围之外，可能不需要渲染或渲染为空
       if (!charData) return null;
 
       const isCurrent = charData.status === 'current';
@@ -252,7 +260,6 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
         <AnimatePresence mode="popLayout" initial={false}>
           {linesToRender.map((line) => {
             const isCurrent = line.type === 'current';
-            const isPrev = line.type === 'prev';
 
             return (
               <motion.div
@@ -273,8 +280,8 @@ export function TextDisplay({ targetText, displayText, typedText, status, mode, 
                   mass: 1
                 }}
                 className={`w-full break-words ${isCurrent
-                    ? (mode === 'coder' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl')
-                    : 'text-base'
+                  ? (mode === 'coder' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl')
+                  : 'text-base'
                   } min-h-[1.5em]`}
               >
                 {renderLineContent(line.text, line.start, line.hasNewline)}
