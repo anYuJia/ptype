@@ -35,20 +35,14 @@ export function History() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [historyRes, profileRes] = await Promise.all([
+                const [historyRes, statsRes] = await Promise.all([
                     fetch('/api/history'),
-                    fetch('/api/profile')
+                    fetch('/api/history/stats')
                 ]);
 
                 if (historyRes.ok) {
                     const history = await historyRes.json();
-                    // Format history for chart and table.
-                    // Assuming API returns chronological (oldest first) or we sort it.
-                    // Recharts typically expects chronological data.
-                    // API returns newest first (desc).
-                    // For Chart, we want Oldest -> Newest (Chronological).
-                    // For List, we want Newest -> Oldest (Reverse Chronological).
-                    // So we reverse the API response to store it as Chronological in state.
+
                     const formattedHistory = history.map((item: any) => ({
                         ...item,
                         date: new Date(item.createdAt).toLocaleString('zh-CN', {
@@ -58,16 +52,16 @@ export function History() {
                             minute: '2-digit',
                             hour12: false
                         }),
-                        // Ensure numeric values for chart
                         cpm: Number(item.wpm),
                         accuracy: Number(item.accuracy),
-                    })).reverse(); // Reverse to make it Chronological (Oldest first)
+                    })).reverse(); // Reverse for chart (Chronological)
+
                     setHistoryData(formattedHistory);
                 }
 
-                if (profileRes.ok) {
-                    const profile = await profileRes.json();
-                    setStats(profile.stats);
+                if (statsRes.ok) {
+                    const statsData = await statsRes.json();
+                    setStats(statsData);
                 }
             } catch (error) {
                 console.error('Failed to fetch history data', error);
@@ -87,7 +81,37 @@ export function History() {
     };
 
     if (loading) {
-        return <div className="text-center text-gray-500 py-20">Loading history...</div>;
+        return (
+            <div className="w-full max-w-5xl mx-auto space-y-8 animate-pulse">
+                {/* Stats Skeleton */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="bg-gray-900/50 border border-white/5 p-4 rounded-xl h-24">
+                            <div className="h-4 w-20 bg-gray-800 rounded mb-4"></div>
+                            <div className="h-8 w-16 bg-gray-800 rounded"></div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Chart Skeleton */}
+                <div className="bg-gray-900/30 border border-white/5 rounded-2xl p-6 h-[300px]">
+                    <div className="h-full w-full bg-gray-800/20 rounded-xl"></div>
+                </div>
+
+                {/* List Skeleton */}
+                <div className="space-y-4">
+                    <div className="h-4 w-24 bg-gray-800 rounded"></div>
+                    <div className="bg-gray-900/30 border border-white/5 rounded-2xl overflow-hidden">
+                        <div className="px-6 py-3 border-b border-white/5 bg-white/[0.02] h-10"></div>
+                        <div className="divide-y divide-white/5">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="px-6 py-4 h-16 bg-gray-800/10"></div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

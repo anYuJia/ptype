@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         const history = await prisma.typingResult.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
-            take: 50, // Limit to last 50 for now
+            take: 20, // Limit to last 20 as requested
         });
 
         return NextResponse.json(history);

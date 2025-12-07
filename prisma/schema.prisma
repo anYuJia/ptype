@@ -30,4 +30,7 @@ model TypingResult {
   difficulty  String   // 'easy', 'medium', 'hard'
   duration    Int      // seconds
   createdAt   DateTime @default(now())
+
+  @@index([mode, difficulty, wpm(sort: Desc)]) // Optimized for Leaderboard queries
+  @@index([userId])                            // Optimized for User History queries
 }
