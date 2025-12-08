@@ -1,10 +1,9 @@
-'use client';
-
 import { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '../store/typingStore';
 import { AnimatedNumber } from './AnimatedNumber';
+import { useTranslations } from 'next-intl';
 
 interface StatsDisplayProps {
   actionButton?: ReactNode; // 可选的右侧按钮
@@ -17,6 +16,9 @@ const transition = {
 };
 
 export function StatsDisplay({ actionButton }: StatsDisplayProps) {
+  const t = useTranslations('Stats');
+
+  // 使用 selector 订阅状态
   // 使用 selector 订阅状态
   const { mode, wpm, cpm, lpm, accuracy, timeLeft, status } = useTypingStore(
     useShallow((state) => ({
@@ -35,18 +37,18 @@ export function StatsDisplay({ actionButton }: StatsDisplayProps) {
     switch (mode) {
       case 'english':
         return [
-          { value: wpm, label: 'WPM', sublabel: '单词/分钟' },
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟' },
+          { value: wpm, label: t('wpm'), sublabel: t('sublabels.wordsPerMin') },
+          { value: cpm, label: t('cpm'), sublabel: t('sublabels.charsPerMin') },
         ];
       case 'chinese':
-        return [{ value: cpm, label: 'CPM', sublabel: '字符/分钟' }];
+        return [{ value: cpm, label: t('cpm'), sublabel: t('sublabels.charsPerMin') }];
       case 'coder':
         return [
-          { value: lpm, label: 'LPM', sublabel: '行/分钟' },
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟' },
+          { value: lpm, label: t('lpm'), sublabel: t('sublabels.linesPerMin') },
+          { value: cpm, label: t('cpm'), sublabel: t('sublabels.charsPerMin') },
         ];
       default:
-        return [{ value: wpm, label: 'WPM', sublabel: '单词/分钟' }];
+        return [{ value: wpm, label: t('wpm'), sublabel: t('sublabels.wordsPerMin') }];
     }
   };
 
@@ -86,8 +88,8 @@ export function StatsDisplay({ actionButton }: StatsDisplayProps) {
             className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${timeLeft <= 10 && status === 'running' ? 'text-red-400' : 'text-white'
               }`}
           />
-          <div className="text-xs text-gray-400 mt-1">SEC</div>
-          <div className="text-xs text-gray-500">秒</div>
+          <div className="text-xs text-gray-400 mt-1">{t('sec')}</div>
+          <div className="text-xs text-gray-500">{t('sublabels.seconds')}</div>
         </motion.div>
 
         <motion.div layout transition={transition} className="text-center">
@@ -96,8 +98,8 @@ export function StatsDisplay({ actionButton }: StatsDisplayProps) {
             className={`text-4xl md:text-6xl font-extrabold tracking-tighter tabular-nums ${accuracy < 90 ? 'text-yellow-400' : 'text-emerald-400'
               }`}
           />
-          <div className="text-xs text-gray-400 mt-1">ACC%</div>
-          <div className="text-xs text-gray-500">准确率</div>
+          <div className="text-xs text-gray-400 mt-1">{t('acc')}</div>
+          <div className="text-xs text-gray-500">{t('sublabels.accuracy')}</div>
         </motion.div>
       </motion.div>
 

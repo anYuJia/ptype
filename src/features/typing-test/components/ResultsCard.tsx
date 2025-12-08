@@ -1,12 +1,15 @@
-'use client';
-
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '../store/typingStore';
 import { Button } from '@/components/ui/Button';
 import { WpmChart } from './WpmChart';
+import { useTranslations } from 'next-intl';
 
 export function ResultsCard() {
+  const t = useTranslations('Results');
+  const tStats = useTranslations('Stats');
+  const tSettings = useTranslations('Settings');
+
   // 从 Store 获取结果数据和 restart action
   const {
     settings,
@@ -39,20 +42,20 @@ export function ResultsCard() {
     switch (mode) {
       case 'english':
         return [
-          { value: wpm, label: 'WPM', sublabel: '单词/分钟', color: 'text-teal-400' },
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟', color: 'text-cyan-400' },
+          { value: wpm, label: tStats('wpm'), sublabel: tStats('sublabels.wordsPerMin'), color: 'text-teal-400' },
+          { value: cpm, label: tStats('cpm'), sublabel: tStats('sublabels.charsPerMin'), color: 'text-cyan-400' },
         ];
       case 'chinese':
         return [
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟', color: 'text-teal-400' },
+          { value: cpm, label: tStats('cpm'), sublabel: tStats('sublabels.charsPerMin'), color: 'text-teal-400' },
         ];
       case 'coder':
         return [
-          { value: lpm, label: 'LPM', sublabel: '行/分钟', color: 'text-teal-400' },
-          { value: cpm, label: 'CPM', sublabel: '字符/分钟', color: 'text-cyan-400' },
+          { value: lpm, label: tStats('lpm'), sublabel: tStats('sublabels.linesPerMin'), color: 'text-teal-400' },
+          { value: cpm, label: tStats('cpm'), sublabel: tStats('sublabels.charsPerMin'), color: 'text-cyan-400' },
         ];
       default:
-        return [{ value: wpm, label: 'WPM', sublabel: '单词/分钟', color: 'text-teal-400' }];
+        return [{ value: wpm, label: tStats('wpm'), sublabel: tStats('sublabels.wordsPerMin'), color: 'text-teal-400' }];
     }
   };
 
@@ -62,11 +65,11 @@ export function ResultsCard() {
   const getModeLabel = () => {
     switch (mode) {
       case 'english':
-        return 'English';
+        return tSettings('modeLabels.english');
       case 'chinese':
-        return `Chinese (${chineseStyle === 'modern' ? '现代文' : '古文'})`;
+        return `${tSettings('modeLabels.chinese')} (${chineseStyle === 'modern' ? '现代文' : '古文'})`; // 临时处理，后续可以优化
       case 'coder':
-        return `Coder (${programmingLanguage})`;
+        return `${tSettings('modeLabels.coder')} (${programmingLanguage})`;
       default:
         return mode;
     }
@@ -74,13 +77,7 @@ export function ResultsCard() {
 
   return (
     <motion.div
-      className="
-        bg-gray-900/80 backdrop-blur-lg
-        border border-gray-700/50
-        rounded-2xl p-8
-        shadow-2xl shadow-teal-500/10
-        max-w-2xl mx-auto
-      "
+      // ... (keep className)
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
@@ -91,7 +88,7 @@ export function ResultsCard() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        测试完成！
+        {t('title')}
       </motion.h2>
 
       {/* 测试详情 */}
@@ -105,7 +102,7 @@ export function ResultsCard() {
           {getModeLabel()}
         </span>
         <span className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-sm text-gray-300 capitalize">
-          {difficulty}
+          {tSettings(`difficultyLabels.${difficulty}`)}
         </span>
         <span className="px-3 py-1 bg-gray-800/50 border border-gray-700 rounded-full text-sm text-gray-300">
           {duration}s
@@ -137,8 +134,8 @@ export function ResultsCard() {
           transition={{ delay: 0.3 + speedStats.length * 0.1 }}
         >
           <div className="text-5xl md:text-6xl font-extrabold text-emerald-400 tabular-nums">{accuracy}%</div>
-          <div className="text-sm text-gray-400 mt-1">ACC%</div>
-          <div className="text-xs text-gray-500">准确率</div>
+          <div className="text-sm text-gray-400 mt-1">{tStats('acc')}</div>
+          <div className="text-xs text-gray-500">{tStats('sublabels.accuracy')}</div>
         </motion.div>
 
         {/* 错误数 */}
@@ -149,8 +146,8 @@ export function ResultsCard() {
           transition={{ delay: 0.4 + speedStats.length * 0.1 }}
         >
           <div className="text-5xl md:text-6xl font-extrabold text-red-400 tabular-nums">{errors}</div>
-          <div className="text-sm text-gray-400 mt-1">Errors</div>
-          <div className="text-xs text-gray-500">错误</div>
+          <div className="text-sm text-gray-400 mt-1">{tStats('errors')}</div>
+          <div className="text-xs text-gray-500">{tStats('sublabels.errorCount')}</div>
         </motion.div>
       </div>
 
@@ -162,7 +159,7 @@ export function ResultsCard() {
         transition={{ delay: 0.7 }}
       >
         <h3 className="text-sm text-gray-400 mb-4">
-          {mode === 'english' ? 'WPM 变化曲线' : mode === 'coder' ? 'LPM 变化曲线' : 'CPM 变化曲线'}
+          {mode === 'english' ? t('chartTitle.wpm') : mode === 'coder' ? t('chartTitle.lpm') : t('chartTitle.cpm')}
         </h3>
         <WpmChart data={wpmHistory} />
       </motion.div>
@@ -175,7 +172,7 @@ export function ResultsCard() {
         transition={{ delay: 0.8 }}
       >
         <Button size="lg" onClick={restart}>
-          再来一次
+          {t('playAgain')}
         </Button>
       </motion.div>
 
@@ -185,8 +182,10 @@ export function ResultsCard() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}
       >
-        按 <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-300">Tab</kbd> +{' '}
-        <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-300">Enter</kbd> 重新开始
+        {t.rich('restartHint', {
+          tab: () => <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-300">Tab</kbd>,
+          enter: () => <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-300">Enter</kbd>
+        })}
       </motion.p>
     </motion.div>
   );

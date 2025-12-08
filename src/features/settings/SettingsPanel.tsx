@@ -1,5 +1,3 @@
-'use client';
-
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
@@ -15,6 +13,7 @@ import {
   TypingMode,
   DifficultyLevel,
 } from '@/lib/constants';
+import { useTranslations } from 'next-intl';
 
 interface SettingsPanelProps {
   disabled?: boolean;
@@ -35,6 +34,8 @@ const difficultyLabels: Record<DifficultyLevel, string> = {
 export function SettingsPanel({
   disabled = false,
 }: SettingsPanelProps) {
+  const t = useTranslations('Settings');
+
   // 从 Store 获取设置和 actions
   const {
     settings,
@@ -60,18 +61,25 @@ export function SettingsPanel({
     typingOptions,
   } = settings;
 
+  const modeDescriptions = {
+    english: t('modeDescriptions.english'),
+    chinese: t('modeDescriptions.chinese'),
+    coder: t('modeDescriptions.coder'),
+  };
+
   return (
     <div className="space-y-3">
       {/* 第一行：时间、模式、难度 */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
         {/* 时间选择 */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400 mr-2">Time:</span>
+          <span className="text-sm text-gray-400 mr-2">{t('time')}</span>
           <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
             {DURATION_OPTIONS.map((d) => (
               <motion.button
                 key={d}
                 onClick={() => !disabled && updateSettings({ duration: d })}
+                // ... (keep className and props)
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200
@@ -96,12 +104,13 @@ export function SettingsPanel({
 
         {/* 模式选择 */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400 mr-2">Mode:</span>
+          <span className="text-sm text-gray-400 mr-2">{t('mode')}</span>
           <div className="flex relative gap-1 bg-gray-900/50 rounded-lg p-1">
             {modes.map((m) => (
               <motion.button
                 key={m.value}
                 onClick={() => !disabled && updateSettings({ mode: m.value })}
+                // ... (keep className and props)
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200 relative
@@ -111,9 +120,9 @@ export function SettingsPanel({
                 whileHover={!disabled ? { scale: 1.05 } : undefined}
                 whileTap={!disabled ? { scale: 0.95 } : undefined}
                 disabled={disabled}
-                title={m.description}
+                title={modeDescriptions[m.value as keyof typeof modeDescriptions]}
               >
-                <span className="relative z-10">{m.label}</span>
+                <span className="relative z-10">{t(`modeLabels.${m.value}`)}</span>
                 {mode === m.value && (
                   <motion.div
                     layoutId="mode-highlight"
@@ -131,12 +140,13 @@ export function SettingsPanel({
 
         {/* 难度选择 */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400 mr-2">Difficulty:</span>
+          <span className="text-sm text-gray-400 mr-2">{t('difficulty')}</span>
           <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
             {DIFFICULTY_OPTIONS.map((d) => (
               <motion.button
                 key={d}
                 onClick={() => !disabled && updateSettings({ difficulty: d })}
+                // ... (keep className and props)
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200
@@ -150,7 +160,7 @@ export function SettingsPanel({
                 whileTap={!disabled ? { scale: 0.95 } : undefined}
                 disabled={disabled}
               >
-                {difficultyLabels[d]}
+                {t(`difficultyLabels.${d}`)}
               </motion.button>
             ))}
           </div>
@@ -169,7 +179,7 @@ export function SettingsPanel({
                 typingOptions: { ...typingOptions, allowBackspace: checked }
               })
             }
-            label="允许删除"
+            label={t('allowBackspace')}
             disabled={disabled}
           />
 
@@ -192,7 +202,7 @@ export function SettingsPanel({
                       englishOptions: { ...englishOptions, caseSensitive: checked }
                     })
                   }
-                  label="区分大小写"
+                  label={t('caseSensitive')}
                   disabled={disabled}
                 />
 
@@ -204,7 +214,7 @@ export function SettingsPanel({
                       englishOptions: { ...englishOptions, ignorePunctuation: checked }
                     })
                   }
-                  label="忽略标点符号"
+                  label={t('ignorePunctuation')}
                   disabled={disabled}
                 />
               </motion.div>
@@ -219,7 +229,7 @@ export function SettingsPanel({
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.15 }}
               >
-                <span className="text-sm text-gray-400 mr-2">文体:</span>
+                <span className="text-sm text-gray-400 mr-2">{t('chineseStyle')}</span>
                 <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
                   {CHINESE_STYLE_OPTIONS.map((style) => (
                     <motion.button
@@ -253,7 +263,7 @@ export function SettingsPanel({
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.15 }}
               >
-                <span className="text-sm text-gray-400 mr-2">编程语言:</span>
+                <span className="text-sm text-gray-400 mr-2">{t('programmingLanguage')}</span>
                 <CustomSelect
                   value={programmingLanguage}
                   options={PROGRAMMING_LANGUAGE_OPTIONS}
@@ -275,7 +285,7 @@ export function SettingsPanel({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            重新生成文本
+            {t('regenerate')}
           </motion.button>
         )}
       </div>

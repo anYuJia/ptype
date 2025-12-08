@@ -74,9 +74,15 @@ const Character = memo(function Character({
   );
 });
 
+import { useTranslations } from 'next-intl';
+
+// ... 
+
 export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
+  const t = useTranslations('Common');
+  const tSettings = useTranslations('Settings');
 
   // 使用 selector 只订阅需要的状态
   const { displayText, typedText, status, mode, targetText } = useTypingStore(
@@ -220,7 +226,7 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          开始输入以开始测试...
+          {t('startTyping')}
         </motion.div>
       )}
 
@@ -292,9 +298,9 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       </div>
 
       <div className="mt-2 text-xs text-gray-600 text-center">
-        {mode === 'coder' && '程序员模式：每行是一行代码'}
-        {mode === 'english' && '英文模式：单词不会被截断'}
-        {mode === 'chinese' && '中文模式'}
+        {mode === 'coder' && tSettings('modeDescriptions.coder')}
+        {mode === 'english' && tSettings('modeDescriptions.english')}
+        {mode === 'chinese' && tSettings('modeDescriptions.chinese')}
       </div>
     </div>
   );

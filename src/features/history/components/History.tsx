@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations, useLocale } from 'next-intl';
 import {
     LineChart,
     Line,
@@ -22,6 +23,10 @@ import {
 } from '@/lib/constants';
 
 export function History() {
+    const t = useTranslations('History');
+    const tSettings = useTranslations('Settings');
+    const locale = useLocale();
+
     const [historyData, setHistoryData] = useState<any[]>([]);
     const [stats, setStats] = useState({
         totalTests: 0,
@@ -45,7 +50,7 @@ export function History() {
 
                     const formattedHistory = history.map((item: any) => ({
                         ...item,
-                        date: new Date(item.createdAt).toLocaleString('zh-CN', {
+                        date: new Date(item.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', {
                             month: '2-digit',
                             day: '2-digit',
                             hour: '2-digit',
@@ -71,12 +76,13 @@ export function History() {
         };
 
         fetchData();
-    }, []);
+    }, [locale]);
 
     const getSubModeLabel = (mode: TypingMode, subMode: string | null) => {
         if (!subMode) return null;
         if (mode === 'chinese') return CHINESE_STYLE_LABELS[subMode as ChineseStyle];
         if (mode === 'coder') return PROGRAMMING_LANGUAGE_LABELS[subMode as ProgrammingLanguage];
+        // Special mapping for 'english' subModes if any, or just return subMode
         return subMode;
     };
 
@@ -124,10 +130,10 @@ export function History() {
             {/* Stats Overview Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: '总测试数', value: stats.totalTests, icon: '📝' },
-                    { label: '平均速度', value: stats.avgWpm, unit: 'CPM', icon: '⚡' },
-                    { label: '最高速度', value: stats.bestWpm, unit: 'CPM', icon: '🏆' },
-                    { label: '总练习时长', value: stats.totalTime, icon: '⏱️' },
+                    { label: t('totalTests'), value: stats.totalTests, icon: '📝' },
+                    { label: t('averageSpeed'), value: stats.avgWpm, unit: 'CPM', icon: '⚡' },
+                    { label: t('bestSpeed'), value: stats.bestWpm, unit: 'CPM', icon: '🏆' },
+                    { label: t('totalTime'), value: stats.totalTime, icon: '⏱️' },
                 ].map((stat, index) => (
                     <motion.div
                         key={stat.label}
@@ -155,7 +161,7 @@ export function History() {
                 transition={{ delay: 0.2 }}
                 className="bg-gray-900/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm h-[300px] relative"
             >
-                <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">CPM 趋势</h3>
+                <h3 className="text-sm font-medium text-gray-400 mb-4 absolute top-6 left-6 z-10">{t('cpmTrend')}</h3>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={historyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
@@ -207,16 +213,16 @@ export function History() {
 
             {/* Recent Activity List */}
             <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-400 px-1">最近练习</h3>
+                <h3 className="text-sm font-medium text-gray-400 px-1">{t('recentActivity')}</h3>
                 <div className="bg-gray-900/30 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-sm">
                     {/* Header */}
                     <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-white/[0.02]">
-                        <div className="col-span-2">Date</div>
-                        <div className="col-span-3">Mode</div>
-                        <div className="col-span-2 text-center">Difficulty</div>
-                        <div className="col-span-1 text-center">Time</div>
-                        <div className="col-span-2 text-center">CPM</div>
-                        <div className="col-span-2 text-center">Accuracy</div>
+                        <div className="col-span-2">{t('table.date')}</div>
+                        <div className="col-span-3">{t('table.mode')}</div>
+                        <div className="col-span-2 text-center">{t('table.difficulty')}</div>
+                        <div className="col-span-1 text-center">{t('table.time')}</div>
+                        <div className="col-span-2 text-center">{t('table.cpm')}</div>
+                        <div className="col-span-2 text-center">{t('table.accuracy')}</div>
                     </div>
 
                     {/* Rows */}
@@ -240,7 +246,7 @@ px - 2 py - 0.5 rounded text - [10px] uppercase font - bold tracking - wider bor
                                                 'bg-purple-500/10 text-purple-400 border-purple-500/20'
                                         }
 `}>
-                                        {item.mode}
+                                        {tSettings(`modeLabels.${item.mode}`)}
                                     </span>
                                     {item.subMode && (
                                         <span className="text-xs text-gray-500 truncate max-w-[100px]" title={getSubModeLabel(item.mode, item.subMode) || ''}>
@@ -256,7 +262,7 @@ text - xs font - medium
                                                 'text-red-400'
                                         }
 `}>
-                                        {item.difficulty === 'easy' ? '简单' : item.difficulty === 'medium' ? '中等' : '困难'}
+                                        {tSettings(`difficultyLabels.${item.difficulty}`)}
                                     </span>
                                 </div>
                                 <div className="col-span-1 text-center text-gray-500 font-mono text-xs">

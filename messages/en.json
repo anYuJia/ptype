@@ -1,0 +1,106 @@
+{
+    "Metadata": {
+        "title": "PType - Typing Practice",
+        "description": "Test and improve your typing speed with PType"
+    },
+    "HomePage": {
+        "welcome": "Welcome to PType",
+        "start": "Start Typing"
+    },
+    "Navigation": {
+        "practice": "Practice",
+        "leaderboard": "Leaderboard",
+        "history": "History",
+        "profile": "Profile",
+        "login": "Login",
+        "register": "Register",
+        "logout": "Logout"
+    },
+    "Common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "viewOnGithub": "View on GitHub",
+        "startTyping": "Start typing to begin test...",
+        "footer": "Powered by Next.js, Tailwind CSS & Framer Motion"
+    },
+    "History": {
+        "totalTests": "Total Tests",
+        "averageSpeed": "Avg Speed",
+        "bestSpeed": "Best Speed",
+        "totalTime": "Total Time",
+        "cpmTrend": "CPM Trend",
+        "recentActivity": "Recent Activity",
+        "table": {
+            "date": "Date",
+            "mode": "Mode",
+            "difficulty": "Difficulty",
+            "time": "Time",
+            "cpm": "CPM",
+            "accuracy": "Accuracy"
+        }
+    },
+    "Leaderboard": {
+        "difficulty": "Difficulty:",
+        "style": "Style:",
+        "language": "Language:",
+        "rank": "Rank",
+        "user": "User",
+        "cpm": "CPM",
+        "accuracy": "Accuracy",
+        "date": "Date"
+    },
+    "Settings": {
+        "time": "Time:",
+        "mode": "Mode:",
+        "difficulty": "Difficulty:",
+        "difficultyLabels": {
+            "easy": "Easy",
+            "medium": "Medium",
+            "hard": "Hard"
+        },
+        "modeLabels": {
+            "english": "English",
+            "chinese": "Chinese",
+            "coder": "Coder"
+        },
+        "modeDescriptions": {
+            "english": "Common phrases & quotes",
+            "chinese": "Modern & Classical",
+            "coder": "Multi-language code"
+        },
+        "allowBackspace": "Allow Backspace",
+        "caseSensitive": "Case Sensitive",
+        "ignorePunctuation": "Ignore Punctuation",
+        "chineseStyle": "Style:",
+        "programmingLanguage": "Language:",
+        "regenerate": "Regenerate Text"
+    },
+    "Stats": {
+        "wpm": "WPM",
+        "cpm": "CPM",
+        "lpm": "LPM",
+        "acc": "ACC%",
+        "sec": "SEC",
+        "errors": "Errors",
+        "sublabels": {
+            "wordsPerMin": "words/min",
+            "charsPerMin": "chars/min",
+            "linesPerMin": "lines/min",
+            "seconds": "seconds",
+            "accuracy": "accuracy",
+            "errorCount": "count"
+        },
+        "stopAndRestart": "Stop & Restart"
+    },
+    "Results": {
+        "title": "Test Completed!",
+        "chartTitle": {
+            "wpm": "WPM History",
+            "cpm": "CPM History",
+            "lpm": "LPM History"
+        },
+        "playAgain": "Play Again",
+        "restartHint": "Press {tab} + {enter} to restart"
+    }
+}

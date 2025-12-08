@@ -15,6 +15,8 @@ import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
 import { History } from '@/features/history/components/History';
 import { Profile } from '@/features/profile/components/Profile';
 import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
@@ -112,11 +114,14 @@ export function TypingTest() {
   // Tab state
   const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');
 
+  // i18n
+  const t = useTranslations('Navigation');
+
   const tabs = [
-    { id: 'practice', label: '练习' },
-    { id: 'leaderboard', label: '排行' },
-    { id: 'history', label: '历史' },
-    { id: 'profile', label: '我的' },
+    { id: 'practice', label: t('practice') },
+    { id: 'leaderboard', label: t('leaderboard') },
+    { id: 'history', label: t('history') },
+    { id: 'profile', label: t('profile') },
   ] as const;
 
   return (
@@ -155,7 +160,9 @@ export function TypingTest() {
           </div>
 
           {/* User & Actions */}
-          <div className="flex items-center justify-end gap-6 w-[240px]">
+          <div className="flex items-center justify-end gap-6">
+            <LanguageSwitcher />
+
             <motion.a
               href="https://github.com/anYuJia/ptype/"
               target="_blank"
@@ -192,7 +199,7 @@ export function TypingTest() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  退出
+                  {t('logout')}
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-red-500 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
                 </motion.button>
               </div>
@@ -207,7 +214,7 @@ export function TypingTest() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  登录
+                  {t('login')}
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
                 </motion.button>
 
@@ -220,7 +227,7 @@ export function TypingTest() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  注册
+                  {t('register')}
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-teal-400 group-hover:w-1/2 transition-all duration-300 rounded-full opacity-0 group-hover:opacity-100" />
                 </motion.button>
               </div>
@@ -301,7 +308,7 @@ export function TypingTest() {
 
       {/* 页脚 */}
       <footer className="py-4 text-center text-gray-600 text-sm">
-        <p>由 Next.js, Tailwind CSS & Framer Motion 驱动</p>
+        <p>{useTranslations('Common')('footer')}</p>
       </footer>
       <AuthModal />
     </div>

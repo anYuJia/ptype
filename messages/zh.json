@@ -1,0 +1,106 @@
+{
+    "Metadata": {
+        "title": "PType - 打字练习",
+        "description": "使用 PType 测试并提升你的打字速度"
+    },
+    "HomePage": {
+        "welcome": "欢迎使用 PType",
+        "start": "开始打字"
+    },
+    "Navigation": {
+        "practice": "练习",
+        "leaderboard": "排行",
+        "history": "历史",
+        "profile": "我的",
+        "login": "登录",
+        "register": "注册",
+        "logout": "退出"
+    },
+    "Common": {
+        "loading": "加载中...",
+        "error": "错误",
+        "success": "成功",
+        "viewOnGithub": "在 GitHub 上查看",
+        "startTyping": "开始输入以开始测试...",
+        "footer": "由 Next.js, Tailwind CSS & Framer Motion 驱动"
+    },
+    "History": {
+        "totalTests": "总测试数",
+        "averageSpeed": "平均速度",
+        "bestSpeed": "最高速度",
+        "totalTime": "总练习时长",
+        "cpmTrend": "CPM 趋势",
+        "recentActivity": "最近练习",
+        "table": {
+            "date": "日期",
+            "mode": "模式",
+            "difficulty": "难度",
+            "time": "时长",
+            "cpm": "CPM",
+            "accuracy": "准确率"
+        }
+    },
+    "Leaderboard": {
+        "difficulty": "难度:",
+        "style": "文体:",
+        "language": "语言:",
+        "rank": "排名",
+        "user": "用户",
+        "cpm": "CPM",
+        "accuracy": "准确率",
+        "date": "日期"
+    },
+    "Settings": {
+        "time": "时间:",
+        "mode": "模式:",
+        "difficulty": "难度:",
+        "difficultyLabels": {
+            "easy": "简单",
+            "medium": "中等",
+            "hard": "困难"
+        },
+        "modeLabels": {
+            "english": "英文",
+            "chinese": "中文",
+            "coder": "代码"
+        },
+        "modeDescriptions": {
+            "english": "常用短语和名言",
+            "chinese": "现代文与文言文",
+            "coder": "多语言代码片段"
+        },
+        "allowBackspace": "允许退格",
+        "caseSensitive": "区分大小写",
+        "ignorePunctuation": "忽略标点",
+        "chineseStyle": "文体:",
+        "programmingLanguage": "语言:",
+        "regenerate": "重新生成"
+    },
+    "Stats": {
+        "wpm": "WPM",
+        "cpm": "CPM",
+        "lpm": "LPM",
+        "acc": "ACC%",
+        "sec": "SEC",
+        "errors": "Errors",
+        "sublabels": {
+            "wordsPerMin": "单词/分钟",
+            "charsPerMin": "字符/分钟",
+            "linesPerMin": "行/分钟",
+            "seconds": "秒",
+            "accuracy": "准确率",
+            "errorCount": "错误数"
+        },
+        "stopAndRestart": "停止并重新开始"
+    },
+    "Results": {
+        "title": "测试完成！",
+        "chartTitle": {
+            "wpm": "WPM 变化曲线",
+            "cpm": "CPM 变化曲线",
+            "lpm": "LPM 变化曲线"
+        },
+        "playAgain": "再来一次",
+        "restartHint": "按 {tab} + {enter} 重新开始"
+    }
+}

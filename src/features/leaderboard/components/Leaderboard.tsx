@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { CustomSelect } from '@/components/CustomSelect';
 import {
@@ -16,12 +17,6 @@ import {
 
 type Mode = 'english' | 'chinese' | 'coder';
 
-const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
-    easy: '简单',
-    medium: '中等',
-    hard: '困难',
-};
-
 interface LeaderboardEntry {
     id: string;
     rank: number;
@@ -33,6 +28,9 @@ interface LeaderboardEntry {
 }
 
 export function Leaderboard() {
+    const t = useTranslations('Leaderboard');
+    const tSettings = useTranslations('Settings');
+
     const [activeMode, setActiveMode] = useState<Mode>('english');
     const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
     const [chineseStyle, setChineseStyle] = useState<ChineseStyle>('modern');
@@ -43,6 +41,7 @@ export function Leaderboard() {
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
+            // ... (keep fetch logic)
             setLoading(true);
             try {
                 const params = new URLSearchParams({
@@ -85,9 +84,9 @@ export function Leaderboard() {
                 {/* Left: Main Mode Toggle */}
                 <div className="bg-gray-900/50 p-1 rounded-xl border border-white/5 backdrop-blur-sm flex gap-1">
                     {[
-                        { id: 'english', label: 'English' },
-                        { id: 'chinese', label: '中文' },
-                        { id: 'coder', label: 'Code' }
+                        { id: 'english', label: tSettings('modeLabels.english') },
+                        { id: 'chinese', label: tSettings('modeLabels.chinese') },
+                        { id: 'coder', label: tSettings('modeLabels.coder') }
                     ].map((mode) => (
                         <button
                             key={mode.id}
@@ -119,11 +118,15 @@ export function Leaderboard() {
                         layout
                         className="flex items-center gap-2"
                     >
-                        <span className="text-sm text-gray-500">难度:</span>
+                        <span className="text-sm text-gray-500">{t('difficulty')}</span>
                         <CustomSelect
                             value={difficulty}
                             options={DIFFICULTY_OPTIONS}
-                            labels={DIFFICULTY_LABELS}
+                            labels={{
+                                easy: tSettings('difficultyLabels.easy'),
+                                medium: tSettings('difficultyLabels.medium'),
+                                hard: tSettings('difficultyLabels.hard')
+                            }}
                             onChange={setDifficulty}
                             className="w-24"
                         />
@@ -141,7 +144,7 @@ export function Leaderboard() {
                                 transition={{ duration: 0.15 }}
                                 className="flex items-center gap-2"
                             >
-                                <span className="text-sm text-gray-500">文体:</span>
+                                <span className="text-sm text-gray-500">{t('style')}</span>
                                 <CustomSelect
                                     value={chineseStyle}
                                     options={CHINESE_STYLE_OPTIONS}
@@ -163,7 +166,7 @@ export function Leaderboard() {
                                 transition={{ duration: 0.15 }}
                                 className="flex items-center gap-2"
                             >
-                                <span className="text-sm text-gray-500">语言:</span>
+                                <span className="text-sm text-gray-500">{t('language')}</span>
                                 <CustomSelect
                                     value={programmingLanguage}
                                     options={PROGRAMMING_LANGUAGE_OPTIONS}
@@ -207,7 +210,7 @@ export function Leaderboard() {
                     <div className="text-center">
                         <div className="font-bold text-white text-lg mb-1">{data[0]?.username}</div>
                         <div className="text-teal-400 font-mono text-3xl font-bold">{data[0]?.cpm} <span className="text-sm text-gray-500 font-normal">CPM</span></div>
-                        <div className="text-xs text-gray-500 mt-1">{data[0]?.accuracy}% Accuracy</div>
+                        <div className="text-xs text-gray-500 mt-1">{data[0]?.accuracy}% {t('accuracy')}</div>
                     </div>
                 </div>
 
@@ -230,11 +233,11 @@ export function Leaderboard() {
             <div className="bg-gray-900/30 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-sm">
                 {/* Header */}
                 <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/5 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="col-span-1">Rank</div>
-                    <div className="col-span-5">User</div>
-                    <div className="col-span-2 text-right">CPM</div>
-                    <div className="col-span-2 text-right">Accuracy</div>
-                    <div className="col-span-2 text-right">Date</div>
+                    <div className="col-span-1">{t('rank')}</div>
+                    <div className="col-span-5">{t('user')}</div>
+                    <div className="col-span-2 text-right">{t('cpm')}</div>
+                    <div className="col-span-2 text-right">{t('accuracy')}</div>
+                    <div className="col-span-2 text-right">{t('date')}</div>
                 </div>
 
                 {/* Rows */}
@@ -265,7 +268,7 @@ export function Leaderboard() {
                                 {item.accuracy}%
                             </div>
                             <div className="col-span-2 text-right text-xs text-gray-600">
-                                {item.date}
+                                {new Date(item.date).toLocaleDateString()}
                             </div>
                         </motion.div>
                     ))}
