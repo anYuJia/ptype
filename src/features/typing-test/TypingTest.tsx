@@ -15,6 +15,7 @@ import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
 import { History } from '@/features/history/components/History';
 import { Profile } from '@/features/profile/components/Profile';
 import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
+import { saveTypingResult } from '@/features/history/actions';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
@@ -81,23 +82,19 @@ export function TypingTest() {
           const saveResult = async () => {
             try {
               console.log('Saving result from TypingTest...');
-              const res = await fetch('/api/history', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  wpm: cpm, // Unify to CPM
-                  accuracy,
-                  mode: settings.mode,
-                  subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
-                  difficulty: settings.difficulty,
-                  duration: settings.duration,
-                }),
+              const res = await saveTypingResult({
+                wpm: cpm, // Unify to CPM
+                accuracy,
+                mode: settings.mode,
+                subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
+                difficulty: settings.difficulty,
+                duration: settings.duration,
               });
 
-              if (res.ok) {
+              if (res.success) {
                 console.log('Result saved successfully');
               } else {
-                console.error('Failed to save result:', await res.text());
+                console.error('Failed to save result:', res.error);
               }
             } catch (error) {
               console.error('Failed to save result:', error);

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { AuthState, User } from '../types';
+import { authService } from '../services/authService';
 
 interface AuthStore extends AuthState {
     triggerPosition: { x: number; y: number } | null;
@@ -8,7 +9,7 @@ interface AuthStore extends AuthState {
     closeAuthModal: () => void;
     setAuthModalView: (view: 'login' | 'register') => void;
     login: (user: User) => void;
-    logout: () => void;
+    logout: () => Promise<void>;
     setLoading: (isLoading: boolean) => void;
     setError: (error: string | null) => void;
 }
@@ -27,7 +28,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
     setAuthModalView: (view) => set({ authModalView: view, error: null }),
 
     login: (user) => set({ user, isAuthenticated: true, error: null }),
-    logout: () => set({ user: null, isAuthenticated: false, error: null }),
+    logout: async () => {
+        await authService.logout();
+        set({ user: null, isAuthenticated: false, error: null });
+    },
     setLoading: (isLoading) => set({ isLoading }),
     setError: (error) => set({ error }),
 }));

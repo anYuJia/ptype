@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { getProfile } from '@/features/profile/actions';
 
 export function AuthInitializer() {
     const { login, setLoading } = useAuthStore();
@@ -10,10 +11,13 @@ export function AuthInitializer() {
         const checkAuth = async () => {
             setLoading(true);
             try {
-                const res = await fetch('/api/profile');
-                if (res.ok) {
-                    const { user } = await res.json();
-                    login(user);
+                const result = await getProfile();
+                if (result.success && result.data) {
+                    const userWithDateString = {
+                        ...result.data.user,
+                        createdAt: result.data.user.createdAt.toISOString()
+                    };
+                    login(userWithDateString);
                 }
             } catch (error) {
                 console.error('Failed to check auth status', error);

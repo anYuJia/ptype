@@ -1,13 +1,26 @@
-import { NextResponse } from 'next/server';
+'use server';
+
 import { prisma } from '@/lib/prisma';
+import { TypingMode } from '@/lib/constants';
 
-export const revalidate = 60; // Cache for 60 seconds
+export interface LeaderboardEntry {
+    id: string;
+    rank: number;
+    username: string;
+    cpm: number;
+    accuracy: number;
+    date: string;
+    avatar?: string | null;
+}
 
-export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const mode = searchParams.get('mode') || 'english';
-    const difficulty = searchParams.get('difficulty') || 'medium';
-    const subMode = searchParams.get('subMode');
+export interface GetLeaderboardParams {
+    mode?: TypingMode;
+    difficulty?: string;
+    subMode?: string | null;
+}
+
+export async function getLeaderboard(params: GetLeaderboardParams): Promise<{ success: boolean; data?: LeaderboardEntry[]; error?: string }> {
+    const { mode = 'english', difficulty = 'medium', subMode } = params;
 
     try {
         const whereClause: any = {
@@ -38,8 +51,8 @@ export async function GET(request: Request) {
         });
 
         // Filter to keep only the best result per user
-        const uniqueLeaderboard = [];
-        const seenUsers = new Set();
+        const uniqueLeaderboard: typeof leaderboard = [];
+        const seenUsers = new Set<string>();
 
         for (const entry of leaderboard) {
             if (!seenUsers.has(entry.userId)) {
@@ -50,19 +63,19 @@ export async function GET(request: Request) {
         }
 
         // Transform data to match frontend expectation
-        const formattedLeaderboard = uniqueLeaderboard.map((entry, index) => ({
+        const formattedLeaderboard: LeaderboardEntry[] = uniqueLeaderboard.map((entry, index) => ({
             id: entry.id,
             rank: index + 1,
             username: entry.user.username,
-            cpm: entry.wpm,
+            cpm: Math.round(entry.wpm), // Ensure it's rounded if needed, logic says directly passing wpm which is float usually.
             accuracy: entry.accuracy,
-            date: entry.createdAt.toISOString(), // Or format as needed
+            date: entry.createdAt.toISOString(),
             avatar: entry.user.avatarUrl,
         }));
 
-        return NextResponse.json(formattedLeaderboard);
+        return { success: true, data: formattedLeaderboard };
     } catch (error) {
         console.error('Error fetching leaderboard:', error);
-        return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
+        return { success: false, error: 'Failed to fetch leaderboard' };
     }
 }

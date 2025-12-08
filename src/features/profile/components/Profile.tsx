@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { getProfile, updateProfile } from '../actions';
 
 export function Profile() {
     const t = useTranslations('Profile');
     const { user, logout } = useAuthStore();
+    // We can also update the global user store if needed when profile updates
     const [isEditing, setIsEditing] = useState(false);
 
     const [editUsername, setEditUsername] = useState(user?.username || '');
@@ -23,10 +25,12 @@ export function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch('/api/profile');
-                if (res.ok) {
-                    const data = await res.json();
-                    setStats(data.stats);
+                const result = await getProfile();
+                if (result.success && result.data) {
+                    setStats(result.data.stats);
+                    // Optionally sync user data if it changed on server
+                } else {
+                    console.error(result.error);
                 }
             } catch (error) {
                 console.error('Failed to fetch profile:', error);
@@ -40,15 +44,14 @@ export function Profile() {
 
     const handleSaveProfile = async () => {
         try {
-            const res = await fetch('/api/profile', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: editUsername }),
-            });
+            const result = await updateProfile(editUsername);
 
-            if (res.ok) {
+            if (result.success) {
                 setIsEditing(false);
+                // Simple way to refresh user data in store/app
                 window.location.reload();
+            } else {
+                console.error(result.error);
             }
         } catch (error) {
             console.error('Failed to update profile:', error);

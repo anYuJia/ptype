@@ -17,19 +17,13 @@ import {
 
 type Mode = 'english' | 'chinese' | 'coder';
 
-interface LeaderboardEntry {
-    id: string;
-    rank: number;
-    username: string;
-    cpm: number;
-    accuracy: number;
-    date: string;
-    avatar: string | null;
-}
+import { getLeaderboard, LeaderboardEntry } from '../actions';
+import { useLocale } from 'next-intl';
 
 export function Leaderboard() {
     const t = useTranslations('Leaderboard');
     const tSettings = useTranslations('Settings');
+    const locale = useLocale();
 
     const [activeMode, setActiveMode] = useState<Mode>('english');
     const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
@@ -41,24 +35,24 @@ export function Leaderboard() {
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
-            // ... (keep fetch logic)
             setLoading(true);
             try {
-                const params = new URLSearchParams({
+                const params: any = {
                     mode: activeMode,
                     difficulty,
-                });
+                };
 
                 if (activeMode === 'chinese') {
-                    params.append('subMode', chineseStyle);
+                    params.subMode = chineseStyle;
                 } else if (activeMode === 'coder') {
-                    params.append('subMode', programmingLanguage);
+                    params.subMode = programmingLanguage;
                 }
 
-                const res = await fetch(`/api/leaderboard?${params.toString()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setLeaderboardData(data);
+                const result = await getLeaderboard(params);
+                if (result.success && result.data) {
+                    setLeaderboardData(result.data);
+                } else {
+                    console.error('Failed to fetch leaderboard:', result.error);
                 }
             } catch (error) {
                 console.error('Failed to fetch leaderboard:', error);
@@ -268,7 +262,7 @@ export function Leaderboard() {
                                 {item.accuracy}%
                             </div>
                             <div className="col-span-2 text-right text-xs text-gray-600">
-                                {new Date(item.date).toLocaleDateString()}
+                                {new Date(item.date).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US')}
                             </div>
                         </motion.div>
                     ))}

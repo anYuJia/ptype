@@ -21,6 +21,7 @@ import {
     CHINESE_STYLE_OPTIONS,
     PROGRAMMING_LANGUAGE_OPTIONS
 } from '@/lib/constants';
+import { getHistory, getHistoryStats } from '../actions';
 
 export function History() {
     const t = useTranslations('History');
@@ -40,15 +41,13 @@ export function History() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [historyRes, statsRes] = await Promise.all([
-                    fetch('/api/history'),
-                    fetch('/api/history/stats')
+                const [historyResult, statsResult] = await Promise.all([
+                    getHistory(),
+                    getHistoryStats()
                 ]);
 
-                if (historyRes.ok) {
-                    const history = await historyRes.json();
-
-                    const formattedHistory = history.map((item: any) => ({
+                if (historyResult.success && historyResult.data) {
+                    const formattedHistory = historyResult.data.map((item) => ({
                         ...item,
                         date: new Date(item.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', {
                             month: '2-digit',
@@ -62,11 +61,14 @@ export function History() {
                     })).reverse(); // Reverse for chart (Chronological)
 
                     setHistoryData(formattedHistory);
+                } else {
+                    console.error('Failed to fetch history:', historyResult.error);
                 }
 
-                if (statsRes.ok) {
-                    const statsData = await statsRes.json();
-                    setStats(statsData);
+                if (statsResult.success && statsResult.data) {
+                    setStats(statsResult.data);
+                } else {
+                    console.error('Failed to fetch stats:', statsResult.error);
                 }
             } catch (error) {
                 console.error('Failed to fetch history data', error);
