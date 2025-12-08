@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { Checkbox } from '@/components/ui/Checkbox';
+import { CustomTextModal } from '../typing-test/components/CustomTextModal';
 import {
   DURATION_OPTIONS,
   DIFFICULTY_OPTIONS,
@@ -23,6 +25,7 @@ const modes: { value: TypingMode; label: string; description: string }[] = [
   { value: 'english', label: 'English', description: 'Common phrases & quotes' },
   { value: 'chinese', label: '中文', description: '现代文、文言文' },
   { value: 'coder', label: 'Coder', description: 'Multi-language code' },
+  { value: 'custom', label: 'Custom', description: 'Your own text' },
 ];
 
 const difficultyLabels: Record<DifficultyLevel, string> = {
@@ -35,6 +38,7 @@ export function SettingsPanel({
   disabled = false,
 }: SettingsPanelProps) {
   const t = useTranslations('Settings');
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   // 从 Store 获取设置和 actions
   const {
@@ -65,10 +69,47 @@ export function SettingsPanel({
     english: t('modeDescriptions.english'),
     chinese: t('modeDescriptions.chinese'),
     coder: t('modeDescriptions.coder'),
+    custom: t('modeDescriptions.custom'),
+  };
+
+  const handleModeChange = (newMode: TypingMode) => {
+    if (disabled) return;
+
+    if (newMode === 'custom') {
+      setIsCustomModalOpen(true);
+    } else {
+      updateSettings({ mode: newMode });
+    }
+  };
+
+  const handleCustomTextConfirm = (text: string) => {
+    updateSettings({ mode: 'custom', customText: text });
+    // updateSettings calls initTest internally if mode changes, but if we are already in custom mode and just changing text,
+    // we might need to force re-init or ensure updateSettings handles it.
+    // Our typingStore implementation of updateSettings will call initTest if mode changes.
+    // If mode is same but customText changes, we need to ensure initTest is called.
+    // Let's modify typingStore to handle customText change or just manually call initTest here.
+    // Checking typingStore: it checks specifics properties. It doesn't check customText.
+    // So we should probably manually call initTest here just in case, or update typingStore to watch customText.
+    // For now, let's just calling initTest() is safer after update.
+    // Actually, `updateSettings` runs asynchronously in React state terms? No, Zustand is sync usually.
+    // Let's rely on updateSettings logic. Wait, I should double check typingStore updateSettings.
+    /*
+      if ((newSettings.mode && newSettings.mode !== settings.mode) || ... ) { initTest() }
+    */
+    // If I'm already in custom mode, changing text won't trigger initTest automatically unless I add customText to that condition in store.
+    // Plan: I'll manually call initTest() here after updateSettings to be sure.
+    setTimeout(() => initTest(), 0);
   };
 
   return (
     <div className="space-y-3">
+      <CustomTextModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onConfirm={handleCustomTextConfirm}
+      />
+
       {/* 第一行：时间、模式、难度 */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
         {/* 时间选择 */}
@@ -109,7 +150,7 @@ export function SettingsPanel({
             {modes.map((m) => (
               <motion.button
                 key={m.value}
-                onClick={() => !disabled && updateSettings({ mode: m.value })}
+                onClick={() => handleModeChange(m.value)}
                 // ... (keep className and props)
                 className={`
                   px-3 py-1.5 rounded-md text-sm font-medium
@@ -272,6 +313,24 @@ export function SettingsPanel({
                   disabled={disabled}
                   className="w-40"
                 />
+              </motion.div>
+            )}
+
+            {mode === 'custom' && (
+              <motion.div
+                key="custom-options"
+                className="flex items-center gap-2"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.15 }}
+              >
+                <button
+                  onClick={() => !disabled && setIsCustomModalOpen(true)}
+                  className="text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors hover:underline"
+                >
+                  {t('editCustomText')}
+                </button>
               </motion.div>
             )}
           </AnimatePresence>

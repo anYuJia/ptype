@@ -8,14 +8,14 @@
 - [x] Remove unused API routes
 
 ## 2. Feature: Activity Heatmap
-- [ ] Design Heatmap component
-- [ ] Implement data fetching for yearly activity (requires new DB query)
-- [ ] Integrate Heatmap into Profile page
-- [ ] Add "Coming Soon" removal and final polish
+- [x] Design Heatmap component
+- [x] Implement Heatmap logic (data aggregation)
+- [x] Integrate Heatmap into Profile page
+- [x] Add "Coming Soon" removal and final polish
 
 ## 3. Feature: Custom Text Mode
-- [ ] Update `TypingMode` type and constants
-- [ ] Add "Custom" option to Mode selector
-- [ ] Create UI for text input/paste (Modal or dedicated page)
-- [ ] Store custom text in store/state
-- [ ] Adapt `TextDisplay` and `wpmCalculator` to handle custom text
+- [x] Add "Custom" mode to selector
+- [x] Create input modal for custom text
+- [x] Implement text processing for custom input
+- [x] Store custom text in store/state
+- [x] Adapt `TextDisplay` and `wpmCalculator` to handle custom text

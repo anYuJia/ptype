@@ -62,7 +62,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "logout": "Sign Out",
-        "heatmap": "Activity Heatmap Coming Soon"
+        "heatmap": "Activity Heatmap"
     },
     "Settings": {
         "time": "Time:",
@@ -76,19 +76,26 @@
         "modeLabels": {
             "english": "English",
             "chinese": "Chinese",
-            "coder": "Coder"
+            "coder": "Coder",
+            "custom": "Custom"
         },
         "modeDescriptions": {
             "english": "Common phrases & quotes",
             "chinese": "Modern & Classical",
-            "coder": "Multi-language code"
+            "coder": "Multi-language code",
+            "custom": "Your own text"
         },
         "allowBackspace": "Allow Backspace",
         "caseSensitive": "Case Sensitive",
         "ignorePunctuation": "Ignore Punctuation",
         "chineseStyle": "Style:",
         "programmingLanguage": "Language:",
-        "regenerate": "Regenerate Text"
+        "regenerate": "Regenerate Text",
+        "customText": "Custom Text",
+        "customTextPlaceholder": "Paste or type your text here...",
+        "editCustomText": "Edit Text",
+        "startCustomTest": "Start Test",
+        "cancel": "Cancel"
     },
     "Stats": {
         "wpm": "WPM",

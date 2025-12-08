@@ -54,6 +54,10 @@ export function ResultsCard() {
           { value: lpm, label: tStats('lpm'), sublabel: tStats('sublabels.linesPerMin'), color: 'text-teal-400' },
           { value: cpm, label: tStats('cpm'), sublabel: tStats('sublabels.charsPerMin'), color: 'text-cyan-400' },
         ];
+      case 'custom':
+        return [
+          { value: cpm, label: tStats('cpm'), sublabel: tStats('sublabels.charsPerMin'), color: 'text-teal-400' },
+        ];
       default:
         return [{ value: wpm, label: tStats('wpm'), sublabel: tStats('sublabels.wordsPerMin'), color: 'text-teal-400' }];
     }
@@ -70,6 +74,8 @@ export function ResultsCard() {
         return `${tSettings('modeLabels.chinese')} (${chineseStyle === 'modern' ? '现代文' : '古文'})`; // 临时处理，后续可以优化
       case 'coder':
         return `${tSettings('modeLabels.coder')} (${programmingLanguage})`;
+      case 'custom':
+        return tSettings('modeLabels.custom');
       default:
         return mode;
     }

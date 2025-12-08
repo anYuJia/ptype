@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { getProfile, updateProfile } from '../actions';
+import { ActivityHeatmap } from './ActivityHeatmap';
+import { getProfile, updateProfile, ActivityData } from '../actions';
 
 export function Profile() {
     const t = useTranslations('Profile');
@@ -20,6 +22,7 @@ export function Profile() {
         bestWpm: 0,
         timeSpent: '0m',
     });
+    const [activityHistory, setActivityHistory] = useState<ActivityData[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,6 +31,7 @@ export function Profile() {
                 const result = await getProfile();
                 if (result.success && result.data) {
                     setStats(result.data.stats);
+                    setActivityHistory(result.data.activityHistory);
                     // Optionally sync user data if it changed on server
                 } else {
                     console.error(result.error);
@@ -178,10 +182,8 @@ export function Profile() {
                         </div>
                     </div>
 
-                    {/* Activity Heatmap Placeholder */}
-                    <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm min-h-[200px] flex items-center justify-center text-gray-500">
-                        {t('heatmap')}
-                    </div>
+                    {/* Activity Heatmap */}
+                    <ActivityHeatmap data={activityHistory} />
                 </div>
 
                 {/* Settings / Actions */}

@@ -1,5 +1,5 @@
 // 练习模式
-export type TypingMode = 'english' | 'chinese' | 'coder';
+export type TypingMode = 'english' | 'chinese' | 'coder' | 'custom';
 
 // 练习状态
 export type TypingStatus = 'idle' | 'running' | 'finished';

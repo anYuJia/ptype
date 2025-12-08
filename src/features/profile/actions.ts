@@ -12,6 +12,11 @@ export interface ProfileStats {
     timeSpent: string;
 }
 
+export interface ActivityData {
+    date: string;
+    count: number;
+}
+
 export interface ProfileData {
     user: {
         id: string;
@@ -20,6 +25,7 @@ export interface ProfileData {
         createdAt: Date;
     };
     stats: ProfileStats;
+    activityHistory: ActivityData[];
 }
 
 function formatDuration(seconds: number): string {
@@ -38,7 +44,7 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
             return { success: false, error: 'Unauthorized' };
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: { id: userId },
             select: {
                 id: true,
@@ -55,19 +61,34 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         // Aggregate stats
         const aggregations = await prisma.typingResult.aggregate({
             where: { userId },
-            _avg: {
-                wpm: true,
-            },
-            _max: {
-                wpm: true,
-            },
-            _sum: {
-                duration: true,
-            },
-            _count: {
-                id: true,
-            },
+            _avg: { wpm: true },
+            _max: { wpm: true },
+            _sum: { duration: true },
+            _count: { id: true },
         });
+
+        // Get activity history (last 365 days)
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+        const recentResults = await prisma.typingResult.findMany({
+            where: {
+                userId,
+                createdAt: { gte: oneYearAgo }
+            },
+            select: { createdAt: true }
+        });
+
+        const activityMap = new Map<string, number>();
+        recentResults.forEach(r => {
+            const date = r.createdAt.toISOString().split('T')[0];
+            activityMap.set(date, (activityMap.get(date) || 0) + 1);
+        });
+
+        const activityHistory: ActivityData[] = Array.from(activityMap.entries()).map(([date, count]) => ({
+            date,
+            count
+        }));
 
         const stats: ProfileStats = {
             joinDate: user.createdAt.toISOString().split('T')[0],
@@ -77,7 +98,7 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
             timeSpent: formatDuration(aggregations._sum.duration || 0),
         };
 
-        return { success: true, data: { user, stats } };
+        return { success: true, data: { user, stats, activityHistory } };
     } catch (error) {
         console.error('Error fetching profile:', error);
         return { success: false, error: 'Failed to fetch profile' };

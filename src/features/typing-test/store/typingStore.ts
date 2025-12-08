@@ -35,6 +35,7 @@ export interface TypingSettings {
   programmingLanguage: ProgrammingLanguage; // 编程语言
   englishOptions: EnglishOptions; // 英文选项
   typingOptions: TypingOptions; // 打字选项
+  customText?: string; // 自定义文本
 }
 
 // 状态接口
@@ -124,13 +125,20 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   // 初始化测试（生成新文本）
   initTest: () => {
     const { settings } = get();
-    const rawText = generateText(
-      settings.mode,
-      settings.difficulty,
-      500,
-      settings.chineseStyle,
-      settings.programmingLanguage
-    );
+
+    let rawText = '';
+    if (settings.mode === 'custom' && settings.customText) {
+      rawText = settings.customText;
+    } else {
+      rawText = generateText(
+        settings.mode,
+        settings.difficulty,
+        500,
+        settings.chineseStyle,
+        settings.programmingLanguage
+      );
+    }
+
     const displayText = processTargetText(rawText, settings.mode, settings.englishOptions);
 
     set({

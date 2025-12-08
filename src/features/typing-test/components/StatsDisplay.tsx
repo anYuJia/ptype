@@ -47,6 +47,8 @@ export function StatsDisplay({ actionButton }: StatsDisplayProps) {
           { value: lpm, label: t('lpm'), sublabel: t('sublabels.linesPerMin') },
           { value: cpm, label: t('cpm'), sublabel: t('sublabels.charsPerMin') },
         ];
+      case 'custom':
+        return [{ value: cpm, label: t('cpm'), sublabel: t('sublabels.charsPerMin') }];
       default:
         return [{ value: wpm, label: t('wpm'), sublabel: t('sublabels.wordsPerMin') }];
     }
