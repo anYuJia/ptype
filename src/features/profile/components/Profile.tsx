@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/features/auth/store/authStore';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 export function Profile() {
+    const t = useTranslations('Profile');
     const { user, logout } = useAuthStore();
     const [isEditing, setIsEditing] = useState(false);
 
@@ -25,7 +27,6 @@ export function Profile() {
                 if (res.ok) {
                     const data = await res.json();
                     setStats(data.stats);
-                    // Optionally update user in auth store if needed, but we rely on authStore for user info
                 }
             } catch (error) {
                 console.error('Failed to fetch profile:', error);
@@ -46,16 +47,8 @@ export function Profile() {
             });
 
             if (res.ok) {
-                // Ideally update the global auth store user here
-                // For now we just close edit mode as the UI will reflect the input value if we updated the store
-                // But since we don't have updateStore method easily available here without checking authStore, 
-                // we might need to reload or just assume success.
-                // Let's assume we need to trigger a re-fetch or update local user object if possible.
-                // Since `user` comes from `useAuthStore`, we should probably update it there.
-                // Assuming `login` or a `setUser` exists. If not, we might see stale data.
-                // For this step, let's just close editing.
                 setIsEditing(false);
-                window.location.reload(); // Simple way to refresh user data in store
+                window.location.reload();
             }
         } catch (error) {
             console.error('Failed to update profile:', error);
@@ -65,7 +58,7 @@ export function Profile() {
     if (!user) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
-                <p>Please login to view your profile</p>
+                <p>{t('pleaseLogin')}</p>
             </div>
         );
     }
@@ -112,7 +105,7 @@ export function Profile() {
                                         onClick={handleSaveProfile}
                                         className="px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 transition-colors"
                                     >
-                                        Save
+                                        {t('save')}
                                     </button>
                                     <button
                                         onClick={() => {
@@ -121,7 +114,7 @@ export function Profile() {
                                         }}
                                         className="px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded hover:bg-gray-600 transition-colors"
                                     >
-                                        Cancel
+                                        {t('cancel')}
                                     </button>
                                 </div>
                             </div>
@@ -132,7 +125,7 @@ export function Profile() {
                                 </div>
                                 <p className="text-gray-400">{user.email}</p>
                                 <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-gray-500 pt-2">
-                                    <span>Joined {stats.joinDate}</span>
+                                    <span>{t('joined', { date: stats.joinDate })}</span>
                                     <span>•</span>
                                     <button
                                         onClick={() => {
@@ -141,7 +134,7 @@ export function Profile() {
                                         }}
                                         className="text-teal-400 hover:text-teal-300 transition-colors"
                                     >
-                                        Edit Profile
+                                        {t('editProfile')}
                                     </button>
                                 </div>
                             </>
@@ -152,15 +145,15 @@ export function Profile() {
                     <div className="flex gap-8 border-l border-white/10 pl-8">
                         <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.avgWpm}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">平均 CPM</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('avgSpeed')}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.bestWpm}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">最高 CPM</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('bestSpeed')}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.totalTests}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">Tests</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('totalTests')}</div>
                         </div>
                     </div>
                 </div>
@@ -170,21 +163,21 @@ export function Profile() {
             <div className="space-y-8">
                 {/* Detailed Stats */}
                 <div className="space-y-6">
-                    <h3 className="text-lg font-medium text-white">Statistics</h3>
+                    <h3 className="text-lg font-medium text-white">{t('statistics')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm">
-                            <div className="text-gray-400 text-sm mb-1">Average Speed</div>
-                            <div className="text-3xl font-bold text-teal-400">{stats.avgWpm} <span className="text-sm text-gray-500 font-normal">WPM</span></div>
+                            <div className="text-gray-400 text-sm mb-1">{t('avgSpeed')}</div>
+                            <div className="text-3xl font-bold text-teal-400">{stats.avgWpm} <span className="text-sm text-gray-500 font-normal">CPM</span></div>
                         </div>
                         <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm">
-                            <div className="text-gray-400 text-sm mb-1">Time Spent</div>
+                            <div className="text-gray-400 text-sm mb-1">{t('timeSpent')}</div>
                             <div className="text-3xl font-bold text-purple-400">{stats.timeSpent}</div>
                         </div>
                     </div>
 
                     {/* Activity Heatmap Placeholder */}
                     <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm min-h-[200px] flex items-center justify-center text-gray-500">
-                        Activity Heatmap Coming Soon
+                        {t('heatmap')}
                     </div>
                 </div>
 
@@ -194,7 +187,7 @@ export function Profile() {
                         onClick={logout}
                         className="px-8 py-3 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
                     >
-                        Sign Out
+                        {t('logout')}
                     </button>
                 </div>
             </div>

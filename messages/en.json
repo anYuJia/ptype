@@ -50,6 +50,20 @@
         "accuracy": "Accuracy",
         "date": "Date"
     },
+    "Profile": {
+        "pleaseLogin": "Please login to view your profile",
+        "joined": "Joined {date}",
+        "editProfile": "Edit Profile",
+        "avgSpeed": "Avg Speed",
+        "bestSpeed": "Best Speed",
+        "totalTests": "Tests",
+        "timeSpent": "Time Spent",
+        "statistics": "Statistics",
+        "save": "Save",
+        "cancel": "Cancel",
+        "logout": "Sign Out",
+        "heatmap": "Activity Heatmap Coming Soon"
+    },
     "Settings": {
         "time": "Time:",
         "mode": "Mode:",

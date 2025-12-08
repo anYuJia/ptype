@@ -50,6 +50,20 @@
         "accuracy": "准确率",
         "date": "日期"
     },
+    "Profile": {
+        "pleaseLogin": "请登录以查看您的个人资料",
+        "joined": "加入于 {date}",
+        "editProfile": "编辑资料",
+        "avgSpeed": "平均速度",
+        "bestSpeed": "最高速度",
+        "totalTests": "测试次数",
+        "timeSpent": "总时长",
+        "statistics": "统计数据",
+        "save": "保存",
+        "cancel": "取消",
+        "logout": "退出登录",
+        "heatmap": "活跃度热力图即将上线"
+    },
     "Settings": {
         "time": "时间:",
         "mode": "模式:",
