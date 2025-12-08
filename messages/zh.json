@@ -91,11 +91,18 @@
         "chineseStyle": "文体:",
         "programmingLanguage": "语言:",
         "regenerate": "重新生成",
-        "customText": "自定义文本",
-        "customTextPlaceholder": "在此粘贴或输入您的文本...",
-        "editCustomText": "编辑文本",
+        "customText": "自定义文本管理",
+        "customTextPlaceholder": "在此输入您的自定义文本...",
+        "customTitlePlaceholder": "输入标题...",
+        "editCustomText": "管理文本",
         "startCustomTest": "开始测试",
-        "cancel": "取消"
+        "save": "保存",
+        "delete": "删除",
+        "new": "新建文本",
+        "savedTexts": "已保存文本",
+        "noSavedTexts": "暂无保存的文本",
+        "cancel": "取消",
+        "titleAndContentRequired": "标题和内容不能为空"
     },
     "Stats": {
         "wpm": "WPM",

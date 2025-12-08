@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { CustomSelect } from '@/components/CustomSelect';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { CustomTextModal } from '../typing-test/components/CustomTextModal';
+import { getCustomTexts, CustomText } from '@/features/custom-text/actions';
 import {
   DURATION_OPTIONS,
   DIFFICULTY_OPTIONS,
@@ -39,6 +40,8 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   const t = useTranslations('Settings');
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [savedTexts, setSavedTexts] = useState<CustomText[]>([]);
+  const [selectedTextId, setSelectedTextId] = useState<string>('');
 
   // 从 Store 获取设置和 actions
   const {
@@ -63,7 +66,47 @@ export function SettingsPanel({
     programmingLanguage,
     englishOptions,
     typingOptions,
+    customText,
   } = settings;
+
+  // Load custom texts
+  const fetchCustomTexts = async () => {
+    const res = await getCustomTexts();
+    if (res.success && res.data) {
+      setSavedTexts(res.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomTexts();
+  }, []);
+
+  // Refresh list when modal closes
+  useEffect(() => {
+    if (!isCustomModalOpen) {
+      fetchCustomTexts();
+    }
+  }, [isCustomModalOpen]);
+
+  // Sync selectedId with current text content
+  useEffect(() => {
+    if (mode === 'custom' && customText && savedTexts.length > 0) {
+      const match = savedTexts.find(t => t.content === customText);
+      if (match) {
+        setSelectedTextId(match.id);
+      } else {
+        setSelectedTextId(''); // Custom un-saved text
+      }
+    }
+  }, [mode, customText, savedTexts]);
+
+  const customTextOptions = useMemo(() => savedTexts.map(t => t.id), [savedTexts]);
+  const customTextLabels = useMemo(() => {
+    const labels: Record<string, string> = {};
+    savedTexts.forEach(t => labels[t.id] = t.title);
+    return labels;
+  }, [savedTexts]);
+
 
   const modeDescriptions = {
     english: t('modeDescriptions.english'),
@@ -76,6 +119,25 @@ export function SettingsPanel({
     if (disabled) return;
 
     if (newMode === 'custom') {
+      // 1. If we already have custom text, just switch
+      if (customText && customText.trim().length > 0) {
+        updateSettings({ mode: 'custom' });
+        return;
+      }
+
+      // 2. If we have saved texts, auto-select the most recent one (first one)
+      if (savedTexts.length > 0) {
+        const mostRecent = savedTexts[0];
+        updateSettings({ mode: 'custom', customText: mostRecent.content });
+        // Ensure init happens if just switching customText content implies a "fresh" start
+        // Usually updating settings.mode triggers initTest if changed.
+        // But if we were already in custom mode (unlikely given the if check above checks for text presence),
+        // this safeguard ensures we load the text.
+        setTimeout(() => initTest(), 0);
+        return;
+      }
+
+      // 3. Fallback: Open modal
       setIsCustomModalOpen(true);
     } else {
       updateSettings({ mode: newMode });
@@ -84,22 +146,16 @@ export function SettingsPanel({
 
   const handleCustomTextConfirm = (text: string) => {
     updateSettings({ mode: 'custom', customText: text });
-    // updateSettings calls initTest internally if mode changes, but if we are already in custom mode and just changing text,
-    // we might need to force re-init or ensure updateSettings handles it.
-    // Our typingStore implementation of updateSettings will call initTest if mode changes.
-    // If mode is same but customText changes, we need to ensure initTest is called.
-    // Let's modify typingStore to handle customText change or just manually call initTest here.
-    // Checking typingStore: it checks specifics properties. It doesn't check customText.
-    // So we should probably manually call initTest here just in case, or update typingStore to watch customText.
-    // For now, let's just calling initTest() is safer after update.
-    // Actually, `updateSettings` runs asynchronously in React state terms? No, Zustand is sync usually.
-    // Let's rely on updateSettings logic. Wait, I should double check typingStore updateSettings.
-    /*
-      if ((newSettings.mode && newSettings.mode !== settings.mode) || ... ) { initTest() }
-    */
-    // If I'm already in custom mode, changing text won't trigger initTest automatically unless I add customText to that condition in store.
-    // Plan: I'll manually call initTest() here after updateSettings to be sure.
     setTimeout(() => initTest(), 0);
+  };
+
+  const handleCustomSelectChange = (id: string) => {
+    const selected = savedTexts.find(t => t.id === id);
+    if (selected) {
+      setSelectedTextId(id);
+      updateSettings({ mode: 'custom', customText: selected.content });
+      setTimeout(() => initTest(), 0);
+    }
   };
 
   return (
@@ -309,7 +365,10 @@ export function SettingsPanel({
                   value={programmingLanguage}
                   options={PROGRAMMING_LANGUAGE_OPTIONS}
                   labels={PROGRAMMING_LANGUAGE_LABELS}
-                  onChange={(lang) => updateSettings({ programmingLanguage: lang })}
+                  onChange={(lang) => {
+                    updateSettings({ programmingLanguage: lang });
+                    setTimeout(() => initTest(true), 0);
+                  }}
                   disabled={disabled}
                   className="w-40"
                 />
@@ -325,9 +384,19 @@ export function SettingsPanel({
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.15 }}
               >
+                {savedTexts.length > 0 && (
+                  <CustomSelect
+                    value={selectedTextId}
+                    options={customTextOptions}
+                    labels={customTextLabels}
+                    onChange={handleCustomSelectChange}
+                    disabled={disabled}
+                    className="w-32"
+                  />
+                )}
                 <button
                   onClick={() => !disabled && setIsCustomModalOpen(true)}
-                  className="text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors hover:underline"
+                  className="text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors hover:underline px-2"
                 >
                   {t('editCustomText')}
                 </button>
@@ -339,7 +408,7 @@ export function SettingsPanel({
         {/* 右侧：重新生成按钮 */}
         {status === 'idle' && (
           <motion.button
-            onClick={() => initTest()}
+            onClick={() => initTest(true)}
             className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

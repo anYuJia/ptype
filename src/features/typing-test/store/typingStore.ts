@@ -62,11 +62,14 @@ export interface TypingState {
   wpmHistory: WpmHistoryPoint[];
   lastCorrectChars?: number; // 上一次 tick 的正确字符数，用于计算瞬时速度
 
+  // 缓存
+  lastCoderText?: string; // 缓存代码模式文本
+
   // 设置
   settings: TypingSettings;
 
   // Actions
-  initTest: () => void;
+  initTest: (forceRegenerate?: boolean) => void;
   startTest: () => void;
   handleInput: (char: string) => void;
   handleBackspace: () => void;
@@ -123,12 +126,46 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   },
 
   // 初始化测试（生成新文本）
-  initTest: () => {
+  initTest: (forceRegenerate?: boolean) => {
     const { settings } = get();
 
     let rawText = '';
+    const state = get();
+
+    // Custom Mode
     if (settings.mode === 'custom' && settings.customText) {
       rawText = settings.customText;
+    }
+    // Coder Mode - Reuse text if switching back to it (and language matches if we tracked it, but for now just reuse text if mode matches)
+    // Actually, initTest is called on mode change.
+    // We only want to reuse text if we are switching TO coder mode from another mode, NOT when we hit "regenerate".
+    // "Regenerate" calls initTest directly. Mode didn't change.
+    // "Switch Mode" calls updateSettings -> initTest.
+    // It's hard to distinguish "Regenerate" from "Switch Mode" inside initTest without extra flags.
+    // However, the user request is "Default is previous code".
+    // Maybe we just check if state.lastCoderText exists?
+    // But if I hit "Regenerate", I want NEW code.
+    // How to distinguish?
+    // Let's rely on `lastCoderText`. When `initTest` is called, we can't easily know the intent.
+    // But typically `initTest` generates text.
+    // If I want to persist, I should perhaps NOT call `initTest` when switching mode if I can restore state?
+    // But `updateSettings` forces `initTest`.
+
+    // Better approach:
+    // When we leave coder mode, we save the text.
+    // When we enter coder mode, if we have saved text, we use it.
+    // But `initTest` wipes everything.
+
+    // Let's modify logic:
+    // If settings.mode === 'coder' AND state.lastCoderText is set... use it?
+    // But then "Regenerate" won't work because it calls initTest which sees lastCoderText and reuses it.
+    // We need to clear `lastCoderText` when "Regenerate" is clicked.
+    // But "Regenerate" just calls `initTest`.
+
+    // Okay, let's create a new action or param for `initTest(forceRegenerate?: boolean)`.
+
+    else if (settings.mode === 'coder' && state.lastCoderText && !forceRegenerate) {
+      rawText = state.lastCoderText;
     } else {
       rawText = generateText(
         settings.mode,
@@ -137,6 +174,12 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         settings.chineseStyle,
         settings.programmingLanguage
       );
+
+      // If we just generated new text for coder mode, save it
+      if (settings.mode === 'coder') {
+        // We can't set state here immediately if we are inside set() - wait, we are in get().
+        // We will set it in the set() call below.
+      }
     }
 
     const displayText = processTargetText(rawText, settings.mode, settings.englishOptions);
@@ -154,6 +197,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       startTime: null,
       wpmHistory: [],
       lastCorrectChars: 0,
+      // Save lastCoderText if we are in coder mode
+      lastCoderText: settings.mode === 'coder' ? rawText : state.lastCoderText
     });
   },
 

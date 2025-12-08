@@ -91,11 +91,18 @@
         "chineseStyle": "Style:",
         "programmingLanguage": "Language:",
         "regenerate": "Regenerate Text",
-        "customText": "Custom Text",
-        "customTextPlaceholder": "Paste or type your text here...",
-        "editCustomText": "Edit Text",
+        "customText": "Custom Text Manager",
+        "customTextPlaceholder": "Type your custom text here...",
+        "customTitlePlaceholder": "Enter title...",
+        "editCustomText": "Manage Texts",
         "startCustomTest": "Start Test",
-        "cancel": "Cancel"
+        "save": "Save",
+        "delete": "Delete",
+        "new": "New Text",
+        "savedTexts": "Saved Texts",
+        "noSavedTexts": "No saved texts found",
+        "cancel": "Cancel",
+        "titleAndContentRequired": "Title and content required"
     },
     "Stats": {
         "wpm": "WPM",
