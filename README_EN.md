@@ -140,6 +140,7 @@ PType comes with a rich code practice library covering mainstream languages and 
 
 - **Node.js**: >= 18.0.0
 - **npm**: >= 9.0.0
+- **PostgreSQL**: >= 14.0 ([Download & Installation Guide](https://www.postgresql.org/download/))
 
 ### Installation
 

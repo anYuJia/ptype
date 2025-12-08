@@ -140,6 +140,7 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 
 - **Node.js**: >= 18.0.0
 - **npm**: >= 9.0.0
+- **PostgreSQL**: >= 14.0 ([下载与安装教程](https://www.postgresql.org/download/))
 
 ### 安装步骤
 
