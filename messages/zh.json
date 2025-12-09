@@ -21,8 +21,7 @@
         "error": "错误",
         "success": "成功",
         "viewOnGithub": "在 GitHub 上查看",
-        "startTyping": "开始输入以开始测试...",
-        "footer": "由 Next.js, Tailwind CSS & Framer Motion 驱动"
+        "startTyping": "开始输入以开始测试..."
     },
     "History": {
         "totalTests": "总测试数",

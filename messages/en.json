@@ -21,8 +21,7 @@
         "error": "Error",
         "success": "Success",
         "viewOnGithub": "View on GitHub",
-        "startTyping": "Start typing to begin test...",
-        "footer": "Powered by Next.js, Tailwind CSS & Framer Motion"
+        "startTyping": "Start typing to begin test..."
     },
     "History": {
         "totalTests": "Total Tests",

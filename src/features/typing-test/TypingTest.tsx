@@ -302,11 +302,6 @@ export function TypingTest() {
           </AnimatePresence>
         </div>
       </main>
-
-      {/* 页脚 */}
-      <footer className="py-4 text-center text-gray-600 text-sm">
-        <p>{useTranslations('Common')('footer')}</p>
-      </footer>
       <AuthModal />
     </div>
   );
