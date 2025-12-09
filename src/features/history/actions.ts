@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 export interface TypingResultData {
     id: string;
     wpm: number;
+    cpm: number; // Added unified CPM field
     accuracy: number;
     mode: string;
     subMode: string | null;
@@ -17,7 +18,7 @@ export interface TypingResultData {
 
 export interface HistoryStats {
     totalTests: number;
-    avgWpm: number;
+    avgWpm: number; // This remains "avg score" (mixed units) or we unify it? Let's leave stats for now or just user history list.
     bestWpm: number;
     totalTime: string;
     totalSeconds: number;
@@ -36,7 +37,15 @@ export async function getHistory(): Promise<{ success: boolean; data?: TypingRes
             take: 20,
         });
 
-        return { success: true, data: history };
+        // Since we are now storing CPM for all modes (including English),
+        // we map the stored 'wpm' value directly to 'cpm'.
+        // Note: Historical English data stored as WPM will appear as low CPM values.
+        const historyWithCpm = history.map(item => ({
+            ...item,
+            cpm: item.wpm
+        }));
+
+        return { success: true, data: historyWithCpm };
     } catch (error) {
         console.error('Failed to fetch history:', error);
         return { success: false, error: 'Failed to fetch history' };
@@ -107,10 +116,15 @@ export async function saveTypingResult(input: SaveResultInput): Promise<{ succes
             },
         });
 
+        const resultWithCpm: TypingResultData = {
+            ...result,
+            cpm: result.wpm
+        };
+
         revalidatePath('/history');
         revalidatePath('/profile');
 
-        return { success: true, data: result };
+        return { success: true, data: resultWithCpm };
     } catch (error) {
         console.error('Error saving result:', error);
         return { success: false, error: 'Failed to save result' };

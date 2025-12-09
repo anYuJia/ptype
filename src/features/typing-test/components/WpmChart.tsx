@@ -1,8 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -15,10 +14,22 @@ import { WpmHistoryPoint } from '../store/typingStore';
 
 interface WpmChartProps {
   data: WpmHistoryPoint[];
+  unit?: string;
 }
 
-export function WpmChart({ data }: WpmChartProps) {
-  if (data.length < 2) {
+export function WpmChart({ data, unit = 'WPM' }: WpmChartProps) {
+  // Process data: use index as X-axis to avoid duplicate time issues
+  // Each point gets a unique position, and we show the original time in tooltip
+  const chartData = useMemo(() => {
+    return data.map((item, index) => ({
+      index, // Use index as X position - guarantees unique values
+      time: item.time, // Keep original time for tooltip display
+      wpm: Number.isFinite(item.wpm) ? Math.max(0, item.wpm) : 0,
+      accuracy: item.accuracy,
+    }));
+  }, [data]);
+
+  if (chartData.length < 2) {
     return (
       <div className="h-48 flex items-center justify-center text-gray-500">
         Not enough data to display chart
@@ -26,10 +37,14 @@ export function WpmChart({ data }: WpmChartProps) {
     );
   }
 
+  // Calculate Y domain with padding
+  const maxWpm = Math.max(...chartData.map(d => d.wpm));
+  const yMax = Math.ceil(Math.max(maxWpm, 50) * 1.15);
+
   return (
     <div className="h-48 w-full min-h-[192px]">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
           <defs>
             <linearGradient id="wpmGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
@@ -38,12 +53,17 @@ export function WpmChart({ data }: WpmChartProps) {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
           <XAxis
-            dataKey="time"
+            dataKey="index"
             stroke="#6b7280"
             fontSize={12}
-            tickFormatter={(value) => `${value}s`}
+            tickFormatter={(value) => `${chartData[value]?.time ?? value}s`}
           />
-          <YAxis stroke="#6b7280" fontSize={12} />
+          <YAxis
+            stroke="#6b7280"
+            fontSize={12}
+            width={45}
+            domain={[0, yMax]}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: '#1f2937',
@@ -51,10 +71,10 @@ export function WpmChart({ data }: WpmChartProps) {
               borderRadius: '8px',
               color: '#fff',
             }}
-            labelFormatter={(value) => `Time: ${value}s`}
+            labelFormatter={(index) => `Time: ${chartData[index]?.time ?? index}s`}
             formatter={(value: number, name: string) => [
-              value,
-              name === 'wpm' ? 'CPM' : 'Accuracy %',
+              Math.round(value),
+              name === 'wpm' ? unit : name,
             ]}
           />
           <Area
@@ -63,6 +83,8 @@ export function WpmChart({ data }: WpmChartProps) {
             stroke="#14b8a6"
             strokeWidth={2}
             fill="url(#wpmGradient)"
+            dot={false}
+            activeDot={{ r: 5, fill: '#fff', stroke: '#14b8a6', strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

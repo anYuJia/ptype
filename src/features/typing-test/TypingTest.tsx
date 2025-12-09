@@ -77,13 +77,13 @@ export function TypingTest() {
 
         if (isAuthenticated && user) {
           savedRef.current = true;
-          const { cpm, accuracy, settings } = state;
+          const { wpm, cpm, accuracy, settings } = state;
 
           const saveResult = async () => {
             try {
               console.log('Saving result from TypingTest...');
               const res = await saveTypingResult({
-                wpm: cpm, // Unify to CPM
+                wpm: cpm, // Store CPM for ALL modes
                 accuracy,
                 mode: settings.mode,
                 subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,

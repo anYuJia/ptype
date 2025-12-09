@@ -62,7 +62,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "logout": "Sign Out",
-        "heatmap": "Activity Heatmap"
+        "activityHeatmap": "Activity Heatmap"
     },
     "Settings": {
         "time": "Time:",

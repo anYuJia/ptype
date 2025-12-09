@@ -47,8 +47,9 @@ export function History() {
                 ]);
 
                 if (historyResult.success && historyResult.data) {
-                    const formattedHistory = historyResult.data.map((item) => ({
+                    const formattedHistory = historyResult.data.map((item, index) => ({
                         ...item,
+                        index, // Add unique index for X-axis
                         date: new Date(item.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', {
                             month: '2-digit',
                             day: '2-digit',
@@ -56,7 +57,7 @@ export function History() {
                             minute: '2-digit',
                             hour12: false
                         }),
-                        cpm: Number(item.wpm),
+                        cpm: Number(item.cpm),
                         accuracy: Number(item.accuracy),
                     })).reverse(); // Reverse for chart (Chronological)
 
@@ -174,12 +175,13 @@ export function History() {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} opacity={0.3} />
                         <XAxis
-                            dataKey="date"
+                            dataKey="index"
                             stroke="#6b7280"
                             tick={{ fontSize: 10 }}
                             tickLine={false}
                             axisLine={false}
                             dy={10}
+                            tickFormatter={(index) => historyData[index]?.date ?? ''}
                         />
                         <YAxis
                             stroke="#6b7280"
@@ -198,6 +200,7 @@ export function History() {
                             }}
                             itemStyle={{ color: '#fff' }}
                             labelStyle={{ color: '#9ca3af', marginBottom: '4px' }}
+                            labelFormatter={(index) => historyData[index]?.date ?? ''}
                             cursor={{ stroke: '#14b8a6', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
                         <Area
@@ -207,7 +210,7 @@ export function History() {
                             strokeWidth={2}
                             fillOpacity={1}
                             fill="url(#colorCpm)"
-                            activeDot={{ r: 4, strokeWidth: 0, fill: '#fff' }}
+                            activeDot={{ r: 5, strokeWidth: 2, stroke: '#14b8a6', fill: '#fff' }}
                         />
                     </AreaChart>
                 </ResponsiveContainer>

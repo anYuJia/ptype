@@ -62,7 +62,7 @@
         "save": "保存",
         "cancel": "取消",
         "logout": "退出登录",
-        "heatmap": "活跃度热力图"
+        "activityHeatmap": "活跃度热力图"
     },
     "Settings": {
         "time": "时间:",
