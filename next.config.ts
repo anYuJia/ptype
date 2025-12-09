@@ -8,7 +8,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   /* config options here */
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    // 生产环境移除 console.log，但保留 warn 和 error
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ['warn', 'error'] } : false,
   },
   turbopack: {
     root: __dirname,

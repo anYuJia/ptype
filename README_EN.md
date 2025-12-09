@@ -226,6 +226,14 @@ npm start
 
 PType has built-in multi-layer security protection mechanisms:
 
+### User Authentication
+
+- **JWT Authentication** - Uses JSON Web Token for user identity verification
+- **HttpOnly Cookie** - Tokens stored in HttpOnly cookies to prevent XSS attacks
+- **Secure Cookie** - Secure flag automatically enabled in production (HTTPS)
+
+> ⚠️ **HTTP Environment**: If your server doesn't have HTTPS configured, set `SECURE_COOKIES=false` in `.env`
+
 ### Request Signing System
 
 All sensitive write operations (login, register, save scores, etc.) require a valid request signature.
@@ -234,7 +242,7 @@ All sensitive write operations (login, register, save scores, etc.) require a va
 - ⏱️ **Timestamp Validation** - Signatures expire after 5 minutes
 - 🔄 **Nonce Anti-Replay** - Each signature can only be used once
 - 🔒 **Data Integrity** - Verify request data hasn't been tampered with
-- 🌐 **Browser Fingerprint** - Increase request uniqueness
+- 🌐 **Browser Fingerprint** - Increase request uniqueness, prevent cross-device replay
 - 🔐 **Multi-round HMAC** - Increase reverse engineering difficulty
 
 For detailed documentation, see [src/lib/security/README.md](./src/lib/security/README.md)

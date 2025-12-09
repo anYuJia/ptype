@@ -226,6 +226,14 @@ npm start
 
 PType 内置了多层安全防护机制：
 
+### 用户认证
+
+- **JWT 认证** - 使用 JSON Web Token 进行用户身份验证
+- **HttpOnly Cookie** - Token 存储在 HttpOnly Cookie 中，防止 XSS 攻击
+- **Secure Cookie** - 生产环境（HTTPS）自动启用 Secure 标志
+
+> ⚠️ **HTTP 环境配置**：如果服务器未配置 HTTPS，需要在 `.env` 中设置 `SECURE_COOKIES=false`
+
 ### 请求签名系统
 
 所有敏感的写操作（登录、注册、保存成绩等）都需要携带有效的请求签名。
@@ -234,7 +242,7 @@ PType 内置了多层安全防护机制：
 - ⏱️ **时间戳验证** - 签名 5 分钟后自动过期
 - 🔄 **Nonce 防重放** - 每个签名只能使用一次
 - 🔒 **数据完整性** - 验证请求数据未被篡改
-- 🌐 **浏览器指纹** - 增加请求唯一性
+- 🌐 **浏览器指纹** - 增加请求唯一性，防止跨设备重放
 - 🔐 **多轮 HMAC** - 增加逆向破解难度
 
 详细文档请参阅 [src/lib/security/README.md](./src/lib/security/README.md)
