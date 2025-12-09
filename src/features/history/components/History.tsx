@@ -47,7 +47,11 @@ export function History() {
                 ]);
 
                 if (historyResult.success && historyResult.data) {
-                    const formattedHistory = historyResult.data.map((item, index) => ({
+                    // API 返回的数据是按时间倒序（最新在前）
+                    // 图表需要按时间正序显示（最旧在左，最新在右）
+                    const chronologicalData = [...historyResult.data].reverse();
+
+                    const formattedHistory = chronologicalData.map((item, index) => ({
                         ...item,
                         index, // Add unique index for X-axis
                         date: new Date(item.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', {
@@ -59,7 +63,7 @@ export function History() {
                         }),
                         cpm: Number(item.cpm),
                         accuracy: Number(item.accuracy),
-                    })).reverse(); // Reverse for chart (Chronological)
+                    }));
 
                     setHistoryData(formattedHistory);
                 } else {
