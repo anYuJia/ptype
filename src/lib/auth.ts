@@ -7,12 +7,17 @@ export async function getUserId(): Promise<string | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get('token');
 
-    if (!token) return null;
+    if (!token) {
+        console.log('[Auth] No token cookie found');
+        return null;
+    }
 
     try {
         const { payload } = await jwtVerify(token.value, JWT_SECRET);
+        console.log('[Auth] Token verified, user:', payload.sub);
         return payload.sub as string;
-    } catch {
+    } catch (error) {
+        console.error('[Auth] Token verification failed:', error instanceof Error ? error.message : error);
         return null;
     }
 }

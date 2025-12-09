@@ -163,8 +163,14 @@ export interface AdvancedSignaturePayload {
 
 /**
  * 生成高级混淆签名
+ * 注意：此函数必须在客户端环境调用，因为需要浏览器指纹信息
  */
 export function generateAdvancedSignature(data?: unknown): AdvancedSignaturePayload {
+    // 确保在客户端环境中运行
+    if (typeof window === 'undefined') {
+        throw new Error('generateAdvancedSignature must be called on the client side');
+    }
+
     const t = _t();
     const n = _n(16);
     const f = _h(_fp(), 1);

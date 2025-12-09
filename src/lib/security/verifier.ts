@@ -115,21 +115,39 @@ export async function verifyAdvancedSignature(
     expectedData?: unknown
 ): Promise<{ valid: boolean; error?: string }> {
     if (!payload) {
+        console.warn('[Signature] Missing payload');
         return { valid: false, error: 'Missing signature payload' };
     }
 
     const { s, t, n, f, d } = payload;
 
+    // 调试日志
+    console.log('[Signature] Verifying:', {
+        hasSignature: !!s,
+        timestamp: t,
+        hasNonce: !!n,
+        fingerprint: f ? f.substring(0, 8) + '...' : '(empty)',
+        hasData: !!d
+    });
+
     // 1. 时间戳验证
     const now = Date.now();
     const timeDiff = Math.abs(now - t);
+    console.log('[Signature] Time check:', {
+        clientTime: t,
+        serverTime: now,
+        diff: timeDiff,
+        maxAllowed: TIME_WINDOW,
+        passed: timeDiff <= TIME_WINDOW
+    });
     if (timeDiff > TIME_WINDOW) {
-        return { valid: false, error: 'Signature expired' };
+        return { valid: false, error: `Signature expired (diff: ${Math.round(timeDiff / 1000)}s)` };
     }
 
     // 2. Nonce 重放检查
     const nonceKey = `${n}:${t}`;
     if (usedNonces.has(nonceKey)) {
+        console.warn('[Signature] Replay detected for nonce:', n);
         return { valid: false, error: 'Replay detected' };
     }
     usedNonces.add(nonceKey);
@@ -139,6 +157,10 @@ export async function verifyAdvancedSignature(
         const dataStr = JSON.stringify(expectedData);
         const expectedHash = hash(dataStr, 2);
         if (d !== expectedHash) {
+            console.warn('[Signature] Data hash mismatch:', {
+                received: d?.substring(0, 16),
+                expected: expectedHash.substring(0, 16)
+            });
             return { valid: false, error: 'Data integrity check failed' };
         }
     }
@@ -147,6 +169,7 @@ export async function verifyAdvancedSignature(
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value || '';
     const tk = token ? token.substring(0, 8) : '';
+    console.log('[Signature] Token prefix:', tk || '(no token)');
 
     // 5. 重建签名
     const dk = deriveKey(f);
@@ -159,9 +182,14 @@ export async function verifyAdvancedSignature(
 
     // 6. 比较签名
     if (s !== expectedSig) {
+        console.warn('[Signature] Mismatch:', {
+            received: s?.substring(0, 16),
+            expected: expectedSig.substring(0, 16)
+        });
         return { valid: false, error: 'Signature mismatch' };
     }
 
+    console.log('[Signature] Verification successful');
     return { valid: true };
 }
 
