@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Inter } from "next/font/google";
 import "../globals.css";
 import { AuthInitializer } from "@/features/auth/components/AuthInitializer";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "PType - Typing Practice",
@@ -46,9 +35,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="dark">
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-gray-950`}
-      >
+      <body className="font-sans antialiased bg-gray-950">
         <NextIntlClientProvider messages={messages}>
           <AuthInitializer />
           {children}
