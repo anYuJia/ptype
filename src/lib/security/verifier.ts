@@ -120,12 +120,9 @@ export async function verifyAdvancedSignature(
 
     const { s, t, n, f, d } = payload;
 
-    console.log('[Signature Debug] Received payload:', { s: s?.substring(0, 16) + '...', t, n: n?.substring(0, 8) + '...', f: f?.substring(0, 16) + '...', d: d?.substring(0, 16) + '...' });
-
     // 1. 时间戳验证
     const now = Date.now();
     const timeDiff = Math.abs(now - t);
-    console.log('[Signature Debug] Time check:', { now, received: t, diff: timeDiff, allowed: TIME_WINDOW });
     if (timeDiff > TIME_WINDOW) {
         return { valid: false, error: 'Signature expired' };
     }
@@ -141,12 +138,6 @@ export async function verifyAdvancedSignature(
     if (expectedData !== undefined) {
         const dataStr = JSON.stringify(expectedData);
         const expectedHash = hash(dataStr, 2);
-        console.log('[Signature Debug] Data hash check:', {
-            expectedDataStr: dataStr.substring(0, 50) + '...',
-            expectedHash: expectedHash.substring(0, 16) + '...',
-            receivedHash: d?.substring(0, 16) + '...',
-            match: d === expectedHash
-        });
         if (d !== expectedHash) {
             return { valid: false, error: 'Data integrity check failed' };
         }
@@ -156,23 +147,15 @@ export async function verifyAdvancedSignature(
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value || '';
     const tk = token ? token.substring(0, 8) : '';
-    console.log('[Signature Debug] Token check:', { hasToken: !!token, tk });
 
     // 5. 重建签名
     const dk = deriveKey(f);
     const base = [t, n, f, tk, d || ''].join(':');
-    console.log('[Signature Debug] Rebuilding signature:', { dk: dk.substring(0, 16) + '...', baseLength: base.length });
 
     let sig = hmac(dk, base);
     sig = hmac(sig.substring(0, 32), sig);
 
     const expectedSig = hash(sig + n + t.toString(36), 1);
-
-    console.log('[Signature Debug] Signature comparison:', {
-        expected: expectedSig.substring(0, 32) + '...',
-        received: s?.substring(0, 32) + '...',
-        match: s === expectedSig
-    });
 
     // 6. 比较签名
     if (s !== expectedSig) {
@@ -183,3 +166,4 @@ export async function verifyAdvancedSignature(
 }
 
 export type { AdvancedSignaturePayload };
+

@@ -25,16 +25,9 @@ export async function login(
     signature?: AdvancedSignaturePayload
 ): Promise<AuthResult> {
     try {
-        console.log('=== LOGIN CALLED ===');
-        console.log('Input:', JSON.stringify(input));
-        console.log('Signature:', signature ? JSON.stringify(signature).substring(0, 100) + '...' : 'MISSING');
-
         // 签名验证
         const verification = await verifyAdvancedSignature(signature || null, input);
-        console.log('Verification result:', verification);
-
         if (!verification.valid) {
-            console.warn('Invalid login signature:', verification.error);
             return { success: false, error: 'Invalid request signature' };
         }
 

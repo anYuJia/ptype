@@ -30,9 +30,10 @@
 - [✨ Highlights](#-highlights)
 - [📸 Screenshots](#-screenshots)
 - [🚀 Core Features](#-core-features)
-- [🛠️ Tech Stack](#-tech-stack)
+- [🛠️ Tech Stack](#️-tech-stack)
 - [💻 Code Library](#-code-library)
 - [🏁 Quick Start](#-quick-start)
+- [🔐 Security](#-security)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 - [🌟 Star History](#-star-history)
@@ -43,11 +44,12 @@
 
 PType is not just a typing tool; it's a training ground designed to **boost developer productivity**.
 
-- 🎯 **Ultimate Experience**: Silky smooth animations and responsive design built with React 18 and Framer Motion.
+- 🎯 **Ultimate Experience**: Silky smooth animations and responsive design built with React 19 and Framer Motion.
 - 🌍 **Multi-language Support**: Supports English, Chinese (Modern/Classical), and natively supports **10+ programming languages**.
 - 📊 **Professional Analysis**: Unified CPM (Characters Per Minute) as the core metric, providing multi-dimensional analysis including WPM and accuracy heatmaps.
 - 🏆 **Competitive Leaderboard**: Built-in global leaderboard and personal history to track your growth curve in real-time.
-- 🎨 **Highly Customizable**: Supports various themes, fonts, and sound effects to create your exclusive practice environment.
+- 🔐 **Request Signing**: Built-in multi-layer encryption signing mechanism to prevent API abuse and automated attacks.
+- 🌐 **Internationalization**: Full Chinese and English interface support using next-intl.
 
 ---
 
@@ -93,21 +95,25 @@ PType is not just a typing tool; it's a training ground designed to **boost deve
 
 ### 3. User & Social
 
-- **User System**: Complete registration and login flow, with cloud data storage.
+- **User System**: Complete registration and login flow, JWT authentication, with cloud data storage.
 - **Leaderboard**: Real-time global speed rankings to motivate practice.
+- **Custom Texts**: Support for users to upload their own practice texts.
 
 ---
 
 ## 🛠️ Tech Stack
 
-Built with a modern frontend tech stack to ensure high performance and maintainability.
+Built with a modern full-stack tech stack to ensure high performance and maintainability.
 
 | Category | Technology |
 | :--- | :--- |
 | **Core Framework** | ![React](https://img.shields.io/badge/-React_19-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js_16-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
 | **Styling & Animation** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
-| **Backend & Data** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **Backend & Data** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql&logoColor=white) |
+| **State Management** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
 | **Visualization** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
+| **Internationalization** | ![next-intl](https://img.shields.io/badge/-next--intl-000000?logo=next.js&logoColor=white) |
+| **Auth & Security** | ![JWT](https://img.shields.io/badge/-JWT-000000?logo=json-web-tokens&logoColor=white) ![HMAC](https://img.shields.io/badge/-HMAC--SHA256-blue) |
 
 ---
 
@@ -139,7 +145,7 @@ PType comes with a rich code practice library covering mainstream languages and 
 ### Prerequisites
 
 - **Node.js**: >= 18.0.0
-- **npm**: >= 9.0.0
+- **npm / pnpm / yarn**: Package manager
 - **PostgreSQL**: >= 14.0 ([Download & Installation Guide](https://www.postgresql.org/download/))
 
 ### Installation
@@ -148,13 +154,10 @@ PType comes with a rich code practice library covering mainstream languages and 
 
 ```bash
 git clone https://github.com/anYuJia/ptype.git
-```
-
-```bash
 cd ptype
 ```
 
-3. **Install dependencies**
+2. **Install dependencies**
 
 ```bash
 npm install
@@ -162,21 +165,30 @@ npm install
 pnpm install
 ```
 
-4. **Configure Environment Variables**
+3. **Configure Environment Variables**
 
-Create a `.env` file in the project root and add the following:
+Copy the environment template and modify the configuration:
 
-```env
-# PostgreSQL connection string
-DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
-
-# JWT Secret (Optional, uses fallback if not provided)
-JWT_SECRET="your-secret-key"
+```bash
+cp .env.example .env
 ```
 
-5. **Initialize Database**
+Edit the `.env` file:
 
-> **Tip**: If you encounter issues downloading the Prisma engine, please set the mirror before installing dependencies:
+```env
+# Database connection
+DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+
+# JWT Secret (for user authentication, use a strong random string)
+JWT_SECRET="your-jwt-secret-key"
+
+# Signature Secret (for request signing, use a strong random string)
+SIGNATURE_SECRET="your-signature-secret-key"
+```
+
+4. **Initialize Database**
+
+> **Tip**: If you encounter issues downloading the Prisma engine, set the mirror first:
 > ```bash
 > export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
 > ```
@@ -186,13 +198,39 @@ npx prisma generate
 npx prisma db push
 ```
 
-6. **Start Development Server**
+5. **Start Development Server**
 
 ```bash
 npm run dev
 ```
 
 Open your browser and visit [http://localhost:3000](http://localhost:3000) to start!
+
+### Production Deployment
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 🔐 Security
+
+PType has built-in multi-layer security protection mechanisms:
+
+### Request Signing System
+
+All sensitive write operations (login, register, save scores, etc.) require a valid request signature.
+
+**Security Features:**
+- ⏱️ **Timestamp Validation** - Signatures expire after 5 minutes
+- 🔄 **Nonce Anti-Replay** - Each signature can only be used once
+- 🔒 **Data Integrity** - Verify request data hasn't been tampered with
+- 🌐 **Browser Fingerprint** - Increase request uniqueness
+- 🔐 **Multi-round HMAC** - Increase reverse engineering difficulty
+
+For detailed documentation, see [src/lib/security/README.md](./src/lib/security/README.md)
 
 ---
 
@@ -208,7 +246,7 @@ We welcome contributions from the community! Whether it's fixing bugs, adding ne
 
 ### How to add new practice code?
 
-All code library files are located at `/frontend/src/lib/code-libraries/`.
+All code library files are located at `/src/lib/code-libraries/`.
 You can refer to the existing `python.ts` or `java.ts` format, create a new language file, and export it in `index.ts`.
 
 ---

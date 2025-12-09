@@ -30,9 +30,10 @@
 - [✨ 项目亮点](#-项目亮点)
 - [📸 界面预览](#-界面预览)
 - [🚀 核心特性](#-核心特性)
-- [🛠️ 技术栈](#-技术栈)
+- [🛠️ 技术栈](#️-技术栈)
 - [💻 代码库支持](#-代码库支持)
 - [🏁 快速开始](#-快速开始)
+- [🔐 安全机制](#-安全机制)
 - [🤝 参与贡献](#-参与贡献)
 - [📄 许可证](#-许可证)
 - [🌟 Star History](#-star-history)
@@ -43,11 +44,12 @@
 
 PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产力**而生的训练场。
 
-- 🎯 **极致体验**：基于 React 18 和 Framer Motion 打造的丝滑动画与响应式设计。
+- 🎯 **极致体验**：基于 React 19 和 Framer Motion 打造的丝滑动画与响应式设计。
 - 🌍 **多语言支持**：不仅支持英文、中文（现代/文言），更原生支持 10+ 种编程语言。
 - 📊 **专业分析**：统一使用 CPM (Characters Per Minute) 作为核心指标，提供 WPM、准确率热力图等多维度数据分析。
 - 🏆 **竞技排行**：内置全球排行榜与个人历史记录，实时监控你的成长曲线。
-- 🎨 **高度定制**：支持多种主题、字体、音效设置，打造你的专属练习环境。
+- 🔐 **请求签名**：内置多层加密签名机制，防止 API 滥用和自动化攻击。
+- 🌐 **国际化**：完整的中英文界面支持，基于 next-intl 实现。
 
 ---
 
@@ -93,21 +95,25 @@ PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产
 
 ### 3. 用户与社交
 
-- **账号系统**: 完整的注册登录流程，数据云端存储。
+- **账号系统**: 完整的注册登录流程，JWT 认证，数据云端存储。
 - **排行榜**: 实时更新的全球速度排行，激发练习动力。
+- **自定义文本**: 支持用户上传自己的练习文本。
 
 ---
 
-## �️ 技术栈
+## 🛠️ 技术栈
 
-本项目采用现代化的前端技术栈构建，确保高性能与可维护性。
+本项目采用现代化的全栈技术构建，确保高性能与可维护性。
 
 | 领域 | 技术选型 |
 | :--- | :--- |
 | **核心框架** | ![React](https://img.shields.io/badge/-React_19-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js_16-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
 | **样式与动画** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
-| **后端与数据** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
+| **后端与数据** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql&logoColor=white) |
+| **状态管理** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
 | **图表可视化** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
+| **国际化** | ![next-intl](https://img.shields.io/badge/-next--intl-000000?logo=next.js&logoColor=white) |
+| **认证安全** | ![JWT](https://img.shields.io/badge/-JWT-000000?logo=json-web-tokens&logoColor=white) ![HMAC](https://img.shields.io/badge/-HMAC--SHA256-blue) |
 
 ---
 
@@ -139,7 +145,7 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 ### 环境要求
 
 - **Node.js**: >= 18.0.0
-- **npm**: >= 9.0.0
+- **npm / pnpm / yarn**: 包管理器
 - **PostgreSQL**: >= 14.0 ([下载与安装教程](https://www.postgresql.org/download/))
 
 ### 安装步骤
@@ -148,13 +154,10 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 
 ```bash
 git clone https://github.com/anYuJia/ptype.git
-```
-
-```bash
 cd ptype
 ```
 
-3. **安装依赖**
+2. **安装依赖**
 
 ```bash
 npm install
@@ -162,21 +165,30 @@ npm install
 pnpm install
 ```
 
-4. **配置环境变量**
+3. **配置环境变量**
 
-在项目根目录下创建 `.env` 文件，并添加以下内容：
+复制环境变量模板并修改配置：
 
-```env
-# PostgreSQL 数据库连接字符串
-DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
-
-# JWT 密钥 (可选，默认使用 fallback)
-JWT_SECRET="your-secret-key"
+```bash
+cp .env.example .env
 ```
 
-5. **初始化数据库**
+编辑 `.env` 文件：
 
-> **提示**：如果遇到 Prisma 引擎下载失败，请在安装依赖前设置镜像：
+```env
+# 数据库连接
+DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+
+# JWT 密钥（用于用户认证，请使用强随机字符串）
+JWT_SECRET="your-jwt-secret-key"
+
+# 签名密钥（用于请求签名验证，请使用强随机字符串）
+SIGNATURE_SECRET="your-signature-secret-key"
+```
+
+4. **初始化数据库**
+
+> **提示**：如果遇到 Prisma 引擎下载失败，请先设置镜像：
 > ```bash
 > export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
 > ```
@@ -186,13 +198,39 @@ npx prisma generate
 npx prisma db push
 ```
 
-6. **启动开发服务器**
+5. **启动开发服务器**
 
 ```bash
 npm run dev
 ```
 
 打开浏览器访问 [http://localhost:3000](http://localhost:3000) 即可开始体验！
+
+### 生产部署
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 🔐 安全机制
+
+PType 内置了多层安全防护机制：
+
+### 请求签名系统
+
+所有敏感的写操作（登录、注册、保存成绩等）都需要携带有效的请求签名。
+
+**安全特性：**
+- ⏱️ **时间戳验证** - 签名 5 分钟后自动过期
+- 🔄 **Nonce 防重放** - 每个签名只能使用一次
+- 🔒 **数据完整性** - 验证请求数据未被篡改
+- 🌐 **浏览器指纹** - 增加请求唯一性
+- 🔐 **多轮 HMAC** - 增加逆向破解难度
+
+详细文档请参阅 [src/lib/security/README.md](./src/lib/security/README.md)
 
 ---
 
@@ -208,12 +246,12 @@ npm run dev
 
 ### 如何添加新的练习代码？
 
-所有代码库文件位于 `/frontend/src/lib/code-libraries/`。
+所有代码库文件位于 `/src/lib/code-libraries/`。
 你可以参考现有的 `python.ts` 或 `java.ts` 格式，创建一个新的语言文件并在 `index.ts` 中导出。
 
 ---
 
-## � 许可证
+## 📄 许可证
 
 本项目基于 **MIT 许可证** 开源。详情请参阅 [LICENSE](LICENSE) 文件。
 
