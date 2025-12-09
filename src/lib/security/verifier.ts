@@ -2,12 +2,11 @@
 
 /**
  * 高级签名验证器（服务端）
+ * 使用纯 JS 实现，与客户端算法匹配
  */
 
 import { cookies } from 'next/headers';
-import crypto from 'crypto';
 
-const SECRET = process.env.SIGNATURE_SECRET || 'ptype-secure-2024-sign';
 const TIME_WINDOW = 5 * 60 * 1000; // 5分钟
 
 // 用于存储已使用的 nonce（防重放）
@@ -27,20 +26,6 @@ interface AdvancedSignaturePayload {
     d?: string;   // data hash
 }
 
-// 服务端哈希
-function hash(data: string, rounds: number = 3): string {
-    let result = data;
-    for (let i = 0; i < rounds; i++) {
-        result = crypto.createHash('sha256').update(result).digest('hex');
-    }
-    return result;
-}
-
-// 服务端 HMAC
-function hmac(key: string, msg: string): string {
-    return crypto.createHmac('sha256', key).update(msg).digest('hex');
-}
-
 // 混淆的反向映射（与客户端相同）
 function reverseMap(s: string): string {
     const a = 'abcdefghijklmnopqrstuvwxyz';
@@ -51,6 +36,63 @@ function reverseMap(s: string): string {
         m[a[i].toUpperCase()] = b[i].toUpperCase();
     }
     return s.split('').map(c => m[c] || c).join('');
+}
+
+/**
+ * 简单的哈希函数（与客户端相同）
+ */
+function simpleHash(str: string): string {
+    let h1 = 0x811c9dc5;
+    let h2 = 0x1000193;
+
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        h1 ^= c;
+        h1 = Math.imul(h1, 0x1000193);
+        h2 ^= c;
+        h2 = Math.imul(h2, 0x811c9dc5);
+    }
+
+    const mixed = h1 ^ h2;
+
+    const hex1 = (h1 >>> 0).toString(16).padStart(8, '0');
+    const hex2 = (h2 >>> 0).toString(16).padStart(8, '0');
+    const hex3 = (mixed >>> 0).toString(16).padStart(8, '0');
+
+    return hex1 + hex2 + hex3;
+}
+
+// 多轮哈希（与客户端相同）
+function hash(data: string, rounds: number = 3): string {
+    let h = data;
+
+    for (let i = 0; i < rounds; i++) {
+        const salted = h + ':' + i + ':' + h.length;
+        h = simpleHash(salted);
+    }
+
+    const extended = simpleHash(h + 'a') + simpleHash(h + 'b');
+    return extended;
+}
+
+// 简单 HMAC（与客户端相同）
+function hmac(key: string, msg: string): string {
+    const ipad = 0x36;
+    const opad = 0x5c;
+
+    let innerKey = '';
+    for (let i = 0; i < key.length; i++) {
+        innerKey += String.fromCharCode(key.charCodeAt(i) ^ ipad);
+    }
+    const innerHash = hash(innerKey + msg, 2);
+
+    let outerKey = '';
+    for (let i = 0; i < key.length; i++) {
+        outerKey += String.fromCharCode(key.charCodeAt(i) ^ opad);
+    }
+    const outerHash = hash(outerKey + innerHash, 2);
+
+    return outerHash;
 }
 
 // 派生密钥（与客户端相同逻辑）
@@ -112,21 +154,12 @@ export async function verifyAdvancedSignature(
 
     const expectedSig = hash(sig + n + t.toString(36), 1);
 
-    // 6. 使用时间常量比较
-    try {
-        const isValid = crypto.timingSafeEqual(
-            Buffer.from(s),
-            Buffer.from(expectedSig)
-        );
-
-        if (!isValid) {
-            return { valid: false, error: 'Signature mismatch' };
-        }
-
-        return { valid: true };
-    } catch {
-        return { valid: false, error: 'Signature verification failed' };
+    // 6. 比较签名
+    if (s !== expectedSig) {
+        return { valid: false, error: 'Signature mismatch' };
     }
+
+    return { valid: true };
 }
 
 export type { AdvancedSignaturePayload };

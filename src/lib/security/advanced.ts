@@ -1,6 +1,8 @@
 /**
  * 高级混淆签名生成器
  * 使用多层混淆和动态代码生成来增加逆向难度
+ * 
+ * 兼容非 HTTPS 环境（不依赖 crypto.subtle）
  */
 
 // 混淆的字符映射表
@@ -65,45 +67,81 @@ function _fp(): string {
     return parts.join('|');
 }
 
-// 多轮哈希
-async function _h(data: string, rounds: number = 3): Promise<string> {
-    const enc = new TextEncoder();
+/**
+ * 简单的哈希函数（不依赖 crypto.subtle）
+ * 使用 djb2 变体 + 多轮混合
+ */
+function _simpleHash(str: string): string {
+    let h1 = 0x811c9dc5;
+    let h2 = 0x1000193;
+
+    for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        h1 ^= c;
+        h1 = Math.imul(h1, 0x1000193);
+        h2 ^= c;
+        h2 = Math.imul(h2, 0x811c9dc5);
+    }
+
+    // 混合两个哈希值
+    const mixed = h1 ^ h2;
+
+    // 转换为 hex
+    const hex1 = (h1 >>> 0).toString(16).padStart(8, '0');
+    const hex2 = (h2 >>> 0).toString(16).padStart(8, '0');
+    const hex3 = (mixed >>> 0).toString(16).padStart(8, '0');
+
+    return hex1 + hex2 + hex3;
+}
+
+// 多轮哈希（纯 JS 实现）
+function _h(data: string, rounds: number = 3): string {
     let hash = data;
 
     for (let i = 0; i < rounds; i++) {
-        const buf = await crypto.subtle.digest('SHA-256', enc.encode(hash));
-        hash = Array.from(new Uint8Array(buf))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
+        // 每轮添加盐值增加复杂度
+        const salted = hash + ':' + i + ':' + hash.length;
+        hash = _simpleHash(salted);
     }
 
-    return hash;
+    // 扩展输出长度
+    const extended = _simpleHash(hash + 'a') + _simpleHash(hash + 'b');
+    return extended;
 }
 
-// HMAC
-async function _hmac(key: string, msg: string): Promise<string> {
-    const enc = new TextEncoder();
-    const k = await crypto.subtle.importKey(
-        'raw', enc.encode(key),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false, ['sign']
-    );
-    const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg));
-    return Array.from(new Uint8Array(sig))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+// 简单 HMAC（纯 JS 实现）
+function _hmac(key: string, msg: string): string {
+    // 简化的 HMAC 实现
+    const ipad = 0x36;
+    const opad = 0x5c;
+
+    // 内部哈希
+    let innerKey = '';
+    for (let i = 0; i < key.length; i++) {
+        innerKey += String.fromCharCode(key.charCodeAt(i) ^ ipad);
+    }
+    const innerHash = _h(innerKey + msg, 2);
+
+    // 外部哈希
+    let outerKey = '';
+    for (let i = 0; i < key.length; i++) {
+        outerKey += String.fromCharCode(key.charCodeAt(i) ^ opad);
+    }
+    const outerHash = _h(outerKey + innerHash, 2);
+
+    return outerHash;
 }
 
 // 混淆的密钥派生
-async function _dk(): Promise<string> {
+function _dk(): string {
     // 使用多个来源派生密钥
     const parts = [
         _r('kgbkv'), // 'ptype' reversed
         (0x7e4).toString(16), // 2024
         _r('hxfi'), // 'sign' reversed
-        await _h(_fp(), 1)
+        _h(_fp(), 1)
     ];
-    return await _h(parts.join('-'), 2);
+    return _h(parts.join('-'), 2);
 }
 
 // 获取当前令牌标识（不暴露实际令牌）
@@ -126,29 +164,29 @@ export interface AdvancedSignaturePayload {
 /**
  * 生成高级混淆签名
  */
-export async function generateAdvancedSignature(data?: unknown): Promise<AdvancedSignaturePayload> {
+export function generateAdvancedSignature(data?: unknown): AdvancedSignaturePayload {
     const t = _t();
     const n = _n(16);
-    const f = await _h(_fp(), 1);
+    const f = _h(_fp(), 1);
     const tk = _tk();
 
     // 数据哈希
     let d: string | undefined;
     if (data !== null && data !== undefined) {
         const str = JSON.stringify(data);
-        d = await _h(str, 2);
+        d = _h(str, 2);
     }
 
     // 构建签名
-    const dk = await _dk();
+    const dk = _dk();
     const base = [t, n, f, tk, d || ''].join(':');
 
     // 多轮 HMAC
-    let sig = await _hmac(dk, base);
-    sig = await _hmac(sig.substring(0, 32), sig);
+    let sig = _hmac(dk, base);
+    sig = _hmac(sig.substring(0, 32), sig);
 
     // 最终混淆
-    const final = await _h(sig + n + t.toString(36), 1);
+    const final = _h(sig + n + t.toString(36), 1);
 
     return {
         s: final,
