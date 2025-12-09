@@ -1,9 +1,11 @@
 import { LoginCredentials, RegisterCredentials, User } from '../types';
 import { login, register, logoutAction, checkAuth, checkAvailability } from '../actions';
+import { sign } from '@/lib/security';
 
 export const authService = {
     async login(credentials: LoginCredentials): Promise<User> {
-        const result = await login(credentials);
+        const signature = await sign(credentials);
+        const result = await login(credentials, signature);
         if (!result.success || !result.data) {
             throw new Error(result.error || '登录失败');
         }
@@ -11,7 +13,8 @@ export const authService = {
     },
 
     async register(credentials: RegisterCredentials): Promise<User> {
-        const result = await register(credentials);
+        const signature = await sign(credentials);
+        const result = await register(credentials, signature);
         if (!result.success || !result.data) {
             throw new Error(result.error || '注册失败');
         }
@@ -37,3 +40,4 @@ export const authService = {
         return null;
     }
 };
+

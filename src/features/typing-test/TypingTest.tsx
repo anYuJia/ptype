@@ -16,6 +16,7 @@ import { History } from '@/features/history/components/History';
 import { Profile } from '@/features/profile/components/Profile';
 import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 import { saveTypingResult } from '@/features/history/actions';
+import { sign } from '@/lib/security';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
@@ -82,14 +83,20 @@ export function TypingTest() {
           const saveResult = async () => {
             try {
               console.log('Saving result from TypingTest...');
-              const res = await saveTypingResult({
+
+              const resultData = {
                 wpm: cpm, // Store CPM for ALL modes
                 accuracy,
                 mode: settings.mode,
                 subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
                 difficulty: settings.difficulty,
                 duration: settings.duration,
-              });
+              };
+
+              // 生成请求签名
+              const signature = await sign(resultData);
+
+              const res = await saveTypingResult(resultData, signature);
 
               if (res.success) {
                 console.log('Result saved successfully');

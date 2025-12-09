@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getUserId } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/security/verifier';
 
 export interface ProfileStats {
     joinDate: string;
@@ -105,20 +106,33 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
     }
 }
 
-export async function updateProfile(username: string): Promise<{ success: boolean; data?: any; error?: string }> {
+interface UpdateProfileInput {
+    username: string;
+}
+
+export async function updateProfile(
+    input: UpdateProfileInput,
+    signature?: AdvancedSignaturePayload
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const userId = await getUserId();
         if (!userId) {
             return { success: false, error: 'Unauthorized' };
         }
 
-        if (!username || username.trim().length === 0) {
+        if (!input.username || input.username.trim().length === 0) {
             return { success: false, error: 'Username is required' };
         }
 
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: { username },
+            data: { username: input.username },
             select: {
                 id: true,
                 username: true,
@@ -127,10 +141,11 @@ export async function updateProfile(username: string): Promise<{ success: boolea
             }
         });
 
-        revalidatePath('/profile'); // Revalidate profile page if we had one, or generic paths
+        revalidatePath('/profile');
         return { success: true, data: updatedUser };
     } catch (error) {
         console.error('Error updating profile:', error);
         return { success: false, error: 'Failed to update profile' };
     }
 }
+

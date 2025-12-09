@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getUserId } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/security/verifier';
 
 export interface TypingResultData {
     id: string;
@@ -102,8 +103,30 @@ export interface SaveResultInput {
     duration: number;
 }
 
-export async function saveTypingResult(input: SaveResultInput): Promise<{ success: boolean; data?: TypingResultData; error?: string }> {
+/**
+ * 保存打字结果
+ * @param input 打字结果数据
+ * @param signature 可选的请求签名（用于防止自动化攻击）
+ */
+export async function saveTypingResult(
+    input: SaveResultInput,
+    signature?: AdvancedSignaturePayload
+): Promise<{ success: boolean; data?: TypingResultData; error?: string }> {
     try {
+        // 强制签名验证
+        const REQUIRE_SIGNATURE = true;
+
+        if (REQUIRE_SIGNATURE || signature) {
+            const verification = await verifyAdvancedSignature(signature || null, input);
+            if (!verification.valid) {
+                console.warn('Invalid signature attempt:', verification.error);
+                // 如果强制要求签名，返回错误；否则只记录警告
+                if (REQUIRE_SIGNATURE) {
+                    return { success: false, error: 'Invalid request signature' };
+                }
+            }
+        }
+
         const userId = await getUserId();
         if (!userId) {
             return { success: false, error: 'Unauthorized' };

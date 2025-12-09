@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { ActivityHeatmap } from './ActivityHeatmap';
 import { getProfile, updateProfile, ActivityData } from '../actions';
+import { sign } from '@/lib/security';
 
 export function Profile() {
     const t = useTranslations('Profile');
@@ -48,7 +49,9 @@ export function Profile() {
 
     const handleSaveProfile = async () => {
         try {
-            const result = await updateProfile(editUsername);
+            const input = { username: editUsername };
+            const signature = await sign(input);
+            const result = await updateProfile(input, signature);
 
             if (result.success) {
                 setIsEditing(false);

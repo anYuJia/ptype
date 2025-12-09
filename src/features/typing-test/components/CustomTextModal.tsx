@@ -8,6 +8,7 @@ import {
     deleteCustomText,
     CustomText
 } from '@/features/custom-text/actions';
+import { sign } from '@/lib/security';
 
 interface CustomTextModalProps {
     isOpen: boolean;
@@ -67,9 +68,13 @@ export function CustomTextModal({ isOpen, onClose, onConfirm }: CustomTextModalP
         setIsSaving(true);
         let res;
         if (selectedId) {
-            res = await updateCustomText(selectedId, title, text);
+            const input = { id: selectedId, title, content: text };
+            const signature = await sign(input);
+            res = await updateCustomText(input, signature);
         } else {
-            res = await createCustomText(title, text);
+            const input = { title, content: text };
+            const signature = await sign(input);
+            res = await createCustomText(input, signature);
         }
 
         if (res.success && res.data) {
@@ -91,7 +96,9 @@ export function CustomTextModal({ isOpen, onClose, onConfirm }: CustomTextModalP
         e.stopPropagation();
         if (!confirm('Are you sure you want to delete this text?')) return;
 
-        const res = await deleteCustomText(id);
+        const input = { id };
+        const signature = await sign(input);
+        const res = await deleteCustomText(input, signature);
         if (res.success) {
             if (selectedId === id) {
                 handleNew();

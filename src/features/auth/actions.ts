@@ -7,6 +7,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import { loginSchema, registerSchema } from './schemas/authSchema';
 import { z } from 'zod';
 import { User } from './types';
+import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/security/verifier';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
 
@@ -19,8 +20,18 @@ interface AuthResult {
     error?: string;
 }
 
-export async function login(input: LoginInput): Promise<AuthResult> {
+export async function login(
+    input: LoginInput,
+    signature?: AdvancedSignaturePayload
+): Promise<AuthResult> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            console.warn('Invalid login signature:', verification.error);
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const validationResult = loginSchema.safeParse(input);
 
         if (!validationResult.success) {
@@ -78,8 +89,19 @@ export async function login(input: LoginInput): Promise<AuthResult> {
     }
 }
 
-export async function register(input: RegisterInput): Promise<AuthResult> {
+
+export async function register(
+    input: RegisterInput,
+    signature?: AdvancedSignaturePayload
+): Promise<AuthResult> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            console.warn('Invalid register signature:', verification.error);
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const validationResult = registerSchema.safeParse(input);
 
         if (!validationResult.success) {

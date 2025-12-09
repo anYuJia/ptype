@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { getUserId } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/security/verifier';
 
 export interface CustomText {
     id: string;
@@ -29,16 +30,30 @@ export async function getCustomTexts(): Promise<{ success: boolean; data?: Custo
     }
 }
 
-export async function createCustomText(title: string, content: string): Promise<{ success: boolean; data?: CustomText; error?: string }> {
+interface CreateCustomTextInput {
+    title: string;
+    content: string;
+}
+
+export async function createCustomText(
+    input: CreateCustomTextInput,
+    signature?: AdvancedSignaturePayload
+): Promise<{ success: boolean; data?: CustomText; error?: string }> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const userId = await getUserId();
         if (!userId) return { success: false, error: 'Unauthorized' };
 
         const text = await prisma.customText.create({
             data: {
                 userId,
-                title,
-                content,
+                title: input.title,
+                content: input.content,
             },
         });
 
@@ -50,16 +65,31 @@ export async function createCustomText(title: string, content: string): Promise<
     }
 }
 
-export async function updateCustomText(id: string, title: string, content: string): Promise<{ success: boolean; data?: CustomText; error?: string }> {
+interface UpdateCustomTextInput {
+    id: string;
+    title: string;
+    content: string;
+}
+
+export async function updateCustomText(
+    input: UpdateCustomTextInput,
+    signature?: AdvancedSignaturePayload
+): Promise<{ success: boolean; data?: CustomText; error?: string }> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const userId = await getUserId();
         if (!userId) return { success: false, error: 'Unauthorized' };
 
         const text = await prisma.customText.update({
-            where: { id, userId },
+            where: { id: input.id, userId },
             data: {
-                title,
-                content,
+                title: input.title,
+                content: input.content,
             },
         });
 
@@ -71,13 +101,26 @@ export async function updateCustomText(id: string, title: string, content: strin
     }
 }
 
-export async function deleteCustomText(id: string): Promise<{ success: boolean; error?: string }> {
+interface DeleteCustomTextInput {
+    id: string;
+}
+
+export async function deleteCustomText(
+    input: DeleteCustomTextInput,
+    signature?: AdvancedSignaturePayload
+): Promise<{ success: boolean; error?: string }> {
     try {
+        // 签名验证
+        const verification = await verifyAdvancedSignature(signature || null, input);
+        if (!verification.valid) {
+            return { success: false, error: 'Invalid request signature' };
+        }
+
         const userId = await getUserId();
         if (!userId) return { success: false, error: 'Unauthorized' };
 
         await prisma.customText.delete({
-            where: { id, userId },
+            where: { id: input.id, userId },
         });
 
         revalidatePath('/settings');
@@ -87,3 +130,4 @@ export async function deleteCustomText(id: string): Promise<{ success: boolean; 
         return { success: false, error: 'Failed to delete custom text' };
     }
 }
+
