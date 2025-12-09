@@ -11,6 +11,10 @@ import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/se
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
 
+// Cookie secure 设置：HTTPS 环境设为 true，HTTP 环境设为 false
+// 可通过 SECURE_COOKIES=false 环境变量在生产环境禁用
+const SECURE_COOKIES = process.env.SECURE_COOKIES !== 'false' && process.env.NODE_ENV === 'production';
+
 type LoginInput = z.infer<typeof loginSchema>;
 type RegisterInput = z.infer<typeof registerSchema>;
 
@@ -66,7 +70,7 @@ export async function login(
         const cookieStore = await cookies();
         cookieStore.set('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: SECURE_COOKIES,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 7 days
             path: '/',
@@ -137,7 +141,7 @@ export async function register(
         const cookieStore = await cookies();
         cookieStore.set('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: SECURE_COOKIES,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7,
             path: '/',

@@ -184,7 +184,14 @@ JWT_SECRET="your-jwt-secret-key"
 
 # Signature Secret (for request signing, use a strong random string)
 SIGNATURE_SECRET="your-signature-secret-key"
+
+# Cookie security setting
+# Keep true for HTTPS environments (default)
+# Must be set to false for HTTP environments (no SSL), otherwise sessions won't persist after login
+SECURE_COOKIES=true
 ```
+
+> ⚠️ **Note**: If your server doesn't have HTTPS configured, you must set `SECURE_COOKIES` to `false`, otherwise cookies won't work properly after login.
 
 4. **Initialize Database**
 

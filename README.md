@@ -184,7 +184,14 @@ JWT_SECRET="your-jwt-secret-key"
 
 # 签名密钥（用于请求签名验证，请使用强随机字符串）
 SIGNATURE_SECRET="your-signature-secret-key"
+
+# Cookie 安全设置
+# HTTPS 环境保持 true（默认）
+# HTTP 环境（无 SSL）必须设置为 false，否则登录后无法保持会话
+SECURE_COOKIES=true
 ```
+
+> ⚠️ **注意**：如果你的服务器没有配置 HTTPS，必须将 `SECURE_COOKIES` 设置为 `false`，否则登录后的 Cookie 无法正常工作。
 
 4. **初始化数据库**
 
