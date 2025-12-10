@@ -7,8 +7,8 @@ import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/se
 
 export interface TypingResultData {
     id: string;
-    wpm: number;
-    cpm: number; // Added unified CPM field
+    wpm: number; // Derived/Legacy
+    cpm: number; // Source of truth
     accuracy: number;
     mode: string;
     subMode: string | null;
@@ -19,8 +19,8 @@ export interface TypingResultData {
 
 export interface HistoryStats {
     totalTests: number;
-    avgWpm: number; // This remains "avg score" (mixed units) or we unify it? Let's leave stats for now or just user history list.
-    bestWpm: number;
+    avgCpm: number;
+    bestCpm: number;
     totalTime: string;
     totalSeconds: number;
 }
@@ -38,15 +38,20 @@ export async function getHistory(): Promise<{ success: boolean; data?: TypingRes
             take: 20,
         });
 
-        // Since we are now storing CPM for all modes (including English),
-        // we map the stored 'wpm' value directly to 'cpm'.
-        // Note: Historical English data stored as WPM will appear as low CPM values.
-        const historyWithCpm = history.map(item => ({
-            ...item,
-            cpm: item.wpm
+        // Map database result to TypingResultData
+        const historyWithDerivedMetrics = history.map(item => ({
+            id: item.id,
+            cpm: item.cpm,
+            wpm: Math.round(item.cpm / 5), // Derive WPM
+            accuracy: item.accuracy,
+            mode: item.mode,
+            subMode: item.subMode,
+            difficulty: item.difficulty,
+            duration: item.duration,
+            createdAt: item.createdAt
         }));
 
-        return { success: true, data: historyWithCpm };
+        return { success: true, data: historyWithDerivedMetrics };
     } catch (error) {
         console.error('Failed to fetch history:', error);
         return { success: false, error: 'Failed to fetch history' };
@@ -62,13 +67,13 @@ export async function getHistoryStats(): Promise<{ success: boolean; data?: Hist
 
         const aggregations = await prisma.typingResult.aggregate({
             where: { userId },
-            _avg: { wpm: true },
-            _max: { wpm: true },
+            _avg: { cpm: true },
+            _max: { cpm: true },
             _sum: { duration: true },
             _count: { id: true },
         });
 
-        const totalSeconds = aggregations._sum.duration || 0;
+        const totalSeconds = aggregations._sum?.duration || 0;
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
 
@@ -80,9 +85,9 @@ export async function getHistoryStats(): Promise<{ success: boolean; data?: Hist
         }
 
         const stats: HistoryStats = {
-            totalTests: aggregations._count.id,
-            avgWpm: Math.round(aggregations._avg.wpm || 0),
-            bestWpm: aggregations._max.wpm || 0,
+            totalTests: aggregations._count?.id ?? 0,
+            avgCpm: Math.round(aggregations._avg?.cpm || 0),
+            bestCpm: aggregations._max?.cpm || 0,
             totalTime,
             totalSeconds,
         };
@@ -95,7 +100,7 @@ export async function getHistoryStats(): Promise<{ success: boolean; data?: Hist
 }
 
 export interface SaveResultInput {
-    wpm: number;
+    cpm: number; // Primary metric
     accuracy: number;
     mode: string;
     subMode: string | null;
@@ -139,15 +144,22 @@ export async function saveTypingResult(
             },
         });
 
-        const resultWithCpm: TypingResultData = {
-            ...result,
-            cpm: result.wpm
+        const resultWithDerivedMetrics: TypingResultData = {
+            id: result.id,
+            cpm: result.cpm,
+            wpm: Math.round(result.cpm / 5),
+            accuracy: result.accuracy,
+            mode: result.mode,
+            subMode: result.subMode,
+            difficulty: result.difficulty,
+            duration: result.duration,
+            createdAt: result.createdAt
         };
 
         revalidatePath('/history');
         revalidatePath('/profile');
 
-        return { success: true, data: resultWithCpm };
+        return { success: true, data: resultWithDerivedMetrics };
     } catch (error) {
         console.error('Error saving result:', error);
         return { success: false, error: 'Failed to save result' };

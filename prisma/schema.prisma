@@ -36,7 +36,7 @@ model TypingResult {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  wpm         Int
+  cpm         Int      @map("wpm") // Map to existing 'wpm' column, effectively treating it as CPM storage
   accuracy    Float
   mode        String   // 'english', 'chinese', 'coder'
   subMode     String?  // 'modern', 'classical' or 'python', 'javascript', etc.
@@ -44,6 +44,6 @@ model TypingResult {
   duration    Int      // seconds
   createdAt   DateTime @default(now())
 
-  @@index([mode, difficulty, wpm(sort: Desc)]) // Optimized for Leaderboard queries
+  @@index([mode, difficulty, cpm(sort: Desc)]) // Optimized for Leaderboard queries
   @@index([userId])                            // Optimized for User History queries
 }

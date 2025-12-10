@@ -39,7 +39,7 @@ export async function getLeaderboard(params: GetLeaderboardParams): Promise<{ su
         const leaderboard = await prisma.typingResult.findMany({
             where: whereClause,
             orderBy: [
-                { wpm: 'desc' },
+                { cpm: 'desc' },
                 { accuracy: 'desc' },
             ],
             // Fetch more than 50 to allow for filtering duplicates
@@ -67,15 +67,17 @@ export async function getLeaderboard(params: GetLeaderboardParams): Promise<{ su
         }
 
         // Transform data to match frontend expectation
-        const formattedLeaderboard: LeaderboardEntry[] = uniqueLeaderboard.map((entry, index) => ({
-            id: entry.id,
-            rank: index + 1,
-            username: entry.user.username,
-            cpm: Math.round(entry.wpm), // Ensure it's rounded if needed, logic says directly passing wpm which is float usually.
-            accuracy: entry.accuracy,
-            date: entry.createdAt.toISOString(),
-            avatar: entry.user.avatarUrl,
-        }));
+        const formattedLeaderboard: LeaderboardEntry[] = uniqueLeaderboard.map((entry, index) => {
+            return {
+                id: entry.id,
+                rank: index + 1,
+                username: entry.user?.username || 'Unknown',
+                cpm: entry.cpm,
+                accuracy: entry.accuracy,
+                date: entry.createdAt.toISOString(),
+                avatar: entry.user?.avatarUrl,
+            };
+        });
 
         return { success: true, data: formattedLeaderboard };
     } catch (error) {

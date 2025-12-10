@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '../store/typingStore';
 import { normalizeSpecialChars } from '../utils/wpmCalculator';
-import { calculateLines } from '../utils/lineUtils';
+import { getLinesView } from '../utils/lineUtils';
 
 interface TextDisplayProps {
   inputRef: React.RefObject<HTMLInputElement | null>;
@@ -86,7 +86,7 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const [cursorPosition, setCursorPosition] = useState({ left: 0, top: 0 });
 
   // 使用 selector 只订阅需要的状态
-  const { displayText, typedText, status, mode } = useTypingStore(
+  const { displayText, typedText, status, mode, allLines } = useTypingStore(
     useShallow((state) => ({
       displayText: state.displayText,
       typedText: state.typedText,
@@ -94,6 +94,7 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       // 注意：mode 嵌套在 settings 中，直接获取可能会有问题如果 settings 更新
       // 但 store.settings 是一个对象，我们应该具体订阅
       mode: state.settings.mode,
+      allLines: state.lines,
     }))
   );
 
@@ -123,35 +124,21 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
     }
   }, [typedText]); // Run when typedText changes, which moves the cursor
 
-  // 计算每个字符的状态
-  const characters = useMemo(() => {
-    let normalizedDisplay = normalizeSpecialChars(displayText);
-    let normalizedTyped = normalizeSpecialChars(typedText);
+  // 计算每个字符的状态 - 移除原有的大数组 map，改为渲染时计算
+  // 保持 normalized 字符串缓存
+  const normalizedDisplay = useMemo(() => {
+    return normalizeSpecialChars(displayText).normalize('NFC');
+  }, [displayText]);
 
-    normalizedDisplay = normalizedDisplay.normalize('NFC');
-    normalizedTyped = normalizedTyped.normalize('NFC');
+  const normalizedTyped = useMemo(() => {
+    return normalizeSpecialChars(typedText).normalize('NFC');
+  }, [typedText]);
 
-    const result = normalizedDisplay.split('').map((char, index) => {
-      let charStatus: 'pending' | 'correct' | 'incorrect' | 'current';
-
-      if (index < normalizedTyped.length) {
-        charStatus = normalizedTyped[index] === char ? 'correct' : 'incorrect';
-      } else if (index === normalizedTyped.length && status !== 'finished') {
-        charStatus = 'current';
-      } else {
-        charStatus = 'pending';
-      }
-
-      return { char, status: charStatus, index };
-    });
-
-    return result;
-  }, [displayText, typedText, status]);
-
-  // 计算显示行
+  // 1. 获取显示视图（每次输入变动时运行）- Light operation
+  // allLines 已经在 store 中计算好了，直接使用
   const displayLines = useMemo(() => {
-    return calculateLines(displayText, typedText, mode);
-  }, [displayText, typedText, mode]);
+    return getLinesView(allLines, typedText.length);
+  }, [allLines, typedText]);
 
   // 构建渲染列表
   const linesToRender = useMemo(() => {
@@ -193,20 +180,37 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const renderLineContent = (lineText: string, startOffset: number, hasNewline: boolean) => {
     if (!lineText && !hasNewline) return <span className="inline-block w-full">&nbsp;</span>; // 保持空行高度
 
-    const chars = lineText.split('');
-    const result = chars.map((char, i) => {
-      const globalIndex = startOffset + i;
-      const charData = characters[globalIndex];
-      // 如果没有 charData，说明在这个范围之外，可能不需要渲染或渲染为空
-      if (!charData) return null;
+    // 注意：lineText 是原始文本，而我们需要显示 normalizedDisplay 对应的字符
+    // 假设长度一致（normalizeSpecialChars 大多是 1:1 替换，除了省略号等少数情况）
+    // 如果长度不一致，这里的逻辑会从 normalizedDisplay 取出对应的字符，保持对齐
 
-      const isCurrent = charData.status === 'current';
+    const chars = lineText.split('');
+    const result = chars.map((_, i) => {
+      const globalIndex = startOffset + i;
+
+      // 直接获取 normalized 字符和状态
+      // 如果超出 normalizedDisplay 范围（比如 TextDisplay logic bug），fallback 到 lineText char
+      const displayChar = normalizedDisplay[globalIndex] ?? lineText[i];
+      if (!displayChar) return null;
+
+      let charStatus: 'pending' | 'correct' | 'incorrect' | 'current';
+
+      if (globalIndex < normalizedTyped.length) {
+        // 比较 normalized 的字符
+        charStatus = normalizedTyped[globalIndex] === displayChar ? 'correct' : 'incorrect';
+      } else if (globalIndex === normalizedTyped.length && status !== 'finished') {
+        charStatus = 'current';
+      } else {
+        charStatus = 'pending';
+      }
+
+      const isCurrent = charStatus === 'current';
 
       return (
         <span key={globalIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
           <Character
-            char={charData.char}
-            status={charData.status}
+            char={displayChar}
+            status={charStatus}
             isCurrent={isCurrent}
           />
         </span>
@@ -215,20 +219,30 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
 
     if (hasNewline) {
       const newlineIndex = startOffset + chars.length;
-      const newlineData = characters[newlineIndex];
+      // 这里的 newline char 通常在 normalizedDisplay 也是 \n
+      const newlineChar = normalizedDisplay[newlineIndex] ?? '\n';
 
-      if (newlineData) {
-        const isCurrent = newlineData.status === 'current';
-        result.push(
-          <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
-            <Character
-              char={newlineData.char}
-              status={newlineData.status}
-              isCurrent={isCurrent}
-            />
-          </span>
-        );
+      let newlineStatus: 'pending' | 'correct' | 'incorrect' | 'current';
+
+      if (newlineIndex < normalizedTyped.length) {
+        newlineStatus = normalizedTyped[newlineIndex] === newlineChar ? 'correct' : 'incorrect';
+      } else if (newlineIndex === normalizedTyped.length && status !== 'finished') {
+        newlineStatus = 'current';
+      } else {
+        newlineStatus = 'pending';
       }
+
+      const isCurrent = newlineStatus === 'current';
+
+      result.push(
+        <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+          <Character
+            char={newlineChar}
+            status={newlineStatus}
+            isCurrent={isCurrent}
+          />
+        </span>
+      );
     }
 
     return result;
@@ -250,6 +264,7 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       <input
         ref={inputRef}
         type="text"
+        aria-label="Typing Input"
         className="absolute opacity-0 pointer-events-auto caret-transparent"
         style={{
           position: 'absolute',

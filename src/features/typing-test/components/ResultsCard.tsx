@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '../store/typingStore';
 import { Button } from '@/components/ui/Button';
-import { WpmChart } from './WpmChart';
+import { CpmChart } from './CpmChart';
 import { useTranslations } from 'next-intl';
 
 export function ResultsCard() {
@@ -18,7 +18,7 @@ export function ResultsCard() {
     lpm,
     accuracy,
     errors,
-    wpmHistory,
+    cpmHistory,
     restart,
   } = useTypingStore(
     useShallow((state) => ({
@@ -28,7 +28,7 @@ export function ResultsCard() {
       lpm: state.lpm,
       accuracy: state.accuracy,
       errors: state.errors,
-      wpmHistory: state.wpmHistory,
+      cpmHistory: state.cpmHistory,
       restart: state.resetTest, // restart 对应 resetTest (回到 idle)
     }))
   );
@@ -164,8 +164,8 @@ export function ResultsCard() {
         <h3 className="text-sm text-gray-400 mb-4">
           CPM Trend
         </h3>
-        <WpmChart
-          data={wpmHistory}
+        <CpmChart
+          data={cpmHistory}
           unit="CPM"
         />
       </motion.div>

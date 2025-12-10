@@ -10,21 +10,21 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { WpmHistoryPoint } from '../store/typingStore';
+import { CpmHistoryPoint } from '../store/typingStore';
 
-interface WpmChartProps {
-  data: WpmHistoryPoint[];
+interface CpmChartProps {
+  data: CpmHistoryPoint[];
   unit?: string;
 }
 
-export function WpmChart({ data, unit = 'WPM' }: WpmChartProps) {
+export function CpmChart({ data, unit = 'CPM' }: CpmChartProps) {
   // Process data: use index as X-axis to avoid duplicate time issues
   // Each point gets a unique position, and we show the original time in tooltip
   const chartData = useMemo(() => {
     return data.map((item, index) => ({
       index, // Use index as X position - guarantees unique values
       time: item.time, // Keep original time for tooltip display
-      wpm: Number.isFinite(item.wpm) ? Math.max(0, item.wpm) : 0,
+      cpm: Number.isFinite(item.cpm) ? Math.max(0, item.cpm) : 0,
       accuracy: item.accuracy,
     }));
   }, [data]);
@@ -38,15 +38,15 @@ export function WpmChart({ data, unit = 'WPM' }: WpmChartProps) {
   }
 
   // Calculate Y domain with padding
-  const maxWpm = Math.max(...chartData.map(d => d.wpm));
-  const yMax = Math.ceil(Math.max(maxWpm, 50) * 1.15);
+  const maxCpm = Math.max(...chartData.map(d => d.cpm));
+  const yMax = Math.ceil(Math.max(maxCpm, 50) * 1.15);
 
   return (
     <div className="h-48 w-full min-h-[192px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 10, bottom: 20 }}>
           <defs>
-            <linearGradient id="wpmGradient" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="cpmGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
               <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
             </linearGradient>
@@ -74,15 +74,15 @@ export function WpmChart({ data, unit = 'WPM' }: WpmChartProps) {
             labelFormatter={(index) => `Time: ${chartData[index]?.time ?? index}s`}
             formatter={(value: number, name: string) => [
               Math.round(value),
-              name === 'wpm' ? unit : name,
+              name === 'cpm' ? unit : name,
             ]}
           />
           <Area
             type="monotone"
-            dataKey="wpm"
+            dataKey="cpm"
             stroke="#14b8a6"
             strokeWidth={2}
-            fill="url(#wpmGradient)"
+            fill="url(#cpmGradient)"
             dot={false}
             activeDot={{ r: 5, fill: '#fff', stroke: '#14b8a6', strokeWidth: 2 }}
           />

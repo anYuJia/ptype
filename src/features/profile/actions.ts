@@ -8,8 +8,8 @@ import { verifyAdvancedSignature, type AdvancedSignaturePayload } from '@/lib/se
 export interface ProfileStats {
     joinDate: string;
     totalTests: number;
-    avgWpm: number;
-    bestWpm: number;
+    avgCpm: number;
+    bestCpm: number;
     timeSpent: string;
 }
 
@@ -62,8 +62,8 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         // Aggregate stats
         const aggregations = await prisma.typingResult.aggregate({
             where: { userId },
-            _avg: { wpm: true },
-            _max: { wpm: true },
+            _avg: { cpm: true },
+            _max: { cpm: true },
             _sum: { duration: true },
             _count: { id: true },
         });
@@ -93,10 +93,10 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
 
         const stats: ProfileStats = {
             joinDate: user.createdAt.toISOString().split('T')[0],
-            totalTests: aggregations._count.id,
-            avgWpm: Math.round(aggregations._avg.wpm || 0),
-            bestWpm: aggregations._max.wpm || 0,
-            timeSpent: formatDuration(aggregations._sum.duration || 0),
+            totalTests: aggregations._count?.id ?? 0,
+            avgCpm: Math.round(aggregations._avg?.cpm || 0),
+            bestCpm: aggregations._max?.cpm || 0,
+            timeSpent: formatDuration(aggregations._sum?.duration || 0),
         };
 
         return { success: true, data: { user, stats, activityHistory } };

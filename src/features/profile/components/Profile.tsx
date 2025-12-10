@@ -18,8 +18,8 @@ export function Profile() {
     const [stats, setStats] = useState({
         joinDate: '-',
         totalTests: 0,
-        avgWpm: 0,
-        bestWpm: 0,
+        avgCpm: 0,
+        bestCpm: 0,
         timeSpent: '0m',
     });
     const [activityHistory, setActivityHistory] = useState<ActivityData[]>([]);
@@ -162,12 +162,12 @@ export function Profile() {
                     {/* Quick Stats */}
                     <div className="flex gap-8 border-l border-white/10 pl-8">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-white">{stats.avgWpm}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('avgSpeed')}</div>
+                            <div className="text-2xl font-bold text-white">{stats.avgCpm}</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('avgSpeed')} (CPM)</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-white">{stats.bestWpm}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('bestSpeed')}</div>
+                            <div className="text-2xl font-bold text-white">{stats.bestCpm}</div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('bestSpeed')} (CPM)</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold text-white">{stats.totalTests}</div>
@@ -185,7 +185,7 @@ export function Profile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm">
                             <div className="text-gray-400 text-sm mb-1">{t('avgSpeed')}</div>
-                            <div className="text-3xl font-bold text-teal-400">{stats.avgWpm} <span className="text-sm text-gray-500 font-normal">CPM</span></div>
+                            <div className="text-3xl font-bold text-teal-400">{stats.avgCpm} <span className="text-sm text-gray-500 font-normal">CPM</span></div>
                         </div>
                         <div className="bg-gray-900/30 border border-white/5 p-6 rounded-xl backdrop-blur-sm">
                             <div className="text-gray-400 text-sm mb-1">{t('timeSpent')}</div>

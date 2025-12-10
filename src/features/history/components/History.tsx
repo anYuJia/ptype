@@ -40,8 +40,8 @@ export function History() {
     const [historyData, setHistoryData] = useState<HistoryDataItem[]>([]);
     const [stats, setStats] = useState({
         totalTests: 0,
-        avgWpm: 0,
-        bestWpm: 0,
+        avgCpm: 0,
+        bestCpm: 0,
         totalTime: '0m'
     });
     const [isLoading, setIsLoading] = useState(true);
@@ -146,8 +146,8 @@ export function History() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                     { label: t('totalTests'), value: stats.totalTests, icon: '📝' },
-                    { label: t('averageSpeed'), value: stats.avgWpm, unit: 'CPM', icon: '⚡' },
-                    { label: t('bestSpeed'), value: stats.bestWpm, unit: 'CPM', icon: '🏆' },
+                    { label: t('averageSpeed'), value: stats.avgCpm, unit: 'CPM', icon: '⚡' },
+                    { label: t('bestSpeed'), value: stats.bestCpm, unit: 'CPM', icon: '🏆' },
                     { label: t('totalTime'), value: stats.totalTime, icon: '⏱️' },
                 ].map((stat, index) => (
                     <motion.div

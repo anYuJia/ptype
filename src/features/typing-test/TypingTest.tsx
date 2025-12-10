@@ -1,24 +1,48 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { TextDisplay } from '@/features/typing-test/components/TextDisplay';
 import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay';
-import { ResultsCard } from '@/features/typing-test/components/ResultsCard';
 import { TypewriterTitle } from '@/features/typing-test/components/TypewriterTitle';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { AuthModal } from '@/features/auth/components/AuthModal';
 import { SettingsPanel } from '@/features/settings/SettingsPanel';
-import { Leaderboard } from '@/features/leaderboard/components/Leaderboard';
-import { History } from '@/features/history/components/History';
-import { Profile } from '@/features/profile/components/Profile';
 import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 import { saveTypingResult } from '@/features/history/actions';
 import { sign } from '@/lib/security';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+
+
+// Lazy Load Heavy Components to optimize initial render and bundle size
+const ResultsCard = dynamic(() => import('@/features/typing-test/components/ResultsCard').then(mod => mod.ResultsCard), {
+  loading: () => <TabLoading />,
+});
+
+const Leaderboard = dynamic(() => import('@/features/leaderboard/components/Leaderboard').then(mod => mod.Leaderboard), {
+  loading: () => <TabLoading />,
+});
+
+const History = dynamic(() => import('@/features/history/components/History').then(mod => mod.History), {
+  loading: () => <TabLoading />,
+});
+
+const Profile = dynamic(() => import('@/features/profile/components/Profile').then(mod => mod.Profile), {
+  loading: () => <TabLoading />,
+});
+
+// Loading Skeleton/Spinner for Tabs
+function TabLoading() {
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="w-10 h-10 border-4 border-gray-800 border-t-teal-500 rounded-full animate-spin" />
+    </div>
+  );
+}
 
 export function TypingTest() {
   const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
@@ -85,7 +109,7 @@ export function TypingTest() {
               console.log('Saving result from TypingTest...');
 
               const resultData = {
-                wpm: cpm, // Store CPM for ALL modes
+                cpm, // Store CPM for ALL modes (Source of truth)
                 accuracy,
                 mode: settings.mode,
                 subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,

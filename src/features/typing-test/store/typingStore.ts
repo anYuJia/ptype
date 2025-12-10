@@ -16,13 +16,15 @@ import {
   DEFAULT_TYPING_OPTIONS,
 } from '@/lib/constants';
 import { generateText } from '@/lib/utils/textGenerator';
-import { analyzeTyping, calculateWPM, calculateCPM, calculateLPM, calculateAccuracy } from '../utils/wpmCalculator';
-import { isLineStart } from '../utils/lineUtils';
+import { analyzeTyping, calculateWPM, calculateCPM, calculateLPM, calculateAccuracy, normalizeSpecialChars } from '../utils/wpmCalculator';
+import { calculateAllLines, LineInfo } from '../utils/lineUtils';
+
 
 // WPM 历史记录点（用于绘制曲线图）
-export interface WpmHistoryPoint {
+// CPM 历史记录点（用于绘制曲线图）
+export interface CpmHistoryPoint {
   time: number; // 经过的秒数
-  wpm: number;
+  cpm: number;
   accuracy: number;
 }
 
@@ -58,11 +60,12 @@ export interface TypingState {
   timeLeft: number;
   startTime: number | null;
 
-  // WPM 历史（用于图表）
-  wpmHistory: WpmHistoryPoint[];
+  // CPM 历史（用于图表）
+  cpmHistory: CpmHistoryPoint[];
   lastCorrectChars?: number; // 上一次 tick 的正确字符数，用于计算瞬时速度
 
   // 缓存
+  lines: LineInfo[]; // 缓存行信息，避免重复计算
   lastCoderText?: string; // 缓存代码模式文本
 
   // 设置
@@ -81,23 +84,25 @@ export interface TypingState {
 
 /**
  * 处理目标文本（根据英文选项）
+ * 并在最后统一进行标准化处理，确保 store 中的文本与渲染即逻辑一致
  */
 function processTargetText(text: string, mode: TypingMode, options: EnglishOptions): string {
-  if (mode !== 'english') return text;
-
   let processed = text;
 
-  // 忽略标点符号：直接从文本中移除
-  if (options.ignorePunctuation) {
-    processed = processed.replace(/[.,!?;:'"-]/g, '');
+  if (mode === 'english') {
+    // 忽略标点符号：直接从文本中移除
+    if (options.ignorePunctuation) {
+      processed = processed.replace(/[.,!?;:'"-]/g, '');
+    }
+
+    // 不区分大小写：转换为小写
+    if (!options.caseSensitive) {
+      processed = processed.toLowerCase();
+    }
   }
 
-  // 不区分大小写：转换为小写
-  if (!options.caseSensitive) {
-    processed = processed.toLowerCase();
-  }
-
-  return processed;
+  // 统一标准化：处理特殊符号和 Unicode
+  return normalizeSpecialChars(processed).normalize('NFC');
 }
 
 export const useTypingStore = create<TypingState>((set, get) => ({
@@ -114,7 +119,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   accuracy: 100,
   timeLeft: DEFAULT_DURATION,
   startTime: null,
-  wpmHistory: [],
+  cpmHistory: [],
+  lines: [], // 初始化为空
   settings: {
     duration: DEFAULT_DURATION,
     mode: DEFAULT_MODE,
@@ -195,10 +201,11 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       accuracy: 100,
       timeLeft: settings.duration,
       startTime: null,
-      wpmHistory: [],
+      cpmHistory: [],
       lastCorrectChars: 0,
       // Save lastCoderText if we are in coder mode
-      lastCoderText: settings.mode === 'coder' ? rawText : state.lastCoderText
+      lastCoderText: settings.mode === 'coder' ? rawText : state.lastCoderText,
+      lines: calculateAllLines(displayText, settings.mode),
     });
   },
 
@@ -251,8 +258,9 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     if (status === 'finished' || typedText.length === 0) return;
 
     // 检查是否会删除到上一行（防止跨行删除）
-    // 使用 isLineStart 工具函数检测当前位置是否是某行的开头
-    if (isLineStart(displayText, typedText, settings.mode)) {
+    // 使用预计算的 lines 检查当前位置是否是某行的开头
+    const currentLineStart = get().lines.find(l => l.startIndex === typedText.length);
+    if (currentLineStart && currentLineStart.startIndex !== 0) {
       return;
     }
 
@@ -292,7 +300,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       ? calculateLPM(targetText, correctChars, elapsedSeconds)
       : 0;
 
-    // 计算瞬时速度（用于图表）
+    // WPM 历史记录点（用于绘制曲线图） - actually CPM now
+
     const lastCorrectChars = get().lastCorrectChars || 0;
     const charsDelta = correctChars - lastCorrectChars;
 
@@ -300,9 +309,9 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     // 瞬时 CPM = 这一秒的字符数 * 60
     const instantaneousSpeed = charsDelta * 60;
 
-    const wpmHistory = [...get().wpmHistory, {
+    const cpmHistory = [...get().cpmHistory, {
       time: Math.floor(elapsedSeconds),
-      wpm: Math.max(0, Math.round(instantaneousSpeed)),
+      cpm: Math.max(0, Math.round(instantaneousSpeed)),
       accuracy: currentAccuracy
     }];
 
@@ -312,7 +321,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         wpm: currentWpm,
         cpm: currentCpm,
         lpm: currentLpm,
-        wpmHistory,
+        cpmHistory,
         lastCorrectChars: correctChars // Update for next tick (though finished)
       });
       get().finishTest();
@@ -322,7 +331,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
         wpm: currentWpm,
         cpm: currentCpm,
         lpm: currentLpm,
-        wpmHistory,
+        cpmHistory,
         lastCorrectChars: correctChars // Update for next tick
       });
     }
@@ -357,6 +366,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       const displayText = processTargetText(targetText, settings.mode, updatedSettings.englishOptions);
       set({
         displayText,
+        lines: calculateAllLines(displayText, settings.mode),
         typedText: '', // 重置输入
         correctChars: 0,
         errors: 0,

@@ -18,55 +18,43 @@ export interface DisplayLines {
     nextLineHasNewline: boolean;
 }
 
-export function calculateLines(
+// Cache for calculated lines to avoid expensive re-computation
+const linesCache = new Map<string, LineInfo[]>();
+
+/**
+ * Calculate all text lines based on mode and constraints.
+ * This is the expensive operation that should be memoized.
+ */
+export function calculateAllLines(
     displayText: string,
-    typedText: string,
     mode: TypingMode
-): DisplayLines {
+): LineInfo[] {
+    const cacheKey = `${mode}:${displayText.length}:${displayText.slice(0, 20)}`;
+    if (linesCache.has(cacheKey) && linesCache.get(cacheKey)!.length > 0) {
+        // Simple cache check - can be improved or removed if component-level memoization is sufficient
+        // But since this is a pure function, local weak cache or dependency on args is better handled by React useMemo.
+        // We will skip internal caching here to avoid memory leaks and rely on React.
+    }
+
     if (mode === 'coder') {
-        // 程序员模式：显示三行代码
+        // 程序员模式：按实际换行符分割
         const lines = displayText.split('\n');
-        let charCount = 0;
-        let currentLineIndex = 0;
+        const allLines: LineInfo[] = [];
+        let currentIndex = 0;
 
-        // 找到当前输入位置所在的行
         for (let i = 0; i < lines.length; i++) {
-            const lineLength = lines[i].length + (i < lines.length - 1 ? 1 : 0); // +1 for \n
-
-            if (charCount + lineLength > typedText.length) {
-                currentLineIndex = i;
-                break;
-            }
-            charCount += lineLength;
+            const line = lines[i];
+            allLines.push({
+                text: line,
+                startIndex: currentIndex,
+                hasNewline: i < lines.length - 1
+            });
+            currentIndex += line.length + (i < lines.length - 1 ? 1 : 0);
         }
+        return allLines;
 
-        // 获取三行内容
-        const prevLine = lines[currentLineIndex - 1] || '';
-        const currentLine = lines[currentLineIndex] || '';
-        const nextLine = lines[currentLineIndex + 1] || '';
-
-        // 计算每行的起始位置
-        let prevLineStart = 0;
-        for (let i = 0; i < currentLineIndex - 1; i++) {
-            prevLineStart += lines[i].length + 1;
-        }
-
-        const currentLineStart = prevLineStart + (currentLineIndex > 0 ? prevLine.length + 1 : 0);
-        const nextLineStart = currentLineStart + currentLine.length + 1;
-
-        return {
-            prevLine,
-            currentLine,
-            nextLine,
-            prevLineStart,
-            currentLineStart,
-            nextLineStart,
-            prevLineHasNewline: currentLineIndex > 0,
-            currentLineHasNewline: currentLineIndex < lines.length - 1,
-            nextLineHasNewline: currentLineIndex + 1 < lines.length - 1,
-        };
     } else {
-        // 英文和中文模式：三行滚动显示
+        // 英文和中文模式：根据宽度自动换行
         let words: string[] = [];
         if (mode === 'english') {
             const lines = displayText.split('\n');
@@ -96,7 +84,7 @@ export function calculateLines(
             if (word === '\n') {
                 const lineStartIndex = charIndex - currentLineLength;
                 allLines.push({
-                    text: currentLine.join(''), // Use join('') because we will append separators to words
+                    text: currentLine.join(''),
                     startIndex: lineStartIndex,
                     hasNewline: true
                 });
@@ -137,57 +125,74 @@ export function calculateLines(
             });
         }
 
-        let currentLineIndex = 0;
-        for (let i = 0; i < allLines.length; i++) {
-            const line = allLines[i];
-            const nextLine = allLines[i + 1];
-            const lineEndIndex = nextLine ? nextLine.startIndex : (line.startIndex + line.text.length + (line.hasNewline ? 1 : 0));
-
-            if (typedText.length < lineEndIndex) {
-                currentLineIndex = i;
-                break;
-            }
-        }
-
-        const emptyLine = { text: '', startIndex: 0, hasNewline: false };
-        const prevLine = allLines[currentLineIndex - 1] || emptyLine;
-        const currentLineObj = allLines[currentLineIndex] || emptyLine;
-        const nextLine = allLines[currentLineIndex + 1] || emptyLine;
-
-        return {
-            prevLine: prevLine.text,
-            currentLine: currentLineObj.text,
-            nextLine: nextLine.text,
-            prevLineStart: prevLine.startIndex,
-            currentLineStart: currentLineObj.startIndex,
-            nextLineStart: nextLine.startIndex,
-            prevLineHasNewline: prevLine.hasNewline,
-            currentLineHasNewline: currentLineObj.hasNewline,
-            nextLineHasNewline: nextLine.hasNewline,
-        };
+        return allLines;
     }
 }
 
-export function isLineStart(displayText: string, typedText: string, mode: TypingMode): boolean {
-    // If no text typed, we are at start
-    if (typedText.length === 0) return true;
+/**
+ * Get the visible 3 lines (prev, current, next) based on typed text length.
+ * This is a cheap operation.
+ */
+export function getLinesView(
+    allLines: LineInfo[],
+    typedTextLength: number
+): DisplayLines {
+    let currentLineIndex = 0;
 
-    // Calculate lines based on displayText
-    // Note: This is expensive to do on every keystroke, but for typing test lengths it should be fine.
-    // Optimization: We only need to know the start indices of all lines.
+    // Find current line based on typedTextLength
+    // Optimization: Binary search could be used here for very large text, 
+    // but linear scan is fine for < 100 lines usually visible in short tests.
+    // For longer tests, this is still O(L) where L is line count.
+    for (let i = 0; i < allLines.length; i++) {
+        const line = allLines[i];
 
-    if (mode === 'coder') {
-        const lines = displayText.split('\n');
-        let currentIndex = 0;
-        for (const line of lines) {
-            if (typedText.length === currentIndex && currentIndex !== 0) return true;
-            currentIndex += line.length + 1; // +1 for newline
+        // Calculate the end index of this line
+        // The effective end index for "being in this line" includes the newline character if present
+        const lineLength = line.text.length + (line.hasNewline ? 1 : 0);
+        const lineEndIndex = line.startIndex + lineLength;
+
+        // If typed text length is less than the end of this line, we are in this line.
+        // Special case: if we are exactly at the end of the line, we might be moving to next line 
+        // BUT logic usually dictates we are still completing this line until we type the next char
+        // However, usually index comparison is strictly less for "inside", 
+        // but here `typedTextLength` represents the cursor position (between chars).
+
+        if (typedTextLength < lineEndIndex) {
+            currentLineIndex = i;
+            break;
         }
-        return false;
-    } else {
-        // Reuse the logic from calculateLines but simplified for just indices
-        // Or just call calculateLines and check currentLineStart
-        const { currentLineStart } = calculateLines(displayText, typedText, mode);
-        return typedText.length === currentLineStart && currentLineStart !== 0;
+        // If we matched exactly the end, and there is a next line, we stay here until we type?
+        // Actually, if typedTextLength == lineEndIndex, it means we have typed everything in this line.
+        // So we should be on the NEXT line.
+        if (typedTextLength === lineEndIndex && i < allLines.length - 1) {
+            currentLineIndex = i + 1;
+            // Don't break yet, we continue to check... actually we can just set it and break?
+            // No, let loops continue? No, break.
+            break;
+        }
+        // If we are at the very end of text
+        if (i === allLines.length - 1) {
+            currentLineIndex = i;
+        }
     }
+
+    const emptyLine = { text: '', startIndex: 0, hasNewline: false };
+    // Handle bounds
+    const prevLine = currentLineIndex > 0 ? allLines[currentLineIndex - 1] : emptyLine;
+    const currentLineObj = allLines[currentLineIndex] || emptyLine;
+    const nextLine = currentLineIndex < allLines.length - 1 ? allLines[currentLineIndex + 1] : emptyLine;
+
+    return {
+        prevLine: prevLine.text,
+        currentLine: currentLineObj.text,
+        nextLine: nextLine.text,
+        prevLineStart: prevLine.startIndex,
+        currentLineStart: currentLineObj.startIndex,
+        nextLineStart: nextLine.startIndex,
+        prevLineHasNewline: prevLine.hasNewline,
+        currentLineHasNewline: currentLineObj.hasNewline,
+        nextLineHasNewline: nextLine.hasNewline,
+    };
 }
+
+

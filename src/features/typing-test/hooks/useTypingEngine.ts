@@ -21,7 +21,7 @@ export function useTypingEngine() {
     timeLeft,
     errors,
     correctChars,
-    wpmHistory,
+    cpmHistory,
     settings,
     initTest,
     startTest, // 添加 startTest
@@ -254,7 +254,7 @@ export function useTypingEngine() {
     timeLeft,
     errors,
     correctChars,
-    wpmHistory,
+    cpmHistory,
     settings,
 
     // 方法
