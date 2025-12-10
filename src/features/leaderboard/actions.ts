@@ -23,7 +23,11 @@ export async function getLeaderboard(params: GetLeaderboardParams): Promise<{ su
     const { mode = 'english', difficulty = 'medium', subMode } = params;
 
     try {
-        const whereClause: any = {
+        const whereClause: {
+            mode: string;
+            difficulty: string;
+            subMode?: string;
+        } = {
             mode,
             difficulty,
         };

@@ -1,17 +1,8 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { AuthInput } from './AuthInput';
 import { authService } from '../services/authService';
-
-function RequirementItem({ met, text }: { met: boolean; text: string }) {
-    return (
-        <div className={`flex items-center gap-1.5 transition-colors duration-200 ${met ? 'text-green-400' : 'text-gray-500'}`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-green-400' : 'bg-gray-600'}`} />
-            <span>{text}</span>
-        </div>
-    );
-}
 
 export function AuthModal() {
     const {
@@ -101,15 +92,15 @@ export function AuthModal() {
 
             login(user);
             closeAuthModal();
-        } catch (err: any) {
-            setError(err.message || '操作失败，请重试');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : '操作失败，请重试');
         } finally {
             setLoading(false);
         }
     };
 
     // Calculate animation origin based on trigger position
-    const getAnimationVariants = () => {
+    const getAnimationVariants = useCallback(() => {
         if (!triggerPosition) {
             // Fallback if no position (e.g. direct open)
             return {
@@ -156,9 +147,9 @@ export function AuthModal() {
                 filter: "blur(10px)"
             }
         };
-    };
+    }, [triggerPosition]);
 
-    const variants = useMemo(() => getAnimationVariants(), [triggerPosition]);
+    const variants = useMemo(() => getAnimationVariants(), [getAnimationVariants]);
 
 
 

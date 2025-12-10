@@ -68,7 +68,7 @@ export function TypingTest() {
     }
 
     // 订阅 store 变化以检测完成时刻并保存
-    const unsubscribe = useTypingStore.subscribe((state, prevState) => {
+    const unsubscribe = useTypingStore.subscribe((state) => {
       // 当状态从 !finished 变为 finished 时 (或者就在 finished 状态且还没保存)
       if (state.status === 'finished' && !savedRef.current) {
         // 检查用户是否登录
@@ -78,7 +78,7 @@ export function TypingTest() {
 
         if (isAuthenticated && user) {
           savedRef.current = true;
-          const { wpm, cpm, accuracy, settings } = state;
+          const { cpm, accuracy, settings } = state;
 
           const saveResult = async () => {
             try {

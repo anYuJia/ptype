@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { InputHTMLAttributes, forwardRef } from 'react';
 
 interface AuthInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -64,10 +63,10 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
                                     <div
                                         key={i}
                                         className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i <= strengthScore
-                                                ? strengthScore === 4 ? 'bg-green-400'
-                                                    : strengthScore >= 2 ? 'bg-yellow-400'
-                                                        : 'bg-red-400'
-                                                : 'bg-gray-700'
+                                            ? strengthScore === 4 ? 'bg-green-400'
+                                                : strengthScore >= 2 ? 'bg-yellow-400'
+                                                    : 'bg-red-400'
+                                            : 'bg-gray-700'
                                             }`}
                                     />
                                 ))}

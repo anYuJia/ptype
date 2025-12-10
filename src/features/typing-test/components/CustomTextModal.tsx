@@ -30,12 +30,7 @@ export function CustomTextModal({ isOpen, onClose, onConfirm }: CustomTextModalP
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (isOpen) {
-            fetchTexts();
-        }
-    }, [isOpen]);
-
+    // Fetch custom texts function
     const fetchTexts = async () => {
         setIsLoading(true);
         const res = await getCustomTexts();
@@ -44,6 +39,13 @@ export function CustomTextModal({ isOpen, onClose, onConfirm }: CustomTextModalP
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            fetchTexts();
+        }
+    }, [isOpen]);
 
     const handleSelect = (item: CustomText) => {
         setSelectedId(item.id);

@@ -17,7 +17,6 @@ export function ResultsCard() {
     cpm,
     lpm,
     accuracy,
-    correctChars,
     errors,
     wpmHistory,
     restart,
@@ -28,7 +27,6 @@ export function ResultsCard() {
       cpm: state.cpm,
       lpm: state.lpm,
       accuracy: state.accuracy,
-      correctChars: state.correctChars,
       errors: state.errors,
       wpmHistory: state.wpmHistory,
       restart: state.resetTest, // restart 对应 resetTest (回到 idle)
@@ -65,22 +63,6 @@ export function ResultsCard() {
 
   const speedStats = getSpeedStats();
 
-  // Determine chart title
-  const getChartTitle = () => {
-    // In store, wpmHistory.wpm effectively stores CPM (raw chars/min) for graph purposes or WPM for english?
-    // Let's check store again.
-    // Store: wpm: Math.max(0, Math.round(instantaneousSpeed)), where instantaneousSpeed = charsDelta * 60.
-    // So 'wpm' in history IS ALWAYS CPM (instantaneous characters per minute).
-
-    // So the chart ALWAYS shows Characters Per Minute trend.
-    // So title should always be CPM Trend, or Speed Trend.
-    // If English, users expect WPM. 
-    // Store tick: currentWpm = calculateWPM... but history uses charsDelta * 60.
-    // So history is ALWAYS CPM.
-
-    return t('chartTitle.speedTrend'); // Or just use a generic title like "Speed Trend" or dynamic based on what we want to validly show.
-    // If we want WPM for English, we need to divide by 5.
-  };
   const getModeLabel = () => {
     switch (mode) {
       case 'english':

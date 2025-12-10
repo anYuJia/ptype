@@ -219,9 +219,7 @@ export function useTypingEngine() {
       if (e.key === 'Backspace') {
         e.preventDefault();
 
-        // 获取最新状态进行检查
-        const state = useTypingStore.getState();
-        const { typedText, settings } = state;
+        // 获取最新状态进行检查 (allowBackspace setting is checked internally by handleBackspace)
 
         handleBackspace();
         const target = e.target as HTMLInputElement;

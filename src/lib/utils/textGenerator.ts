@@ -39,8 +39,9 @@ function getTextPool(
   if (mode === 'coder') {
     const lang = programmingLanguage || 'python';
 
-    // 使用新的代码库
-    const codeLibraries: Record<string, any> = {
+    // 使用新的代码库 - CodeLibrary has easy/medium/hard arrays with code property
+    type CodeLibraryType = { [K in 'easy' | 'medium' | 'hard']: { code: string }[] };
+    const codeLibraries: Record<string, CodeLibraryType> = {
       python: pythonLibrary,
       javascript: javascriptLibrary,
       typescript: typescriptLibrary,
@@ -56,7 +57,7 @@ function getTextPool(
 
     const library = codeLibraries[lang];
     if (library && library[difficulty]) {
-      return library[difficulty].map((item: any) => item.code);
+      return library[difficulty].map((item) => item.code);
     }
 
     // 对于尚未迁移的语言，暂时回退到 Python

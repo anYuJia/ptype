@@ -51,8 +51,8 @@ export function calculateLines(
             prevLineStart += lines[i].length + 1;
         }
 
-        let currentLineStart = prevLineStart + (currentLineIndex > 0 ? prevLine.length + 1 : 0);
-        let nextLineStart = currentLineStart + currentLine.length + 1;
+        const currentLineStart = prevLineStart + (currentLineIndex > 0 ? prevLine.length + 1 : 0);
+        const nextLineStart = currentLineStart + currentLine.length + 1;
 
         return {
             prevLine,

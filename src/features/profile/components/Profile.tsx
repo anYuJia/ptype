@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import { ActivityHeatmap } from './ActivityHeatmap';
 import { getProfile, updateProfile, ActivityData } from '../actions';
 import { sign } from '@/lib/security';
@@ -24,7 +23,7 @@ export function Profile() {
         timeSpent: '0m',
     });
     const [activityHistory, setActivityHistory] = useState<ActivityData[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -40,7 +39,7 @@ export function Profile() {
             } catch (error) {
                 console.error('Failed to fetch profile:', error);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
@@ -64,6 +63,15 @@ export function Profile() {
             console.error('Failed to update profile:', error);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] text-gray-500">
+                <div className="w-8 h-8 border-2 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mb-4" />
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
     if (!user) {
         return (

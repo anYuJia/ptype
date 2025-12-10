@@ -211,7 +211,7 @@ export async function checkAuth(): Promise<AuthResult> {
         };
 
         return { success: true, data: userDto };
-    } catch (error) {
+    } catch {
         // Token might be invalid or expired
         return { success: false };
     }

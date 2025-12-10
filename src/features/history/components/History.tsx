@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import {
-    LineChart,
-    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -13,30 +11,40 @@ import {
     AreaChart
 } from 'recharts';
 import {
-    TypingMode,
     ChineseStyle,
     ProgrammingLanguage,
     CHINESE_STYLE_LABELS,
     PROGRAMMING_LANGUAGE_LABELS,
-    CHINESE_STYLE_OPTIONS,
-    PROGRAMMING_LANGUAGE_OPTIONS
 } from '@/lib/constants';
 import { getHistory, getHistoryStats } from '../actions';
+
+interface HistoryDataItem {
+    id: string;
+    wpm: number;
+    cpm: number;
+    accuracy: number;
+    mode: string;
+    subMode: string | null;
+    difficulty: string;
+    duration: number;
+    createdAt: string | Date;
+    date: string;
+    index: number;
+}
 
 export function History() {
     const t = useTranslations('History');
     const tSettings = useTranslations('Settings');
     const locale = useLocale();
 
-    const [historyData, setHistoryData] = useState<any[]>([]);
+    const [historyData, setHistoryData] = useState<HistoryDataItem[]>([]);
     const [stats, setStats] = useState({
         totalTests: 0,
         avgWpm: 0,
         bestWpm: 0,
         totalTime: '0m'
     });
-    const [loading, setLoading] = useState(true);
-    const [hoveredData, setHoveredData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -78,14 +86,14 @@ export function History() {
             } catch (error) {
                 console.error('Failed to fetch history data', error);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
         fetchData();
     }, [locale]);
 
-    const getSubModeLabel = (mode: TypingMode, subMode: string | null) => {
+    const getSubModeLabel = (mode: string, subMode: string | null) => {
         if (!subMode) return null;
         if (mode === 'chinese') return CHINESE_STYLE_LABELS[subMode as ChineseStyle];
         if (mode === 'coder') return PROGRAMMING_LANGUAGE_LABELS[subMode as ProgrammingLanguage];
@@ -93,7 +101,7 @@ export function History() {
         return subMode;
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="w-full max-w-5xl mx-auto space-y-8 animate-pulse">
                 {/* Stats Skeleton */}

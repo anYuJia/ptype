@@ -53,17 +53,21 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
         return dates;
     }, [data]);
 
-    // Group into weeks (columns)
-    const weeks: typeof calendarData[] = [];
-    let currentWeek: typeof calendarData = [];
+    // Group into weeks (columns) - wrapped in useMemo
+    const weeks = useMemo(() => {
+        const result: typeof calendarData[] = [];
+        let currentWeek: typeof calendarData = [];
 
-    calendarData.forEach((day, index) => {
-        currentWeek.push(day);
-        if (currentWeek.length === 7 || index === calendarData.length - 1) {
-            weeks.push(currentWeek);
-            currentWeek = [];
-        }
-    });
+        calendarData.forEach((day, index) => {
+            currentWeek.push(day);
+            if (currentWeek.length === 7 || index === calendarData.length - 1) {
+                result.push(currentWeek);
+                currentWeek = [];
+            }
+        });
+
+        return result;
+    }, [calendarData]);
 
     const getLevelStyle = (level: number) => {
         switch (level) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo, useRef, useEffect } from 'react';
+import { memo, useMemo, useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '../store/typingStore';
@@ -21,12 +21,10 @@ interface TextDisplayProps {
 const Character = memo(function Character({
   char,
   status,
-  index,
   isCurrent,
 }: {
   char: string;
   status: 'pending' | 'correct' | 'incorrect' | 'current';
-  index: number;
   isCurrent: boolean;
 }) {
   const baseClass = 'inline-block transition-colors duration-100 relative';
@@ -84,8 +82,11 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const t = useTranslations('Common');
   const tSettings = useTranslations('Settings');
 
+  // Track cursor position in state for rendering
+  const [cursorPosition, setCursorPosition] = useState({ left: 0, top: 0 });
+
   // 使用 selector 只订阅需要的状态
-  const { displayText, typedText, status, mode, targetText } = useTypingStore(
+  const { displayText, typedText, status, mode } = useTypingStore(
     useShallow((state) => ({
       displayText: state.displayText,
       typedText: state.typedText,
@@ -93,7 +94,6 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       // 注意：mode 嵌套在 settings 中，直接获取可能会有问题如果 settings 更新
       // 但 store.settings 是一个对象，我们应该具体订阅
       mode: state.settings.mode,
-      targetText: state.targetText,
     }))
   );
 
@@ -103,6 +103,25 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       inputRef.current.focus();
     }
   }, [status, inputRef]);
+
+  // Update cursor position synchronously after layout using useLayoutEffect
+  // This is a valid pattern for synchronizing UI state with DOM measurements
+  useLayoutEffect(() => {
+    if (cursorRef.current) {
+      const newPos = {
+        left: cursorRef.current.offsetLeft || 0,
+        top: cursorRef.current.offsetTop || 0,
+      };
+      // Only update if position actually changed
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCursorPosition(prev => {
+        if (prev.left !== newPos.left || prev.top !== newPos.top) {
+          return newPos;
+        }
+        return prev;
+      });
+    }
+  }, [typedText]); // Run when typedText changes, which moves the cursor
 
   // 计算每个字符的状态
   const characters = useMemo(() => {
@@ -188,7 +207,6 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
           <Character
             char={charData.char}
             status={charData.status}
-            index={globalIndex}
             isCurrent={isCurrent}
           />
         </span>
@@ -206,7 +224,6 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
             <Character
               char={newlineData.char}
               status={newlineData.status}
-              index={newlineIndex}
               isCurrent={isCurrent}
             />
           </span>
@@ -236,8 +253,8 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         className="absolute opacity-0 pointer-events-auto caret-transparent"
         style={{
           position: 'absolute',
-          left: cursorRef.current?.offsetLeft || 0,
-          top: cursorRef.current?.offsetTop || 0,
+          left: cursorPosition.left,
+          top: cursorPosition.top,
           width: '1px',
           height: '1em',
           zIndex: 10,
