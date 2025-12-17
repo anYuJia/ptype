@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useTransition } from 'react'
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { CustomTextModal } from '../typing-test/components/CustomTextModal';
 import { getCustomTexts, CustomText } from '@/features/custom-text/actions';
@@ -28,6 +29,7 @@ export function SettingsPanel({
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [savedTexts, setSavedTexts] = useState<CustomText[]>([]);
   const [customDuration, setCustomDuration] = useState<number>(0);
+  const { isAuthenticated } = useAuthStore();
 
   // 从 Store 获取设置和 actions
   const {
@@ -62,11 +64,14 @@ export function SettingsPanel({
       const res = await getCustomTexts();
       if (isMounted && res.success && res.data) {
         setSavedTexts(res.data);
+      } else {
+        // If failed (e.g. unauthorized), clear list
+        setSavedTexts([]);
       }
     };
     loadTexts();
     return () => { isMounted = false; };
-  }, []);
+  }, [isAuthenticated]);
 
   // Load user settings (custom duration)
   useEffect(() => {
@@ -78,11 +83,13 @@ export function SettingsPanel({
         if (saved && typeof saved === 'number') {
           setCustomDuration(saved);
         }
+      } else {
+        setCustomDuration(0);
       }
     };
     loadSettings();
     return () => { isMounted = false; };
-  }, []);
+  }, [isAuthenticated]);
 
   // Refresh list when modal closes
   useEffect(() => {

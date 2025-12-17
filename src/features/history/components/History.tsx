@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import {
     XAxis,
     YAxis,
@@ -36,6 +37,7 @@ export function History() {
     const t = useTranslations('History');
     const tSettings = useTranslations('Settings');
     const locale = useLocale();
+    const { isAuthenticated } = useAuthStore();
 
     const [historyData, setHistoryData] = useState<HistoryDataItem[]>([]);
     const [stats, setStats] = useState({
@@ -49,6 +51,10 @@ export function History() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // If not authenticated, we might want to clear specific user data or show empty state.
+                // But generally trying to fetch might return empty list or unauthorized error which is handled.
+                // However, visually it's better to explicitly reload.
+
                 const [historyResult, statsResult] = await Promise.all([
                     getHistory(),
                     getHistoryStats()
@@ -75,23 +81,30 @@ export function History() {
 
                     setHistoryData(formattedHistory);
                 } else {
-                    console.error('Failed to fetch history:', historyResult.error);
+                    // Handle logout case or empty state
+                    setHistoryData([]);
                 }
 
                 if (statsResult.success && statsResult.data) {
                     setStats(statsResult.data);
                 } else {
-                    console.error('Failed to fetch stats:', statsResult.error);
+                    setStats({
+                        totalTests: 0,
+                        avgCpm: 0,
+                        bestCpm: 0,
+                        totalTime: '0m'
+                    });
                 }
             } catch (error) {
                 console.error('Failed to fetch history data', error);
+                setHistoryData([]);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
-    }, [locale]);
+    }, [locale, isAuthenticated]);
 
     const getSubModeLabel = (mode: string, subMode: string | null) => {
         if (!subMode) return null;
