@@ -91,39 +91,28 @@ export function generateText(
 ): string {
   const textPool = getTextPool(mode, difficulty, chineseStyle, programmingLanguage);
 
-  // 打乱数组
-  let shuffled = shuffleArray(textPool);
-
-  // 随机选择一个起始位置，这样即使文本池相同，每次生成的文本也不同
-  const startIndex = Math.floor(Math.random() * shuffled.length);
-
-  // 从起始位置开始重新排列数组
-  shuffled = [...shuffled.slice(startIndex), ...shuffled.slice(0, startIndex)];
+  // 确保池中有数据
+  if (textPool.length === 0) {
+    return '';
+  }
 
   // 统一使用换行符作为分隔符，这样每句话/每个代码块都会独占一行
   const separator = '\n';
 
   let result = '';
-  let index = 0;
 
-  while (result.length < minLength && index < shuffled.length) {
-    if (result.length > 0) {
-      result += separator;
-    }
-    result += shuffled[index];
-    index++;
-  }
+  // True Random: 每次独立随机抽取
+  // 避免完全通过 shuffle 的排列组合（那样会导致在一个周期内不重复，但也限制了随机性）
+  // 用户要求 "True Random"
 
-  // 如果遍历完了还不够长，重新打乱并继续
   while (result.length < minLength) {
-    // 每次循环都重新打乱，增加随机性
-    shuffled = shuffleArray(textPool);
+    const randomIndex = Math.floor(Math.random() * textPool.length);
+    const randomItem = textPool[randomIndex];
 
     if (result.length > 0) {
       result += separator;
     }
-    result += shuffled[index % shuffled.length];
-    index++;
+    result += randomItem;
   }
 
   return result.trim();

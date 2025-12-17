@@ -153,7 +153,7 @@ PType comes with a rich code practice library covering mainstream languages and 
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/anYuJia/ptype.git
+git clone --depth 1 https://github.com/anYuJia/ptype.git
 cd ptype
 ```
 

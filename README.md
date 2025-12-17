@@ -153,7 +153,7 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 1. **克隆仓库**
 
 ```bash
-git clone https://github.com/anYuJia/ptype.git
+git clone --depth 1 https://github.com/anYuJia/ptype.git
 cd ptype
 ```
 

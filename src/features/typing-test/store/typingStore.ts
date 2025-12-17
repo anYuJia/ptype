@@ -76,6 +76,7 @@ export interface TypingState {
   startTest: () => void;
   handleInput: (char: string) => void;
   handleBackspace: () => void;
+  appendText: () => void;
   tick: () => void;
   finishTest: () => void;
   resetTest: () => void;
@@ -142,34 +143,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     if (settings.mode === 'custom' && settings.customText) {
       rawText = settings.customText;
     }
-    // Coder Mode - Reuse text if switching back to it (and language matches if we tracked it, but for now just reuse text if mode matches)
-    // Actually, initTest is called on mode change.
-    // We only want to reuse text if we are switching TO coder mode from another mode, NOT when we hit "regenerate".
-    // "Regenerate" calls initTest directly. Mode didn't change.
-    // "Switch Mode" calls updateSettings -> initTest.
-    // It's hard to distinguish "Regenerate" from "Switch Mode" inside initTest without extra flags.
-    // However, the user request is "Default is previous code".
-    // Maybe we just check if state.lastCoderText exists?
-    // But if I hit "Regenerate", I want NEW code.
-    // How to distinguish?
-    // Let's rely on `lastCoderText`. When `initTest` is called, we can't easily know the intent.
-    // But typically `initTest` generates text.
-    // If I want to persist, I should perhaps NOT call `initTest` when switching mode if I can restore state?
-    // But `updateSettings` forces `initTest`.
-
-    // Better approach:
-    // When we leave coder mode, we save the text.
-    // When we enter coder mode, if we have saved text, we use it.
-    // But `initTest` wipes everything.
-
-    // Let's modify logic:
-    // If settings.mode === 'coder' AND state.lastCoderText is set... use it?
-    // But then "Regenerate" won't work because it calls initTest which sees lastCoderText and reuses it.
-    // We need to clear `lastCoderText` when "Regenerate" is clicked.
-    // But "Regenerate" just calls `initTest`.
-
-    // Okay, let's create a new action or param for `initTest(forceRegenerate?: boolean)`.
-
+    // Coder Mode - Reuse text if switching back to it AND not forcing regenerate
     else if (settings.mode === 'coder' && state.lastCoderText && !forceRegenerate) {
       rawText = state.lastCoderText;
     } else {
@@ -209,6 +183,43 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     });
   },
 
+  // 追加文本（无限滚动）
+  appendText: () => {
+    const { settings, targetText, displayText } = get();
+
+    // 自定义文本模式不追加
+    if (settings.mode === 'custom') return;
+
+    // 生成新文本块 (长度 300 左右)
+    const newChunk = generateText(
+      settings.mode,
+      settings.difficulty,
+      300,
+      settings.chineseStyle,
+      settings.programmingLanguage
+    );
+
+    // 拼接文本 (注意分隔符)
+    const separator = settings.mode === 'english' ? ' ' : '\n';
+    const newTargetText = targetText + separator + newChunk;
+
+    // 处理新文本显示
+    // 注意：这里我们只处理新追加的部分，然后拼接到 displayText
+    // 这样避免重新处理整个长文本可能带来的潜在差异
+    const processedNewChunk = processTargetText(newChunk, settings.mode, settings.englishOptions);
+    const separatorDisplay = processTargetText(separator, settings.mode, settings.englishOptions);
+
+    const newDisplayText = displayText + separatorDisplay + processedNewChunk;
+
+    set({
+      targetText: newTargetText,
+      displayText: newDisplayText,
+      // 重新计算行信息 - calculateAllLines 目前比较快，直接全量计算
+      // 这里的优化点：未来可以只增量计算新加的行
+      lines: calculateAllLines(newDisplayText, settings.mode),
+    });
+  },
+
   // 开始测试
   startTest: () => {
     set({
@@ -228,7 +239,8 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
     if (status === 'finished') return;
 
-    // 如果已经输入完所有目标文本，忽略新输入
+    // 如果已经输入完所有目标文本（极其罕见的情况），忽略新输入
+    // 正常应该早就追加了
     if (typedText.length >= displayText.length) return;
 
     // 直接添加输入字符（不做任何转换，因为displayText已经预处理过了）
@@ -242,9 +254,11 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       accuracy: calculateAccuracy(analysis.correctChars, analysis.totalTyped),
     });
 
-    // 检查是否完成所有文本
-    if (newTypedText.length >= displayText.length) {
-      get().finishTest();
+    // 检查剩余字符数，如果少于阈值，通过追加文本来实现"无限滚动"
+    // 阈值设为 150，大约是 2-3 行代码或英文
+    const REMAINING_THRESHOLD = 150;
+    if (displayText.length - newTypedText.length < REMAINING_THRESHOLD) {
+      get().appendText();
     }
   },
 
