@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useTransition } from 'react';
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { CustomTextModal } from '../typing-test/components/CustomTextModal';
 import { getCustomTexts, CustomText } from '@/features/custom-text/actions';
+import { getUserSettings, saveCustomDuration } from './actions';
 import { TypingMode } from '@/lib/constants';
 import { useTranslations } from 'next-intl';
 import {
@@ -26,6 +27,7 @@ export function SettingsPanel({
   const t = useTranslations('Settings');
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [savedTexts, setSavedTexts] = useState<CustomText[]>([]);
+  const [customDuration, setCustomDuration] = useState<number>(0);
 
   // 从 Store 获取设置和 actions
   const {
@@ -53,17 +55,32 @@ export function SettingsPanel({
     customText,
   } = settings;
 
-  // Load custom texts - use startTransition to mark as non-urgent update
+  // Load custom texts
   useEffect(() => {
     let isMounted = true;
     const loadTexts = async () => {
       const res = await getCustomTexts();
       if (isMounted && res.success && res.data) {
-        // Using a callback form to satisfy the linter
         setSavedTexts(res.data);
       }
     };
     loadTexts();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Load user settings (custom duration)
+  useEffect(() => {
+    let isMounted = true;
+    const loadSettings = async () => {
+      const res = await getUserSettings();
+      if (isMounted && res.success && res.settings) {
+        const saved = (res.settings as any).customDuration;
+        if (saved && typeof saved === 'number') {
+          setCustomDuration(saved);
+        }
+      }
+    };
+    loadSettings();
     return () => { isMounted = false; };
   }, []);
 
@@ -82,7 +99,7 @@ export function SettingsPanel({
     }
   }, [isCustomModalOpen]);
 
-  // Compute selectedId as derived state instead of syncing via effect
+  // Compute selectedId as derived state
   const selectedTextId = useMemo(() => {
     if (mode === 'custom' && customText && savedTexts.length > 0) {
       const match = savedTexts.find(t => t.content === customText);
@@ -91,7 +108,6 @@ export function SettingsPanel({
     return '';
   }, [mode, customText, savedTexts]);
 
-  // Memoized saved texts for ModeSpecificOptions
   const formattedSavedTexts = useMemo(() =>
     savedTexts.map(t => ({ id: t.id, title: t.title, content: t.content })),
     [savedTexts]
@@ -101,21 +117,16 @@ export function SettingsPanel({
     if (disabled) return;
 
     if (newMode === 'custom') {
-      // 1. If we already have custom text, just switch
       if (customText && customText.trim().length > 0) {
         updateSettings({ mode: 'custom' });
         return;
       }
-
-      // 2. If we have saved texts, auto-select the most recent one (first one)
       if (savedTexts.length > 0) {
         const mostRecent = savedTexts[0];
         updateSettings({ mode: 'custom', customText: mostRecent.content });
         setTimeout(() => initTest(), 0);
         return;
       }
-
-      // 3. Fallback: Open modal
       setIsCustomModalOpen(true);
     } else {
       updateSettings({ mode: newMode });
@@ -130,7 +141,6 @@ export function SettingsPanel({
   const handleCustomSelectChange = useCallback((id: string) => {
     const selected = savedTexts.find(t => t.id === id);
     if (selected) {
-      // selectedTextId is now derived from customText, so just update customText
       updateSettings({ mode: 'custom', customText: selected.content });
       setTimeout(() => initTest(), 0);
     }
@@ -140,6 +150,11 @@ export function SettingsPanel({
     updateSettings({ programmingLanguage: lang });
     setTimeout(() => initTest(true), 0);
   }, [updateSettings, initTest]);
+
+  const handleCustomDurationChange = useCallback(async (newDuration: number) => {
+    setCustomDuration(newDuration);
+    await saveCustomDuration(newDuration);
+  }, []);
 
   return (
     <div className="space-y-3">
@@ -155,6 +170,8 @@ export function SettingsPanel({
         <TimeSelector
           duration={duration}
           onDurationChange={(d) => updateSettings({ duration: d })}
+          customDuration={customDuration}
+          onCustomDurationChange={handleCustomDurationChange}
           disabled={disabled}
         />
 
