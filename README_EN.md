@@ -215,10 +215,33 @@ Open your browser and visit [http://localhost:3000](http://localhost:3000) to st
 
 ### Production Deployment
 
+#### Standard Deployment
+
 ```bash
 npm run build
 npm start
 ```
+
+#### Docker Deployment
+
+1. **Build Image**
+
+```bash
+docker build -t ptype .
+```
+
+2. **Run Container**
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  --name ptype \
+  --env-file .env \
+  ptype
+```
+
+> ⚠️ **Note**: Ensure the `.env` file contains the correct `DATABASE_URL` and other necessary environment variables.
+> If connecting to a host database, replace `localhost` with `host.docker.internal` (Mac/Windows) or the host IP (Linux).
 
 ---
 

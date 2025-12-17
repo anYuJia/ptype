@@ -23,10 +23,10 @@ export function TimeSelector({ duration, onDurationChange, disabled = false }: T
                         onClick={() => !disabled && onDurationChange(d)}
                         className={`
               px-3 py-1.5 rounded-md text-sm font-medium
-              transition-colors duration-200
+              transition-colors duration-200 relative
               ${duration === d
-                                ? 'bg-teal-500 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'text-white'
+                                : 'text-gray-400 hover:text-white'
                             }
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
@@ -34,7 +34,14 @@ export function TimeSelector({ duration, onDurationChange, disabled = false }: T
                         whileTap={!disabled ? { scale: 0.95 } : undefined}
                         disabled={disabled}
                     >
-                        {d}s
+                        <span className="relative z-10">{d}s</span>
+                        {duration === d && (
+                            <motion.div
+                                layoutId="time-highlight"
+                                className="absolute inset-0 bg-teal-500 rounded-md"
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                        )}
                     </motion.button>
                 ))}
             </div>

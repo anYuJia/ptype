@@ -23,10 +23,10 @@ export function DifficultySelector({ difficulty, onDifficultyChange, disabled = 
                         onClick={() => !disabled && onDifficultyChange(d)}
                         className={`
               px-3 py-1.5 rounded-md text-sm font-medium
-              transition-colors duration-200
+              transition-colors duration-200 relative
               ${difficulty === d
-                                ? 'bg-teal-500 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'text-white'
+                                : 'text-gray-400 hover:text-white'
                             }
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
             `}
@@ -34,7 +34,14 @@ export function DifficultySelector({ difficulty, onDifficultyChange, disabled = 
                         whileTap={!disabled ? { scale: 0.95 } : undefined}
                         disabled={disabled}
                     >
-                        {t(`difficultyLabels.${d}`)}
+                        <span className="relative z-10">{t(`difficultyLabels.${d}`)}</span>
+                        {difficulty === d && (
+                            <motion.div
+                                layoutId="difficulty-highlight"
+                                className="absolute inset-0 bg-teal-500 rounded-md"
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                        )}
                     </motion.button>
                 ))}
             </div>

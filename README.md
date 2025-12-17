@@ -215,10 +215,33 @@ npm run dev
 
 ### 生产部署
 
+#### 常规部署
+
 ```bash
 npm run build
 npm start
 ```
+
+#### Docker 部署
+
+1. **构建镜像**
+
+```bash
+docker build -t ptype .
+```
+
+2. **运行容器**
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  --name ptype \
+  --env-file .env \
+  ptype
+```
+
+> ⚠️ **注意**：确保 `.env` 文件中包含正确的 `DATABASE_URL` 以及其他必要的环境变量。
+> 如果连接宿主机数据库，请将 `localhost` 替换为 `host.docker.internal` (Mac/Windows) 或宿主机 IP (Linux)。
 
 ---
 
