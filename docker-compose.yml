@@ -1,0 +1,52 @@
+services:
+  # PostgreSQL 数据库
+  db:
+    image: postgres:16.9
+    container_name: ptype_db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ptype}
+      POSTGRES_USER: ${DB_USER:-ptype}
+      POSTGRES_DB: ${DB_NAME:-ptype}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ptype} -d ${DB_NAME:-ptype}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - ptype_network
+
+  # Next.js Web 应用
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ptype_web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      # 覆盖 DATABASE_URL 为 Docker 内部网络地址
+      - DATABASE_URL=postgresql://${DB_USER:-ptype}:${DB_PASSWORD:-ptype}@db:5432/${DB_NAME:-ptype}?schema=public
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ptype_network
+
+volumes:
+  postgres_data:
+
+networks:
+  ptype_network:
+    driver: bridge
+
+

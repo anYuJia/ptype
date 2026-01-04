@@ -144,104 +144,262 @@ PType comes with a rich code practice library covering mainstream languages and 
 
 ### Prerequisites
 
-- **Node.js**: >= 18.0.0
-- **npm / pnpm / yarn**: Package manager
-- **PostgreSQL**: >= 14.0 ([Download & Installation Guide](https://www.postgresql.org/download/))
+| Method | Requirements |
+| :--- | :--- |
+| **🐳 Docker** (Recommended) | Docker 20.10+, Docker Compose 2.0+ |
+| **💻 Local Development** | Node.js >= 18.0, PostgreSQL >= 14.0 |
 
-### Installation
+### 🚀 One-Click Start (Recommended)
 
-1. **Clone the repository**
+We provide a smart startup script `start.sh` that supports both Docker and local deployment, with automatic database and environment configuration.
+
+```bash
+# 1. Clone the repository
+git clone --depth 1 https://github.com/anYuJia/ptype.git
+cd ptype
+
+# 2. Run the startup script
+./start.sh
+```
+
+The script will guide you through:
+- ✅ Auto-detect/create `.env` configuration
+- ✅ Auto-generate security keys
+- ✅ Choose deployment method (Docker/Local)
+- ✅ Auto-configure database
+- ✅ Start the application
+
+<details>
+<summary><b>📋 Startup Script Command Reference</b></summary>
+
+```bash
+# Interactive start (recommended for first use)
+./start.sh
+
+# Docker deployment
+./start.sh docker           # Interactive Docker deployment
+./start.sh docker -d        # Docker background start
+./start.sh docker -b -d     # Rebuild and background start
+
+# Local deployment
+./start.sh local            # Local development mode
+
+# Other
+./start.sh setup            # Only configure .env file
+./start.sh help             # Show help
+```
+
+</details>
+
+---
+
+### Manual Deployment
+
+If you prefer to control each step manually, refer to the following guides:
+
+<details>
+<summary><b>🐳 Manual Docker Deployment</b></summary>
+
+**1. Clone the repository**
 
 ```bash
 git clone --depth 1 https://github.com/anYuJia/ptype.git
 cd ptype
 ```
 
-2. **Install dependencies**
-
-```bash
-npm install
-# Or use pnpm / yarn
-pnpm install
-```
-
-3. **Configure Environment Variables**
-
-Copy the environment template and modify the configuration:
+**2. Configure environment variables**
 
 ```bash
 cp .env.example .env
 ```
 
-Edit the `.env` file:
+Edit `.env` file to set security keys:
 
 ```env
-# Database connection
-DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+# Database configuration
+DB_USER=ptype
+DB_PASSWORD=ptype
+DB_NAME=ptype
+DB_PORT=5432
 
-# JWT Secret (for user authentication, use a strong random string)
-JWT_SECRET="your-jwt-secret-key"
+# Security keys (must change! use openssl rand -base64 32)
+JWT_SECRET="your-random-secret-key"
+SIGNATURE_SECRET="your-random-secret-key"
 
-# Signature Secret (for request signing, use a strong random string)
-SIGNATURE_SECRET="your-signature-secret-key"
-
-# Cookie security setting
-# Keep true for HTTPS environments (default)
-# Must be set to false for HTTP environments (no SSL), otherwise sessions won't persist after login
-SECURE_COOKIES=true
+# Cookie settings (set to false for HTTP)
+SECURE_COOKIES=false
 ```
 
-> ⚠️ **Note**: If your server doesn't have HTTPS configured, you must set `SECURE_COOKIES` to `false`, otherwise cookies won't work properly after login.
-
-4. **Initialize Database**
-
-> **Tip**: If you encounter issues downloading the Prisma engine, set the mirror first:
-> ```bash
-> export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
-> ```
+**3. Start services**
 
 ```bash
+# Build and start
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+```
+
+**4. Access the app**
+
+Open browser at http://localhost:3000
+
+**Common commands:**
+
+```bash
+docker-compose logs -f web    # View app logs
+docker-compose down           # Stop services
+docker-compose down -v        # Stop and delete data
+docker-compose restart        # Restart services
+```
+
+</details>
+
+<details>
+<summary><b>💻 Manual Local Deployment</b></summary>
+
+**1. Clone repository and install dependencies**
+
+```bash
+git clone --depth 1 https://github.com/anYuJia/ptype.git
+cd ptype
+npm install
+```
+
+**2. Configure PostgreSQL Database**
+
+Choose one of the following:
+
+**Option A: Use Docker for database (Recommended)**
+
+```bash
+docker-compose up -d db
+```
+
+**Option B: Use local PostgreSQL**
+
+```bash
+# Install PostgreSQL (Ubuntu example)
+sudo apt update && sudo apt install -y postgresql postgresql-contrib
+
+# Start service
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Create database and user
+sudo -u postgres psql << EOF
+CREATE USER ptype WITH PASSWORD 'ptype';
+CREATE DATABASE ptype OWNER ptype;
+GRANT ALL PRIVILEGES ON DATABASE ptype TO ptype;
+EOF
+```
+
+**3. Configure environment variables**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` file:
+
+```env
+# Database configuration
+DB_USER=ptype
+DB_PASSWORD=ptype
+DB_NAME=ptype
+DB_PORT=5432
+DATABASE_URL="postgresql://ptype:ptype@localhost:5432/ptype?schema=public"
+
+# Security keys (must change!)
+JWT_SECRET="your-random-secret-key"
+SIGNATURE_SECRET="your-random-secret-key"
+
+# Cookie settings
+SECURE_COOKIES=false
+```
+
+**4. Initialize database**
+
+```bash
+# Set Prisma mirror (optional, speeds up download)
+export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+
+# Generate Prisma client
 npx prisma generate
+
+# Sync database schema
 npx prisma db push
 ```
 
-5. **Start Development Server**
+**5. Start the application**
 
 ```bash
+# Development mode (hot reload)
 npm run dev
+
+# Or production mode
+npm run build && npm start
 ```
 
-Open your browser and visit [http://localhost:3000](http://localhost:3000) to start!
+**6. Access the app**
 
-### Production Deployment
+Open browser at http://localhost:3000
 
-#### Standard Deployment
+</details>
+
+---
+
+### FAQ
+
+<details>
+<summary><b>❓ .env file not found</b></summary>
 
 ```bash
-npm run build
-npm start
+cp .env.example .env
+# Then edit .env to configure JWT_SECRET and SIGNATURE_SECRET
 ```
 
-#### Docker Deployment
+Or use the startup script to auto-generate: `./start.sh setup`
 
-1. **Build Image**
+</details>
 
+<details>
+<summary><b>❓ Container error: Environment variables not configured</b></summary>
+
+Check that `JWT_SECRET` and `SIGNATURE_SECRET` in your `.env` file have been changed from their default values.
+
+</details>
+
+<details>
+<summary><b>❓ Session not persisting after login</b></summary>
+
+If using HTTP (not HTTPS), set in `.env`:
+```env
+SECURE_COOKIES=false
+```
+
+</details>
+
+<details>
+<summary><b>❓ Prisma engine download fails</b></summary>
+
+Set the mirror and retry:
 ```bash
-docker build -t ptype .
+export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+npx prisma generate
 ```
 
-2. **Run Container**
+</details>
 
+<details>
+<summary><b>❓ PostgreSQL collation version mismatch</b></summary>
+
+This is a compatibility issue after system updates. Fix with:
 ```bash
-docker run -d \
-  -p 3000:3000 \
-  --name ptype \
-  --env-file .env \
-  ptype
+sudo -u postgres psql -c "ALTER DATABASE template1 REFRESH COLLATION VERSION;"
 ```
 
-> ⚠️ **Note**: Ensure the `.env` file contains the correct `DATABASE_URL` and other necessary environment variables.
-> If connecting to a host database, replace `localhost` with `host.docker.internal` (Mac/Windows) or the host IP (Linux).
+</details>
 
 ---
 

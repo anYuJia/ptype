@@ -144,30 +144,157 @@ PType 内置了丰富的代码练习库，涵盖主流语言与工具：
 
 ### 环境要求
 
-- **Node.js**: >= 18.0.0
-- **npm / pnpm / yarn**: 包管理器
-- **PostgreSQL**: >= 14.0 ([下载与安装教程](https://www.postgresql.org/download/))
+| 启动方式 | 必需环境 |
+| :--- | :--- |
+| **🐳 Docker 部署**（推荐） | Docker 20.10+, Docker Compose 2.0+ |
+| **💻 本地部署** | Node.js >= 18.0, PostgreSQL >= 14.0 |
 
-### 安装步骤
+### 🚀 一键启动（推荐）
 
-1. **克隆仓库**
+我们提供了智能启动脚本 `start.sh`，支持 Docker 和本地两种部署方式，自动配置数据库和环境变量。
+
+```bash
+# 1. 克隆仓库
+git clone --depth 1 https://github.com/anYuJia/ptype.git
+cd ptype
+
+# 2. 运行启动脚本
+./start.sh
+```
+
+脚本会引导你完成：
+- ✅ 自动检测/创建 `.env` 配置文件
+- ✅ 自动生成安全密钥
+- ✅ 选择部署方式（Docker/本地）
+- ✅ 自动配置数据库
+- ✅ 启动应用服务
+
+<details>
+<summary><b>📋 启动脚本命令参考</b></summary>
+
+```bash
+# 交互式启动（推荐首次使用）
+./start.sh
+
+# Docker 部署
+./start.sh docker           # 交互式 Docker 部署
+./start.sh docker -d        # Docker 后台启动
+./start.sh docker -b -d     # 重新构建并后台启动
+
+# 本地部署
+./start.sh local            # 本地开发模式
+
+# 其他
+./start.sh setup            # 仅配置 .env 文件
+./start.sh help             # 显示帮助
+```
+
+</details>
+
+---
+
+### 手动部署
+
+如果你更喜欢手动控制每一步，请参考以下指南：
+
+<details>
+<summary><b>🐳 手动 Docker 部署</b></summary>
+
+**1. 克隆仓库**
 
 ```bash
 git clone --depth 1 https://github.com/anYuJia/ptype.git
 cd ptype
 ```
 
-2. **安装依赖**
+**2. 配置环境变量**
 
 ```bash
-npm install
-# 或者使用 pnpm / yarn
-pnpm install
+cp .env.example .env
 ```
 
-3. **配置环境变量**
+编辑 `.env` 文件，设置安全密钥：
 
-复制环境变量模板并修改配置：
+```env
+# 数据库配置
+DB_USER=ptype
+DB_PASSWORD=ptype
+DB_NAME=ptype
+DB_PORT=5432
+
+# 安全密钥（必须修改！使用 openssl rand -base64 32 生成）
+JWT_SECRET="你的随机密钥"
+SIGNATURE_SECRET="你的随机密钥"
+
+# Cookie 设置（HTTP 环境设为 false）
+SECURE_COOKIES=false
+```
+
+**3. 启动服务**
+
+```bash
+# 构建并启动
+docker-compose up -d --build
+
+# 查看日志
+docker-compose logs -f
+```
+
+**4. 访问应用**
+
+打开浏览器访问 http://localhost:3000
+
+**常用命令：**
+
+```bash
+docker-compose logs -f web    # 查看应用日志
+docker-compose down           # 停止服务
+docker-compose down -v        # 停止并删除数据
+docker-compose restart        # 重启服务
+```
+
+</details>
+
+<details>
+<summary><b>💻 手动本地部署</b></summary>
+
+**1. 克隆仓库并安装依赖**
+
+```bash
+git clone --depth 1 https://github.com/anYuJia/ptype.git
+cd ptype
+npm install
+```
+
+**2. 配置 PostgreSQL 数据库**
+
+选择以下任一方式：
+
+**方式 A：使用 Docker 启动数据库（推荐）**
+
+```bash
+docker-compose up -d db
+```
+
+**方式 B：使用本地 PostgreSQL**
+
+```bash
+# 安装 PostgreSQL（以 Ubuntu 为例）
+sudo apt update && sudo apt install -y postgresql postgresql-contrib
+
+# 启动服务
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# 创建数据库和用户
+sudo -u postgres psql << EOF
+CREATE USER ptype WITH PASSWORD 'ptype';
+CREATE DATABASE ptype OWNER ptype;
+GRANT ALL PRIVILEGES ON DATABASE ptype TO ptype;
+EOF
+```
+
+**3. 配置环境变量**
 
 ```bash
 cp .env.example .env
@@ -176,72 +303,103 @@ cp .env.example .env
 编辑 `.env` 文件：
 
 ```env
-# 数据库连接
-DATABASE_URL="postgresql://user:password@localhost:5432/ptype?schema=public"
+# 数据库配置
+DB_USER=ptype
+DB_PASSWORD=ptype
+DB_NAME=ptype
+DB_PORT=5432
+DATABASE_URL="postgresql://ptype:ptype@localhost:5432/ptype?schema=public"
 
-# JWT 密钥（用于用户认证，请使用强随机字符串）
-JWT_SECRET="your-jwt-secret-key"
+# 安全密钥（必须修改！）
+JWT_SECRET="你的随机密钥"
+SIGNATURE_SECRET="你的随机密钥"
 
-# 签名密钥（用于请求签名验证，请使用强随机字符串）
-SIGNATURE_SECRET="your-signature-secret-key"
-
-# Cookie 安全设置
-# HTTPS 环境保持 true（默认）
-# HTTP 环境（无 SSL）必须设置为 false，否则登录后无法保持会话
-SECURE_COOKIES=true
+# Cookie 设置
+SECURE_COOKIES=false
 ```
 
-> ⚠️ **注意**：如果你的服务器没有配置 HTTPS，必须将 `SECURE_COOKIES` 设置为 `false`，否则登录后的 Cookie 无法正常工作。
-
-4. **初始化数据库**
-
-> **提示**：如果遇到 Prisma 引擎下载失败，请先设置镜像：
-> ```bash
-> export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
-> ```
+**4. 初始化数据库**
 
 ```bash
+# 设置 Prisma 国内镜像（可选，加速下载）
+export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+
+# 生成 Prisma 客户端
 npx prisma generate
+
+# 同步数据库结构
 npx prisma db push
 ```
 
-5. **启动开发服务器**
+**5. 启动应用**
 
 ```bash
+# 开发模式（热重载）
 npm run dev
+
+# 或生产模式
+npm run build && npm start
 ```
 
-打开浏览器访问 [http://localhost:3000](http://localhost:3000) 即可开始体验！
+**6. 访问应用**
 
-### 生产部署
+打开浏览器访问 http://localhost:3000
 
-#### 常规部署
+</details>
+
+---
+
+### 常见问题
+
+<details>
+<summary><b>❓ .env 文件不存在</b></summary>
 
 ```bash
-npm run build
-npm start
+cp .env.example .env
+# 然后编辑 .env 配置 JWT_SECRET 和 SIGNATURE_SECRET
 ```
 
-#### Docker 部署
+或使用启动脚本自动生成：`./start.sh setup`
 
-1. **构建镜像**
+</details>
 
+<details>
+<summary><b>❓ 容器启动报错：Environment variables not configured</b></summary>
+
+请检查 `.env` 文件中的 `JWT_SECRET` 和 `SIGNATURE_SECRET` 是否已修改为非默认值。
+
+</details>
+
+<details>
+<summary><b>❓ 登录后无法保持会话</b></summary>
+
+如果使用 HTTP（非 HTTPS）访问，请在 `.env` 中设置：
+```env
+SECURE_COOKIES=false
+```
+
+</details>
+
+<details>
+<summary><b>❓ Prisma 引擎下载失败</b></summary>
+
+设置国内镜像后重试：
 ```bash
-docker build -t ptype .
+export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
+npx prisma generate
 ```
 
-2. **运行容器**
+</details>
 
+<details>
+<summary><b>❓ PostgreSQL collation 版本不匹配</b></summary>
+
+这是系统更新后的兼容性问题，执行以下命令修复：
 ```bash
-docker run -d \
-  -p 3000:3000 \
-  --name ptype \
-  --env-file .env \
-  ptype
+sudo -u postgres psql -c "ALTER DATABASE template1 REFRESH COLLATION VERSION;"
 ```
 
-> ⚠️ **注意**：确保 `.env` 文件中包含正确的 `DATABASE_URL` 以及其他必要的环境变量。
-> 如果连接宿主机数据库，请将 `localhost` 替换为 `host.docker.internal` (Mac/Windows) 或宿主机 IP (Linux)。
+</details>
 
 ---
 

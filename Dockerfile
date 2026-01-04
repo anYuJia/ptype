@@ -1,11 +1,17 @@
 # 基础镜像
 FROM node:20-alpine AS base
 
+# 安装 OpenSSL（Prisma 需要）
+RUN apk add --no-cache openssl
+
 # 仅安装生产依赖
 FROM base AS deps
 # 查看 https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine 了解为什么需要 libc6-compat
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# 设置 npm 国内镜像源
+RUN npm config set registry https://registry.npmmirror.com
 
 # 根据首选包管理器安装依赖
 COPY package.json package-lock.json* ./
@@ -21,7 +27,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # 在构建期间禁用遥测
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 设置 Prisma 引擎镜像（加速国内下载）
+ENV PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
 
 # 生成 Prisma 客户端
 RUN npx prisma generate
@@ -33,8 +42,8 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # 创建非 root 用户
 RUN addgroup --system --gid 1001 nodejs
@@ -52,11 +61,24 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# 复制 Prisma 相关文件（用于数据库迁移）
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+
+# 复制入口脚本
+COPY --from=builder --chown=nextjs:nodejs /app/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# 使用入口脚本启动（会先运行数据库迁移）
+CMD ["./docker-entrypoint.sh"]
+
+
