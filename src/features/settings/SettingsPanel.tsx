@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, useTransition } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { useTypingStore } from '@/features/typing-test/store/typingStore';
@@ -79,7 +79,7 @@ export function SettingsPanel({
     const loadSettings = async () => {
       const res = await getUserSettings();
       if (isMounted && res.success && res.settings) {
-        const saved = (res.settings as any).customDuration;
+        const saved = (res.settings as { customDuration?: number }).customDuration;
         if (saved && typeof saved === 'number') {
           setCustomDuration(saved);
         }
@@ -204,9 +204,9 @@ export function SettingsPanel({
       </div>
 
       {/* 第二行：共享选项 + 模式特定选项 */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* 左侧：允许删除（共享） + 模式特定选项 */}
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 w-full sm:w-auto">
           {/* 允许删除 - 所有模式共享，不重新渲染 */}
           <Checkbox
             checked={typingOptions.allowBackspace}
@@ -237,17 +237,21 @@ export function SettingsPanel({
         </div>
 
         {/* 右侧：重新生成按钮 */}
-        {status === 'idle' && (
-          <motion.button
-            onClick={() => initTest(true)}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {t('regenerate')}
-          </motion.button>
-        )}
+        <div className="mt-2 sm:mt-0 w-full sm:w-auto flex justify-center sm:justify-end">
+          {status === 'idle' && (
+            <motion.button
+              onClick={() => initTest(true)}
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={!disabled ? { scale: 1.05 } : undefined}
+              whileTap={!disabled ? { scale: 0.95 } : undefined}
+              disabled={disabled}
+            >
+              {t('regenerate')}
+            </motion.button>
+          )}
+        </div>
       </div>
     </div>
   );
 }
+

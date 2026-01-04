@@ -20,6 +20,7 @@ export function TimeSelector({
 }: TimeSelectorProps) {
     const t = useTranslations('Settings');
 
+
     // Local state for the custom value to display when not active
     // If we receive a prop, use it, otherwise default to something or current duration if custom
     const [savedCustom, setSavedCustom] = useState(initialCustomDuration > 0 ? initialCustomDuration : 0);
@@ -27,19 +28,17 @@ export function TimeSelector({
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Sync state if prop updates (e.g. from server load)
-    useEffect(() => {
-        if (initialCustomDuration > 0) {
-            setSavedCustom(initialCustomDuration);
-        }
-    }, [initialCustomDuration]);
+    // Removed redundant sync effect; savedCustom is initialized directly from prop.
+
 
     // Update saved custom if current duration is non-standard
+
     useEffect(() => {
         const isStandard = DURATION_OPTIONS.includes(duration as any);
-        if (!isStandard && duration > 0) {
+        if (!isStandard && duration > 0 && savedCustom !== duration) {
             setSavedCustom(duration);
         }
-    }, [duration]);
+    }, [duration, savedCustom]);
 
     const isCustomActive = !DURATION_OPTIONS.includes(duration as any) && duration === savedCustom;
 
@@ -85,7 +84,7 @@ export function TimeSelector({
     return (
         <div className="flex items-center gap-2">
             <span className="text-sm text-gray-400 mr-2">{t('time')}</span>
-            <div className="flex gap-1 bg-gray-900/50 rounded-lg p-1">
+            <div className="flex flex-wrap gap-1 md:gap-2 bg-gray-900/50 rounded-lg p-1">
                 {DURATION_OPTIONS.map((d) => (
                     <motion.button
                         key={d}
@@ -115,13 +114,13 @@ export function TimeSelector({
                 ))}
 
                 {/* Custom Button */}
-                <div className="relative min-w-[60px]">
+                <div className="relative min-w-[48px] md:min-w-[60px]">
                     {isEditing ? (
                         <form onSubmit={handleCustomSubmit} className="relative z-20">
                             <input
                                 ref={inputRef}
                                 type="number"
-                                className="w-16 px-2 py-1.5 rounded-md text-sm font-medium bg-gray-800 text-white outline-none border border-teal-500 text-center mx-1 shadow-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="w-12 md:w-16 px-2 py-1.5 rounded-md text-sm font-medium bg-gray-800 text-white outline-none border border-teal-500 text-center mx-1 shadow-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 defaultValue={savedCustom > 0 ? savedCustom : ''}
                                 placeholder="..."
                                 onBlur={handleBlur}
