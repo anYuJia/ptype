@@ -34,7 +34,7 @@ export function TimeSelector({
     // Update saved custom if current duration is non-standard
 
     useEffect(() => {
-        const isStandard = DURATION_OPTIONS.includes(duration as any);
+        const isStandard = DURATION_OPTIONS.includes(duration as typeof DURATION_OPTIONS[number]);
         if (!isStandard && duration > 0 && savedCustom !== duration) {
             setSavedCustom(duration);
         }
