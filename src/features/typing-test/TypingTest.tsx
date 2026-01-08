@@ -144,6 +144,7 @@ export function TypingTest() {
 
   // i18n
   const t = useTranslations('Navigation');
+  const statsT = useTranslations('Stats');
 
   const tabs = [
     { id: 'practice', label: t('practice') },
@@ -288,11 +289,11 @@ export function TypingTest() {
                       status === 'running' ? (
                         <motion.button
                           onClick={restart}
-                          className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-xs sm:text-sm max-w-full"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          停止并重新开始
+                          {statsT('stopAndRestart')}
                         </motion.button>
                       ) : null
                     }
