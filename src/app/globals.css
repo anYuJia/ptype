@@ -37,6 +37,12 @@ body {
   min-height: 100vh;
 }
 
+
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
   width: 8px;

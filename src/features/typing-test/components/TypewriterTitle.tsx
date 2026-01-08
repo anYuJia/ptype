@@ -34,7 +34,7 @@ export function TypewriterTitle() {
         <div className="flex items-center gap-3 w-[180px] sm:w-[240px]">
             <div className="relative w-12 h-12 sm:w-16 sm:h-16">
                 <Image
-                    src="/logo.png"
+                    src="/ptype_logo.png"
                     alt="PType Logo"
                     fill
                     className="object-contain"

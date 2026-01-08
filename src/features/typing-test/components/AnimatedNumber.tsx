@@ -14,14 +14,14 @@ const variants = {
 
 function Digit({ char, direction }: { char: string; direction: number }) {
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block overflow-hidden">
       {/* Ghost element to reserve space and determine width */}
-      <span className="opacity-0">{char}</span>
+      <span className="opacity-0 inline-block pr-0.5">{char}</span>
 
       <AnimatePresence mode="popLayout" initial={false} custom={direction}>
         <motion.span
           key={char}
-          className="absolute inset-0"
+          className="absolute inset-0 pr-0.5"
           variants={variants}
           custom={direction}
           initial="enter"
