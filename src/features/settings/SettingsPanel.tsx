@@ -172,7 +172,7 @@ export function SettingsPanel({
       />
 
       {/* 第一行：时间、模式、难度 */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-6 w-full">
         {/* 时间选择 */}
         <TimeSelector
           duration={duration}

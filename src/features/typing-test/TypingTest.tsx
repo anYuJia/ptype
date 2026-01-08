@@ -64,10 +64,10 @@ export function TypingTest() {
     }
   }, [status]);
 
-  // Tab + Enter 快捷键重新开始
+  // Ctrl + Enter 快捷键重新开始
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && e.getModifierState('Tab')) {
+      if (e.key === 'Enter' && e.ctrlKey) {
         e.preventDefault();
         restart();
         // 重新聚焦
@@ -144,6 +144,7 @@ export function TypingTest() {
 
   // i18n
   const t = useTranslations('Navigation');
+  const statsT = useTranslations('Stats');
 
   const tabs = [
     { id: 'practice', label: t('practice') },
@@ -157,7 +158,7 @@ export function TypingTest() {
       {/* 头部 */}
       <header className="pt-8 pb-2 px-4 max-w-6xl mx-auto w-full">
         <motion.div
-          className="flex items-center justify-between"
+          className="flex flex-wrap items-center justify-between gap-3 sm:gap-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -165,7 +166,7 @@ export function TypingTest() {
           <TypewriterTitle />
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-8 relative">
+          <div className="flex items-center gap-4 sm:gap-8 relative overflow-x-auto max-w-full whitespace-nowrap">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -288,11 +289,11 @@ export function TypingTest() {
                       status === 'running' ? (
                         <motion.button
                           onClick={restart}
-                          className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
+                          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-xs sm:text-sm max-w-full"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          停止并重新开始
+                          {statsT('stopAndRestart')}
                         </motion.button>
                       ) : null
                     }

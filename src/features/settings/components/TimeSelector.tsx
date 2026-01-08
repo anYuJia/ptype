@@ -84,13 +84,13 @@ export function TimeSelector({
     return (
         <div className="flex items-center gap-2">
             <span className="text-sm text-gray-400 mr-2">{t('time')}</span>
-            <div className="flex flex-wrap gap-1 md:gap-2 bg-gray-900/50 rounded-lg p-1">
+            <div className="flex flex-nowrap gap-1 md:gap-2 bg-gray-900/50 rounded-lg p-1 overflow-x-auto max-w-full">
                 {DURATION_OPTIONS.map((d) => (
                     <motion.button
                         key={d}
                         onClick={() => !disabled && onDurationChange(d)}
                         className={`
-              px-3 py-1.5 rounded-md text-sm font-medium
+              px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium
               transition-colors duration-200 relative
               ${duration === d
                                 ? 'text-white'
@@ -133,7 +133,7 @@ export function TimeSelector({
                         <motion.button
                             onClick={!disabled ? handleCustomClick : undefined}
                             className={`
-                  w-full px-3 py-1.5 rounded-md text-sm font-medium
+                  w-full px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium
                   transition-colors duration-200 relative
                   ${isCustomActive
                                     ? 'text-white'
