@@ -157,7 +157,7 @@ export function TypingTest() {
       {/* 头部 */}
       <header className="pt-8 pb-2 px-4 max-w-6xl mx-auto w-full">
         <motion.div
-          className="flex items-center justify-between"
+          className="flex flex-wrap items-center justify-between gap-3 sm:gap-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -165,7 +165,7 @@ export function TypingTest() {
           <TypewriterTitle />
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-8 relative">
+          <div className="flex items-center gap-4 sm:gap-8 relative overflow-x-auto max-w-full whitespace-nowrap">
             {tabs.map((tab) => (
               <button
                 key={tab.id}

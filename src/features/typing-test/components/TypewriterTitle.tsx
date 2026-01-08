@@ -31,8 +31,8 @@ export function TypewriterTitle() {
     }, []);
 
     return (
-        <div className="flex items-center gap-4 w-[240px]">
-            <div className="relative w-16 h-16">
+        <div className="flex items-center gap-3 w-[180px] sm:w-[240px]">
+            <div className="relative w-12 h-12 sm:w-16 sm:h-16">
                 <Image
                     src="/logo.png"
                     alt="PType Logo"
@@ -42,7 +42,7 @@ export function TypewriterTitle() {
                 />
             </div>
             <div className="flex flex-col">
-                <h1 className="text-4xl font-bold text-teal-400 tracking-tight leading-none min-h-[40px] flex items-center">
+                <h1 className="text-3xl sm:text-4xl font-bold text-teal-400 tracking-tight leading-none min-h-[40px] flex items-center">
                     {displayedTitle}
                     {showCursor && (
                         <motion.span
