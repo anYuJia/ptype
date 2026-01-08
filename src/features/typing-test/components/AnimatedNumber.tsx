@@ -14,7 +14,7 @@ const variants = {
 
 function Digit({ char, direction }: { char: string; direction: number }) {
   return (
-    <div className="relative inline-block overflow-hidden">
+    <div className="relative inline-block">
       {/* Ghost element to reserve space and determine width */}
       <span className="opacity-0">{char}</span>
 

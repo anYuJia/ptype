@@ -128,6 +128,6 @@
             "lpm": "LPM History"
         },
         "playAgain": "Play Again",
-        "restartHint": "Press {tab} + {enter} to restart"
+        "restartHint": "Press Ctrl + Enter to restart"
     }
 }

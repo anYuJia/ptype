@@ -64,10 +64,10 @@ export function TypingTest() {
     }
   }, [status]);
 
-  // Tab + Enter 快捷键重新开始
+  // Ctrl + Enter 快捷键重新开始
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && e.getModifierState('Tab')) {
+      if (e.key === 'Enter' && e.ctrlKey) {
         e.preventDefault();
         restart();
         // 重新聚焦
