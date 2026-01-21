@@ -73,9 +73,10 @@ RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
 
-EXPOSE 3000
+# 允许 PORT 通过 build args 或环境变量传入，默认为 3000
+ARG PORT=3000
+EXPOSE ${PORT}
 
-ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # 使用入口脚本启动（会先运行数据库迁移）
