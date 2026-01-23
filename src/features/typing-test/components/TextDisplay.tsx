@@ -1,19 +1,26 @@
-'use client';
+'use client'
 
-import { memo, useMemo, useRef, useEffect, useState, useLayoutEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useShallow } from 'zustand/react/shallow';
-import { useTypingStore } from '../store/typingStore';
-import { normalizeSpecialChars } from '../utils/wpmCalculator';
-import { getLinesView } from '../utils/lineUtils';
+import {
+  memo,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+  useLayoutEffect,
+} from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { useTypingStore } from '../store/typingStore'
+import { normalizeSpecialChars } from '../utils/wpmCalculator'
+import { getLinesView } from '../utils/lineUtils'
 
 interface TextDisplayProps {
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: React.RefObject<HTMLInputElement | null>
   inputHandlers: {
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onCompositionStart: () => void;
-    onCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onCompositionStart: () => void
+    onCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   }
 }
 
@@ -23,29 +30,30 @@ const Character = memo(function Character({
   status,
   isCurrent,
 }: {
-  char: string;
-  status: 'pending' | 'correct' | 'incorrect' | 'current';
-  isCurrent: boolean;
+  char: string
+  status: 'pending' | 'correct' | 'incorrect' | 'current'
+  isCurrent: boolean
 }) {
-  const baseClass = 'inline-block transition-colors duration-100 relative';
+  const baseClass = 'inline-block transition-colors duration-100 relative'
 
   const statusClasses = {
     pending: 'text-gray-500',
     correct: 'text-emerald-400',
     incorrect: 'text-red-400',
     current: 'text-white',
-  };
+  }
 
   // Handle special chars
-  let displayChar = char;
-  if (char === ' ') displayChar = '\u00A0';
-  if (char === '\n') displayChar = '↵';
-  if (char === '\t') displayChar = '→';
+  let displayChar = char
+  if (char === ' ') displayChar = '\u00A0'
+  if (char === '\n') displayChar = '↵'
+  if (char === '\t') displayChar = '→'
 
-  const isSpecial = char === '\n' || char === '\t';
-  const isSpace = char === ' ';
+  const isSpecial = char === '\n' || char === '\t'
+  const isSpace = char === ' '
 
-  const incorrectSpaceClass = (status === 'incorrect' && isSpace) ? 'bg-red-500/30' : '';
+  const incorrectSpaceClass =
+    status === 'incorrect' && isSpace ? 'bg-red-500/30' : ''
 
   return (
     <motion.span
@@ -56,19 +64,19 @@ const Character = memo(function Character({
     >
       {displayChar}
     </motion.span>
-  );
-});
+  )
+})
 
-import { useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl'
 
-// ... 
+// ...
 
 export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cursorRef = useRef<HTMLSpanElement>(null);
-  const cursorOverlayRef = useRef<HTMLDivElement>(null); // New ref for independent cursor
-  const t = useTranslations('Common');
-  const tSettings = useTranslations('Settings');
+  const containerRef = useRef<HTMLDivElement>(null)
+  const cursorRef = useRef<HTMLSpanElement>(null)
+  const cursorOverlayRef = useRef<HTMLDivElement>(null) // New ref for independent cursor
+  const t = useTranslations('Common')
+  const tSettings = useTranslations('Settings')
 
   // Removed cursorPosition state to prevent double-renders.
   // We now use direct DOM manipulation in useLayoutEffect.
@@ -84,67 +92,67 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       mode: state.settings.mode,
       allLines: state.lines,
     }))
-  );
+  )
 
   // 自动聚焦并定位input
   useEffect(() => {
     if (inputRef.current && status !== 'finished') {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [status, inputRef]);
+  }, [status, inputRef])
 
   // Optimize cursor update: Direct DOM manipulation
   useLayoutEffect(() => {
     if (cursorRef.current && containerRef.current) {
       // Measure relative to the container usually, but here cursorRef is inside container.
       // We want the checks to be fast.
-      const charEl = cursorRef.current;
+      const charEl = cursorRef.current
 
-      const left = charEl.offsetLeft;
-      const top = charEl.offsetTop;
-      const width = charEl.offsetWidth;
-      const height = charEl.offsetHeight;
+      const left = charEl.offsetLeft
+      const top = charEl.offsetTop
+      const width = charEl.offsetWidth
+      const height = charEl.offsetHeight
 
       // 1. Update Input Position (Invisible)
       if (inputRef.current) {
-        inputRef.current.style.left = `${left}px`;
-        inputRef.current.style.top = `${top}px`;
+        inputRef.current.style.left = `${left}px`
+        inputRef.current.style.top = `${top}px`
       }
 
       // 2. Update Visual Cursor Position (Direct transform)
       if (cursorOverlayRef.current) {
-        cursorOverlayRef.current.style.display = 'block';
-        cursorOverlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
-        cursorOverlayRef.current.style.width = `${width}px`;
-        cursorOverlayRef.current.style.height = `${height}px`;
+        cursorOverlayRef.current.style.display = 'block'
+        cursorOverlayRef.current.style.transform = `translate(${left}px, ${top}px)`
+        cursorOverlayRef.current.style.width = `${width}px`
+        cursorOverlayRef.current.style.height = `${height}px`
       }
     } else {
       // Hide cursor if no current char (e.g. finished?)
       if (cursorOverlayRef.current && status === 'finished') {
-        cursorOverlayRef.current.style.display = 'none';
+        cursorOverlayRef.current.style.display = 'none'
       }
     }
-  }, [typedText, status]); // Re-run when text changes
+  }, [typedText, status]) // Re-run when text changes
 
   // 计算每个字符的状态 - 移除原有的大数组 map，改为渲染时计算
   // 保持 normalized 字符串缓存
   const normalizedDisplay = useMemo(() => {
-    return normalizeSpecialChars(displayText).normalize('NFC');
-  }, [displayText]);
+    return normalizeSpecialChars(displayText).normalize('NFC')
+  }, [displayText])
 
   const normalizedTyped = useMemo(() => {
-    return normalizeSpecialChars(typedText).normalize('NFC');
-  }, [typedText]);
+    return normalizeSpecialChars(typedText).normalize('NFC')
+  }, [typedText])
 
   // 1. 获取显示视图（每次输入变动时运行）- Light operation
   // allLines 已经在 store 中计算好了，直接使用
   const displayLines = useMemo(() => {
-    return getLinesView(allLines, typedText.length);
-  }, [allLines, typedText]);
+    return getLinesView(allLines, typedText.length)
+  }, [allLines, typedText])
 
   // 构建渲染列表
   const linesToRender = useMemo(() => {
-    const lines = [];
+    const lines = []
 
     // 只有当 prevLine 有效且不与 currentLine 重叠（针对第一行的情况）时才添加
     if (displayLines.prevLineStart !== displayLines.currentLineStart) {
@@ -153,8 +161,8 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         text: displayLines.prevLine,
         start: displayLines.prevLineStart,
         hasNewline: displayLines.prevLineHasNewline,
-        type: 'prev' as const
-      });
+        type: 'prev' as const,
+      })
     }
 
     lines.push({
@@ -162,8 +170,8 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
       text: displayLines.currentLine,
       start: displayLines.currentLineStart,
       hasNewline: displayLines.currentLineHasNewline,
-      type: 'current' as const
-    });
+      type: 'current' as const,
+    })
 
     // 只有当 nextLine 存在时才添加
     if (displayLines.nextLineStart > displayLines.currentLineStart) {
@@ -172,83 +180,106 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         text: displayLines.nextLine,
         start: displayLines.nextLineStart,
         hasNewline: displayLines.nextLineHasNewline,
-        type: 'next' as const
-      });
+        type: 'next' as const,
+      })
     }
 
-    return lines;
-  }, [displayLines]);
+    return lines
+  }, [displayLines])
 
-  const renderLineContent = (lineText: string, startOffset: number, hasNewline: boolean) => {
-    if (!lineText && !hasNewline) return <span className="inline-block w-full">&nbsp;</span>; // 保持空行高度
+  const renderLineContent = (
+    lineText: string,
+    startOffset: number,
+    hasNewline: boolean
+  ) => {
+    if (!lineText && !hasNewline)
+      return <span className="inline-block w-full">&nbsp;</span> // 保持空行高度
 
     // 注意：lineText 是原始文本，而我们需要显示 normalizedDisplay 对应的字符
     // 假设长度一致（normalizeSpecialChars 大多是 1:1 替换，除了省略号等少数情况）
     // 如果长度不一致，这里的逻辑会从 normalizedDisplay 取出对应的字符，保持对齐
 
-    const chars = lineText.split('');
+    const chars = lineText.split('')
     const result = chars.map((_, i) => {
-      const globalIndex = startOffset + i;
+      const globalIndex = startOffset + i
 
       // 直接获取 normalized 字符和状态
       // 如果超出 normalizedDisplay 范围（比如 TextDisplay logic bug），fallback 到 lineText char
-      const displayChar = normalizedDisplay[globalIndex] ?? lineText[i];
-      if (!displayChar) return null;
+      const displayChar = normalizedDisplay[globalIndex] ?? lineText[i]
+      if (!displayChar) return null
 
-      let charStatus: 'pending' | 'correct' | 'incorrect' | 'current';
+      let charStatus: 'pending' | 'correct' | 'incorrect' | 'current'
 
       if (globalIndex < normalizedTyped.length) {
         // 比较 normalized 的字符
-        charStatus = normalizedTyped[globalIndex] === displayChar ? 'correct' : 'incorrect';
-      } else if (globalIndex === normalizedTyped.length && status !== 'finished') {
-        charStatus = 'current';
+        charStatus =
+          normalizedTyped[globalIndex] === displayChar ? 'correct' : 'incorrect'
+      } else if (
+        globalIndex === normalizedTyped.length &&
+        status !== 'finished'
+      ) {
+        charStatus = 'current'
       } else {
-        charStatus = 'pending';
+        charStatus = 'pending'
       }
 
-      const isCurrent = charStatus === 'current';
+      const isCurrent = charStatus === 'current'
 
       return (
-        <span key={globalIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+        <span
+          key={globalIndex}
+          ref={isCurrent ? cursorRef : null}
+          className="relative inline-block"
+        >
           <Character
             char={displayChar}
             status={charStatus}
             isCurrent={isCurrent}
           />
         </span>
-      );
-    });
+      )
+    })
 
     if (hasNewline) {
-      const newlineIndex = startOffset + chars.length;
+      const newlineIndex = startOffset + chars.length
       // 这里的 newline char 通常在 normalizedDisplay 也是 \n
-      const newlineChar = normalizedDisplay[newlineIndex] ?? '\n';
+      const newlineChar = normalizedDisplay[newlineIndex] ?? '\n'
 
-      let newlineStatus: 'pending' | 'correct' | 'incorrect' | 'current';
+      let newlineStatus: 'pending' | 'correct' | 'incorrect' | 'current'
 
       if (newlineIndex < normalizedTyped.length) {
-        newlineStatus = normalizedTyped[newlineIndex] === newlineChar ? 'correct' : 'incorrect';
-      } else if (newlineIndex === normalizedTyped.length && status !== 'finished') {
-        newlineStatus = 'current';
+        newlineStatus =
+          normalizedTyped[newlineIndex] === newlineChar
+            ? 'correct'
+            : 'incorrect'
+      } else if (
+        newlineIndex === normalizedTyped.length &&
+        status !== 'finished'
+      ) {
+        newlineStatus = 'current'
       } else {
-        newlineStatus = 'pending';
+        newlineStatus = 'pending'
       }
 
-      const isCurrent = newlineStatus === 'current';
+      const isCurrent = newlineStatus === 'current'
 
       result.push(
-        <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+        <span
+          key={newlineIndex}
+          ref={isCurrent ? cursorRef : null}
+          className="relative inline-block"
+        >
           <Character
             char={newlineChar}
             status={newlineStatus}
             isCurrent={isCurrent}
           />
         </span>
-      );
+      )
     }
 
-    return result;
-  };
+    return result
+  }
 
   return (
     <div className="relative">
@@ -271,7 +302,7 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         style={{
           position: 'absolute',
           left: 0, // Controlled by useLayoutEffect
-          top: 0,  // Controlled by useLayoutEffect
+          top: 0, // Controlled by useLayoutEffect
           width: '1px',
           height: '1em',
           zIndex: 10,
@@ -304,12 +335,12 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
           style={{
             left: 0,
             top: 0,
-            display: 'none' // Hidden until layout effect works
+            display: 'none', // Hidden until layout effect works
           }}
         />
         <AnimatePresence mode="popLayout" initial={false}>
           {linesToRender.map((line) => {
-            const isCurrent = line.type === 'current';
+            const isCurrent = line.type === 'current'
 
             return (
               <motion.div
@@ -320,23 +351,26 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
                   opacity: isCurrent ? 1 : 0.5,
                   y: 0,
                   scale: isCurrent ? 1 : 0.9,
-                  originX: 0
+                  originX: 0,
                 }}
                 exit={{ opacity: 0, y: -20, scale: 0.9 }}
                 transition={{
-                  type: "spring",
+                  type: 'spring',
                   stiffness: 500,
                   damping: 30,
-                  mass: 1
+                  mass: 1,
                 }}
-                className={`w-full break-words ${isCurrent
-                  ? (mode === 'coder' ? 'text-lg md:text-xl' : 'text-xl md:text-2xl')
-                  : 'text-base'
-                  } min-h-[1.5em]`}
+                className={`w-full break-words ${
+                  isCurrent
+                    ? mode === 'coder'
+                      ? 'text-lg md:text-xl'
+                      : 'text-xl md:text-2xl'
+                    : 'text-base'
+                } min-h-[1.5em]`}
               >
                 {renderLineContent(line.text, line.start, line.hasNewline)}
               </motion.div>
-            );
+            )
           })}
         </AnimatePresence>
       </div>
@@ -347,5 +381,5 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         {mode === 'chinese' && tSettings('modeDescriptions.chinese')}
       </div>
     </div>
-  );
+  )
 }

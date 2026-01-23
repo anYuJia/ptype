@@ -1,41 +1,61 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useShallow } from 'zustand/react/shallow';
-import { useTypingStore } from '@/features/typing-test/store/typingStore';
-import { TextDisplay } from '@/features/typing-test/components/TextDisplay';
-import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay';
-import { Header } from '@/features/typing-test/components/Header';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import { AuthModal } from '@/features/auth/components/AuthModal';
-import { SettingsPanel } from '@/features/settings/SettingsPanel';
-import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
-import { saveTypingResult } from '@/features/history/actions';
-import { sign } from '@/lib/security';
-import { useTranslations } from 'next-intl';
-import { useBattleSocket } from '@/features/battle/hooks/useBattleSocket';
-import { BattleLobby } from '@/features/battle/components/BattleLobby';
-import { BattleArena } from '@/features/battle/components/BattleArena';
-import { BattleTabContent } from '@/features/typing-test/components/BattleTabContent';
+import { useState, useEffect, useCallback, useRef } from 'react'
+import dynamic from 'next/dynamic'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { useTypingStore } from '@/features/typing-test/store/typingStore'
+import { TextDisplay } from '@/features/typing-test/components/TextDisplay'
+import { StatsDisplay } from '@/features/typing-test/components/StatsDisplay'
+import { Header } from '@/features/typing-test/components/Header'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { AuthModal } from '@/features/auth/components/AuthModal'
+import { SettingsPanel } from '@/features/settings/SettingsPanel'
+import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine'
+import { saveTypingResult } from '@/features/history/actions'
+import { sign } from '@/lib/security'
+import { useTranslations } from 'next-intl'
+import { useBattleSocket } from '@/features/battle/hooks/useBattleSocket'
+import { BattleLobby } from '@/features/battle/components/BattleLobby'
+import { BattleArena } from '@/features/battle/components/BattleArena'
+import { BattleTabContent } from '@/features/typing-test/components/BattleTabContent'
 
 // Lazy Load Heavy Components to optimize initial render and bundle size
-const ResultsCard = dynamic(() => import('@/features/typing-test/components/ResultsCard').then(mod => mod.ResultsCard), {
-  loading: () => <TabLoading />,
-});
+const ResultsCard = dynamic(
+  () =>
+    import('@/features/typing-test/components/ResultsCard').then(
+      (mod) => mod.ResultsCard
+    ),
+  {
+    loading: () => <TabLoading />,
+  }
+)
 
-const Leaderboard = dynamic(() => import('@/features/leaderboard/components/Leaderboard').then(mod => mod.Leaderboard), {
-  loading: () => <TabLoading />,
-});
+const Leaderboard = dynamic(
+  () =>
+    import('@/features/leaderboard/components/Leaderboard').then(
+      (mod) => mod.Leaderboard
+    ),
+  {
+    loading: () => <TabLoading />,
+  }
+)
 
-const History = dynamic(() => import('@/features/history/components/History').then(mod => mod.History), {
-  loading: () => <TabLoading />,
-});
+const History = dynamic(
+  () =>
+    import('@/features/history/components/History').then((mod) => mod.History),
+  {
+    loading: () => <TabLoading />,
+  }
+)
 
-const Profile = dynamic(() => import('@/features/profile/components/Profile').then(mod => mod.Profile), {
-  loading: () => <TabLoading />,
-});
+const Profile = dynamic(
+  () =>
+    import('@/features/profile/components/Profile').then((mod) => mod.Profile),
+  {
+    loading: () => <TabLoading />,
+  }
+)
 
 // Loading Skeleton/Spinner for Tabs
 function TabLoading() {
@@ -43,54 +63,54 @@ function TabLoading() {
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="w-10 h-10 border-4 border-gray-800 border-t-teal-500 rounded-full animate-spin" />
     </div>
-  );
+  )
 }
 
 export function TypingTest() {
-  const { openAuthModal, user, isAuthenticated, logout } = useAuthStore();
+  const { openAuthModal, user, isAuthenticated, logout } = useAuthStore()
 
   // 只获取必要的 action 和 状态
   // status 用于切换视图
   // inputHandlers 用于 TextDisplay 输入控制 (保留 useTypingEngine hook 来处理复杂的输入逻辑)
-  const { restart, inputHandlers } = useTypingEngine();
+  const { restart, inputHandlers } = useTypingEngine()
 
   // 使用 shallow selector 订阅 status，避免频繁重绘
-  const status = useTypingStore(useShallow(state => state.status));
+  const status = useTypingStore(useShallow((state) => state.status))
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // 自动聚焦到隐藏的 input
   useEffect(() => {
     if (inputRef.current && status !== 'finished') {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [status]);
+  }, [status])
 
   // Tab + Enter 快捷键重新开始
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Enter' && e.getModifierState('Tab')) {
-        e.preventDefault();
-        restart();
+        e.preventDefault()
+        restart()
         // 重新聚焦
-        setTimeout(() => inputRef.current?.focus(), 0);
+        setTimeout(() => inputRef.current?.focus(), 0)
       }
     },
     [restart]
-  );
+  )
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   // Save result when test finishes
   // 使用 subscribe 避免在 render 中依赖经常变化的 wpm 等状态
-  const savedRef = useRef(false);
+  const savedRef = useRef(false)
   useEffect(() => {
     // 重置 saved 标志
     if (status === 'running') {
-      savedRef.current = false;
+      savedRef.current = false
     }
 
     // 订阅 store 变化以检测完成时刻并保存
@@ -100,52 +120,59 @@ export function TypingTest() {
         // 检查用户是否登录
         // 注意：这里需要从闭包中获取 isAuthenticated 和 user，或者直接从 AuthStore 获取
         // 由于 AuthStore 是外部 store，我们可以直接用 useAuthStore.getState()
-        const { user, isAuthenticated } = useAuthStore.getState();
+        const { user, isAuthenticated } = useAuthStore.getState()
 
         if (isAuthenticated && user) {
-          savedRef.current = true;
-          const { cpm, accuracy, settings } = state;
+          savedRef.current = true
+          const { cpm, accuracy, settings } = state
 
           const saveResult = async () => {
             try {
-              console.log('Saving result from TypingTest...');
+              console.log('Saving result from TypingTest...')
 
               const resultData = {
                 cpm, // Store CPM for ALL modes (Source of truth)
                 accuracy,
                 mode: settings.mode,
-                subMode: settings.mode === 'chinese' ? settings.chineseStyle : settings.mode === 'coder' ? settings.programmingLanguage : null,
+                subMode:
+                  settings.mode === 'chinese'
+                    ? settings.chineseStyle
+                    : settings.mode === 'coder'
+                      ? settings.programmingLanguage
+                      : null,
                 difficulty: settings.difficulty,
                 duration: settings.duration,
-              };
+              }
 
               // 生成请求签名
-              const signature = await sign(resultData);
+              const signature = await sign(resultData)
 
-              const res = await saveTypingResult(resultData, signature);
+              const res = await saveTypingResult(resultData, signature)
 
               if (res.success) {
-                console.log('Result saved successfully');
+                console.log('Result saved successfully')
               } else {
-                console.error('Failed to save result:', res.error);
+                console.error('Failed to save result:', res.error)
               }
             } catch (error) {
-              console.error('Failed to save result:', error);
+              console.error('Failed to save result:', error)
             }
-          };
-          saveResult();
+          }
+          saveResult()
         }
       }
-    });
+    })
 
-    return unsubscribe;
-  }, [status]); // status 依赖主要是为了重置 savedRef
+    return unsubscribe
+  }, [status]) // status 依赖主要是为了重置 savedRef
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'battle' | 'history' | 'profile'>('practice');
+  const [activeTab, setActiveTab] = useState<
+    'practice' | 'leaderboard' | 'battle' | 'history' | 'profile'
+  >('practice')
 
   // i18n
-  const t = useTranslations('Navigation');
+  const t = useTranslations('Navigation')
 
   const tabs = [
     { id: 'practice', label: t('practice') },
@@ -153,7 +180,7 @@ export function TypingTest() {
     { id: 'battle', label: t('battle') },
     { id: 'history', label: t('history') },
     { id: 'profile', label: t('profile') },
-  ] as const;
+  ] as const
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-200 flex flex-col">
@@ -219,12 +246,22 @@ export function TypingTest() {
                 className="flex flex-col items-center justify-center min-h-[400px] text-gray-500"
               >
                 <div className="w-16 h-16 mb-4 rounded-full bg-gray-900/50 flex items-center justify-center">
-                  <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  <svg
+                    className="w-8 h-8 opacity-50"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-300 mb-2">
-                  {tabs.find(t => t.id === activeTab)?.label} 模块开发中
+                  {tabs.find((t) => t.id === activeTab)?.label} 模块开发中
                 </h3>
                 <p className="text-sm">敬请期待更多精彩功能</p>
               </motion.div>
@@ -234,5 +271,5 @@ export function TypingTest() {
       </main>
       <AuthModal />
     </div>
-  );
+  )
 }

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
     "test": "vitest"
   },
   "dependencies": {
@@ -36,7 +37,9 @@
     "@vitejs/plugin-react": "^5.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.6",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^27.2.0",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.15"

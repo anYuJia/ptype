@@ -1,51 +1,44 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { useShallow } from 'zustand/react/shallow';
-import { useTypingStore } from '@/features/typing-test/store/typingStore';
-import { useAuthStore } from '@/features/auth/store/authStore';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { CustomTextModal } from '../typing-test/components/CustomTextModal';
-import { getCustomTexts, CustomText } from '@/features/custom-text/actions';
-import { getUserSettings, saveCustomDuration } from './actions';
-import { TypingMode } from '@/lib/constants';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { motion } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { useTypingStore } from '@/features/typing-test/store/typingStore'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { Checkbox } from '@/components/ui/Checkbox'
+import { CustomTextModal } from '../typing-test/components/CustomTextModal'
+import { getCustomTexts, CustomText } from '@/features/custom-text/actions'
+import { getUserSettings, saveCustomDuration } from './actions'
+import { TypingMode } from '@/lib/constants'
+import { useTranslations } from 'next-intl'
 import {
   TimeSelector,
   ModeSelector,
   DifficultySelector, // Added back
   SoundSelector, // keep import if it was re-exported
   ModeSpecificOptions,
-} from './components';
+} from './components'
 
 interface SettingsPanelProps {
-  disabled?: boolean;
+  disabled?: boolean
 }
 
-export function SettingsPanel({
-  disabled = false,
-}: SettingsPanelProps) {
-  const t = useTranslations('Settings');
-  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [savedTexts, setSavedTexts] = useState<CustomText[]>([]);
-  const [customDuration, setCustomDuration] = useState<number>(0);
-  const { isAuthenticated } = useAuthStore();
+export function SettingsPanel({ disabled = false }: SettingsPanelProps) {
+  const t = useTranslations('Settings')
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false)
+  const [savedTexts, setSavedTexts] = useState<CustomText[]>([])
+  const [customDuration, setCustomDuration] = useState<number>(0)
+  const { isAuthenticated } = useAuthStore()
 
   // 从 Store 获取设置和 actions
-  const {
-    settings,
-    status,
-    updateSettings,
-    initTest
-  } = useTypingStore(
+  const { settings, status, updateSettings, initTest } = useTypingStore(
     useShallow((state) => ({
       settings: state.settings,
       status: state.status,
       updateSettings: state.updateSettings,
       initTest: state.initTest,
     }))
-  );
+  )
 
   const {
     duration,
@@ -56,113 +49,136 @@ export function SettingsPanel({
     englishOptions,
     typingOptions,
     customText,
-  } = settings;
+  } = settings
 
   // Load custom texts
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
     const loadTexts = async () => {
-      const res = await getCustomTexts();
+      const res = await getCustomTexts()
       if (isMounted && res.success && res.data) {
-        setSavedTexts(res.data);
+        setSavedTexts(res.data)
       } else {
         // If failed (e.g. unauthorized), clear list
-        setSavedTexts([]);
+        setSavedTexts([])
       }
-    };
-    loadTexts();
-    return () => { isMounted = false; };
-  }, [isAuthenticated]);
+    }
+    loadTexts()
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated])
 
   // Load user settings (custom duration)
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
     const loadSettings = async () => {
-      const res = await getUserSettings();
+      const res = await getUserSettings()
       if (isMounted && res.success && res.settings) {
-        const saved = (res.settings as { customDuration?: number }).customDuration;
+        const saved = (res.settings as { customDuration?: number })
+          .customDuration
         if (saved && typeof saved === 'number') {
-          setCustomDuration(saved);
+          setCustomDuration(saved)
         }
       } else {
-        setCustomDuration(0);
+        setCustomDuration(0)
       }
-    };
-    loadSettings();
-    return () => { isMounted = false; };
-  }, [isAuthenticated]);
+    }
+    loadSettings()
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated])
 
   // Refresh list when modal closes
   useEffect(() => {
     if (!isCustomModalOpen) {
-      let isMounted = true;
+      let isMounted = true
       const loadTexts = async () => {
-        const res = await getCustomTexts();
+        const res = await getCustomTexts()
         if (isMounted && res.success && res.data) {
-          setSavedTexts(res.data);
+          setSavedTexts(res.data)
         }
-      };
-      loadTexts();
-      return () => { isMounted = false; };
+      }
+      loadTexts()
+      return () => {
+        isMounted = false
+      }
     }
-  }, [isCustomModalOpen]);
+  }, [isCustomModalOpen])
 
   // Compute selectedId as derived state
   const selectedTextId = useMemo(() => {
     if (mode === 'custom' && customText && savedTexts.length > 0) {
-      const match = savedTexts.find(t => t.content === customText);
-      return match ? match.id : '';
+      const match = savedTexts.find((t) => t.content === customText)
+      return match ? match.id : ''
     }
-    return '';
-  }, [mode, customText, savedTexts]);
+    return ''
+  }, [mode, customText, savedTexts])
 
-  const formattedSavedTexts = useMemo(() =>
-    savedTexts.map(t => ({ id: t.id, title: t.title, content: t.content })),
+  const formattedSavedTexts = useMemo(
+    () =>
+      savedTexts.map((t) => ({ id: t.id, title: t.title, content: t.content })),
     [savedTexts]
-  );
+  )
 
-  const handleModeChange = useCallback((newMode: TypingMode) => {
-    if (disabled) return;
+  const handleModeChange = useCallback(
+    (newMode: TypingMode) => {
+      if (disabled) return
 
-    if (newMode === 'custom') {
-      if (customText && customText.trim().length > 0) {
-        updateSettings({ mode: 'custom' });
-        return;
+      if (newMode === 'custom') {
+        if (customText && customText.trim().length > 0) {
+          updateSettings({ mode: 'custom' })
+          return
+        }
+        if (savedTexts.length > 0) {
+          const mostRecent = savedTexts[0]
+          updateSettings({ mode: 'custom', customText: mostRecent.content })
+          setTimeout(() => initTest(), 0)
+          return
+        }
+        setIsCustomModalOpen(true)
+      } else {
+        updateSettings({ mode: newMode })
       }
-      if (savedTexts.length > 0) {
-        const mostRecent = savedTexts[0];
-        updateSettings({ mode: 'custom', customText: mostRecent.content });
-        setTimeout(() => initTest(), 0);
-        return;
+    },
+    [disabled, customText, savedTexts, updateSettings, initTest]
+  )
+
+  const handleCustomTextConfirm = useCallback(
+    (text: string) => {
+      updateSettings({ mode: 'custom', customText: text })
+      setTimeout(() => initTest(), 0)
+    },
+    [updateSettings, initTest]
+  )
+
+  const handleCustomSelectChange = useCallback(
+    (id: string) => {
+      const selected = savedTexts.find((t) => t.id === id)
+      if (selected) {
+        updateSettings({ mode: 'custom', customText: selected.content })
+        setTimeout(() => initTest(), 0)
       }
-      setIsCustomModalOpen(true);
-    } else {
-      updateSettings({ mode: newMode });
-    }
-  }, [disabled, customText, savedTexts, updateSettings, initTest]);
+    },
+    [savedTexts, updateSettings, initTest]
+  )
 
-  const handleCustomTextConfirm = useCallback((text: string) => {
-    updateSettings({ mode: 'custom', customText: text });
-    setTimeout(() => initTest(), 0);
-  }, [updateSettings, initTest]);
+  const handleProgrammingLanguageChange = useCallback(
+    (lang: typeof programmingLanguage) => {
+      updateSettings({ programmingLanguage: lang })
+      setTimeout(() => initTest(true), 0)
+    },
+    [updateSettings, initTest]
+  )
 
-  const handleCustomSelectChange = useCallback((id: string) => {
-    const selected = savedTexts.find(t => t.id === id);
-    if (selected) {
-      updateSettings({ mode: 'custom', customText: selected.content });
-      setTimeout(() => initTest(), 0);
-    }
-  }, [savedTexts, updateSettings, initTest]);
-
-  const handleProgrammingLanguageChange = useCallback((lang: typeof programmingLanguage) => {
-    updateSettings({ programmingLanguage: lang });
-    setTimeout(() => initTest(true), 0);
-  }, [updateSettings, initTest]);
-
-  const handleCustomDurationChange = useCallback(async (newDuration: number) => {
-    setCustomDuration(newDuration);
-    await saveCustomDuration(newDuration);
-  }, []);
+  const handleCustomDurationChange = useCallback(
+    async (newDuration: number) => {
+      setCustomDuration(newDuration)
+      await saveCustomDuration(newDuration)
+    },
+    []
+  )
 
   return (
     <div className="space-y-3">
@@ -213,7 +229,7 @@ export function SettingsPanel({
             checked={typingOptions.allowBackspace}
             onChange={(checked) =>
               updateSettings({
-                typingOptions: { ...typingOptions, allowBackspace: checked }
+                typingOptions: { ...typingOptions, allowBackspace: checked },
               })
             }
             label={t('allowBackspace')}
@@ -224,9 +240,13 @@ export function SettingsPanel({
           <ModeSpecificOptions
             mode={mode}
             englishOptions={englishOptions}
-            onEnglishOptionsChange={(opts) => updateSettings({ englishOptions: opts })}
+            onEnglishOptionsChange={(opts) =>
+              updateSettings({ englishOptions: opts })
+            }
             chineseStyle={chineseStyle}
-            onChineseStyleChange={(style) => updateSettings({ chineseStyle: style })}
+            onChineseStyleChange={(style) =>
+              updateSettings({ chineseStyle: style })
+            }
             programmingLanguage={programmingLanguage}
             onProgrammingLanguageChange={handleProgrammingLanguageChange}
             savedTexts={formattedSavedTexts}
@@ -255,6 +275,5 @@ export function SettingsPanel({
         </div>
       </div>
     </div>
-  );
+  )
 }
-

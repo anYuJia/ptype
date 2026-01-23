@@ -1,218 +1,218 @@
 {
-    "Metadata": {
-        "title": "PType - Typing Practice",
-        "description": "Test and improve your typing speed with PType"
-    },
-    "HomePage": {
-        "welcome": "Welcome to PType",
-        "start": "Start Typing"
-    },
-    "Navigation": {
-        "practice": "Practice",
-        "leaderboard": "Leaderboard",
-        "history": "History",
-        "profile": "Profile",
-        "login": "Login",
-        "register": "Register",
-        "logout": "Logout",
-        "battle": "Battle"
-    },
-    "Common": {
-        "loading": "Loading...",
-        "error": "Error",
-        "success": "Success",
-        "viewOnGithub": "View on GitHub",
-        "startTyping": "Start typing to begin test..."
-    },
-    "History": {
-        "totalTests": "Total Tests",
-        "averageSpeed": "Avg Speed",
-        "bestSpeed": "Best Speed",
-        "totalTime": "Total Time",
-        "cpmTrend": "CPM Trend",
-        "recentActivity": "Recent Activity",
-        "table": {
-            "date": "Date",
-            "mode": "Mode",
-            "difficulty": "Difficulty",
-            "time": "Time",
-            "cpm": "CPM",
-            "accuracy": "Accuracy"
-        }
-    },
-    "Leaderboard": {
-        "difficulty": "Difficulty:",
-        "style": "Style:",
-        "language": "Language:",
-        "rank": "Rank",
-        "user": "User",
-        "cpm": "CPM",
-        "accuracy": "Accuracy",
-        "date": "Date"
-    },
-    "Profile": {
-        "pleaseLogin": "Please login to view your profile",
-        "joined": "Joined {date}",
-        "editProfile": "Edit Profile",
-        "avgSpeed": "Avg Speed",
-        "bestSpeed": "Best Speed",
-        "totalTests": "Tests",
-        "timeSpent": "Time Spent",
-        "statistics": "Statistics",
-        "save": "Save",
-        "cancel": "Cancel",
-        "logout": "Sign Out",
-        "activityHeatmap": "Activity Heatmap"
-    },
-    "Settings": {
-        "time": "Time:",
-        "mode": "Mode:",
-        "difficulty": "Difficulty:",
-        "difficultyLabels": {
-            "easy": "Easy",
-            "medium": "Medium",
-            "hard": "Hard"
-        },
-        "modeLabels": {
-            "english": "English",
-            "chinese": "Chinese",
-            "coder": "Coder",
-            "custom": "Custom"
-        },
-        "modeDescriptions": {
-            "english": "Common phrases & quotes",
-            "chinese": "Modern & Classical",
-            "coder": "Multi-language code",
-            "custom": "Your own text"
-        },
-        "allowBackspace": "Allow Backspace",
-        "caseSensitive": "Case Sensitive",
-        "ignorePunctuation": "Ignore Punctuation",
-        "chineseStyle": "Style:",
-        "programmingLanguage": "Language:",
-        "regenerate": "Regenerate Text",
-        "customText": "Custom Text Manager",
-        "customTextPlaceholder": "Type your custom text here...",
-        "customTitlePlaceholder": "Enter title...",
-        "editCustomText": "Manage Texts",
-        "startCustomTest": "Start Test",
-        "save": "Save",
-        "delete": "Delete",
-        "new": "New Text",
-        "savedTexts": "Saved Texts",
-        "noSavedTexts": "No saved texts found",
-        "cancel": "Cancel",
-        "titleAndContentRequired": "Title and content required",
-        "soundEnabled": "Mech Sound",
-        "soundTypeLabels": {
-            "cherry-blue": "Blue Switch",
-            "cherry-red": "Red Switch"
-        }
-    },
-    "Stats": {
-        "wpm": "WPM",
-        "cpm": "CPM",
-        "lpm": "LPM",
-        "acc": "ACC%",
-        "sec": "SEC",
-        "errors": "Errors",
-        "sublabels": {
-            "wordsPerMin": "words/min",
-            "charsPerMin": "chars/min",
-            "linesPerMin": "lines/min",
-            "seconds": "seconds",
-            "accuracy": "accuracy",
-            "errorCount": "count"
-        },
-        "stopAndRestart": "Stop & Restart"
-    },
-    "Results": {
-        "title": "Test Completed!",
-        "chartTitle": {
-            "wpm": "WPM History",
-            "cpm": "CPM History",
-            "lpm": "LPM History"
-        },
-        "playAgain": "Play Again",
-        "restartHint": "Press {tab} + {enter} to restart"
-    },
-    "Battle": {
-        "title": "Online Battle Arena",
-        "subtitle": "Challenge true typing masters. Join a lobby or create your own.",
-        "createRoom": "Create Room",
-        "createPrivate": "Create Private Match",
-        "privateDesc": "Host a custom game for friends",
-        "joinById": "Join by ID",
-        "joinBtn": "JOIN",
-        "liveRooms": "Live Rooms",
-        "refresh": "Refresh",
-        "noRooms": "No active rooms found.",
-        "beFirst": "Be the first to create one!",
-        "joinNow": "Join Now",
-        "hostRoom": "{host}'s Room",
-        "modal": {
-            "title": "Create Room",
-            "mode": "Game Mode",
-            "timeLimit": "Time Limit",
-            "difficulty": "Difficulty",
-            "textSource": "Text Source",
-            "cancel": "Cancel",
-            "create": "Create Room",
-            "modes": {
-                "race": "🏎️ Race (100%)",
-                "time": "⏱️ Time Attack"
-            },
-            "sources": {
-                "english": "English",
-                "chinese": "Chinese",
-                "coder": "Code",
-                "custom": "Custom Text"
-            },
-            "styles": {
-                "modern": "Modern",
-                "classical": "Classical"
-            },
-            "loginRequired": "Please log in to use custom texts",
-            "noCustomTexts": "No saved texts found. Add them in Settings.",
-            "loginBtn": "Log In",
-            "errors": {
-                "roomNotFound": "Room not found",
-                "roomFull": "Room is full",
-                "gameStarted": "Game already started",
-                "opponentDisconnected": "Opponent disconnected"
-            },
-            "languages": {
-                "python": "Python",
-                "javascript": "JavaScript",
-                "typescript": "TypeScript",
-                "java": "Java",
-                "cpp": "C++",
-                "c": "C",
-                "go": "Go",
-                "rust": "Rust",
-                "html": "HTML",
-                "bash": "Bash/Linux",
-                "powershell": "PowerShell",
-                "k8s": "Kubernetes (K8s)"
-            },
-            "placeholders": {
-                "customText": "Paste your text here...",
-                "code": "ENTER CODE"
-            }
-        },
-        "arena": {
-            "waiting": "Waiting for opponent...",
-            "raceProgress": "RACE IN PROGRESS",
-            "timeAttack": "TIME ATTACK",
-            "gameOver": "GAME OVER",
-            "opponent": "Opponent",
-            "you": "You",
-            "winner": "Winner!",
-            "tie": "It's a Tie!",
-            "spectating": "Spectating",
-            "leave": "Leave Room",
-            "ready": "Ready",
-            "cancelReady": "Cancel Ready"
-        }
+  "Metadata": {
+    "title": "PType - Typing Practice",
+    "description": "Test and improve your typing speed with PType"
+  },
+  "HomePage": {
+    "welcome": "Welcome to PType",
+    "start": "Start Typing"
+  },
+  "Navigation": {
+    "practice": "Practice",
+    "leaderboard": "Leaderboard",
+    "history": "History",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "battle": "Battle"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "viewOnGithub": "View on GitHub",
+    "startTyping": "Start typing to begin test..."
+  },
+  "History": {
+    "totalTests": "Total Tests",
+    "averageSpeed": "Avg Speed",
+    "bestSpeed": "Best Speed",
+    "totalTime": "Total Time",
+    "cpmTrend": "CPM Trend",
+    "recentActivity": "Recent Activity",
+    "table": {
+      "date": "Date",
+      "mode": "Mode",
+      "difficulty": "Difficulty",
+      "time": "Time",
+      "cpm": "CPM",
+      "accuracy": "Accuracy"
     }
+  },
+  "Leaderboard": {
+    "difficulty": "Difficulty:",
+    "style": "Style:",
+    "language": "Language:",
+    "rank": "Rank",
+    "user": "User",
+    "cpm": "CPM",
+    "accuracy": "Accuracy",
+    "date": "Date"
+  },
+  "Profile": {
+    "pleaseLogin": "Please login to view your profile",
+    "joined": "Joined {date}",
+    "editProfile": "Edit Profile",
+    "avgSpeed": "Avg Speed",
+    "bestSpeed": "Best Speed",
+    "totalTests": "Tests",
+    "timeSpent": "Time Spent",
+    "statistics": "Statistics",
+    "save": "Save",
+    "cancel": "Cancel",
+    "logout": "Sign Out",
+    "activityHeatmap": "Activity Heatmap"
+  },
+  "Settings": {
+    "time": "Time:",
+    "mode": "Mode:",
+    "difficulty": "Difficulty:",
+    "difficultyLabels": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "modeLabels": {
+      "english": "English",
+      "chinese": "Chinese",
+      "coder": "Coder",
+      "custom": "Custom"
+    },
+    "modeDescriptions": {
+      "english": "Common phrases & quotes",
+      "chinese": "Modern & Classical",
+      "coder": "Multi-language code",
+      "custom": "Your own text"
+    },
+    "allowBackspace": "Allow Backspace",
+    "caseSensitive": "Case Sensitive",
+    "ignorePunctuation": "Ignore Punctuation",
+    "chineseStyle": "Style:",
+    "programmingLanguage": "Language:",
+    "regenerate": "Regenerate Text",
+    "customText": "Custom Text Manager",
+    "customTextPlaceholder": "Type your custom text here...",
+    "customTitlePlaceholder": "Enter title...",
+    "editCustomText": "Manage Texts",
+    "startCustomTest": "Start Test",
+    "save": "Save",
+    "delete": "Delete",
+    "new": "New Text",
+    "savedTexts": "Saved Texts",
+    "noSavedTexts": "No saved texts found",
+    "cancel": "Cancel",
+    "titleAndContentRequired": "Title and content required",
+    "soundEnabled": "Mech Sound",
+    "soundTypeLabels": {
+      "cherry-blue": "Blue Switch",
+      "cherry-red": "Red Switch"
+    }
+  },
+  "Stats": {
+    "wpm": "WPM",
+    "cpm": "CPM",
+    "lpm": "LPM",
+    "acc": "ACC%",
+    "sec": "SEC",
+    "errors": "Errors",
+    "sublabels": {
+      "wordsPerMin": "words/min",
+      "charsPerMin": "chars/min",
+      "linesPerMin": "lines/min",
+      "seconds": "seconds",
+      "accuracy": "accuracy",
+      "errorCount": "count"
+    },
+    "stopAndRestart": "Stop & Restart"
+  },
+  "Results": {
+    "title": "Test Completed!",
+    "chartTitle": {
+      "wpm": "WPM History",
+      "cpm": "CPM History",
+      "lpm": "LPM History"
+    },
+    "playAgain": "Play Again",
+    "restartHint": "Press {tab} + {enter} to restart"
+  },
+  "Battle": {
+    "title": "Online Battle Arena",
+    "subtitle": "Challenge true typing masters. Join a lobby or create your own.",
+    "createRoom": "Create Room",
+    "createPrivate": "Create Private Match",
+    "privateDesc": "Host a custom game for friends",
+    "joinById": "Join by ID",
+    "joinBtn": "JOIN",
+    "liveRooms": "Live Rooms",
+    "refresh": "Refresh",
+    "noRooms": "No active rooms found.",
+    "beFirst": "Be the first to create one!",
+    "joinNow": "Join Now",
+    "hostRoom": "{host}'s Room",
+    "modal": {
+      "title": "Create Room",
+      "mode": "Game Mode",
+      "timeLimit": "Time Limit",
+      "difficulty": "Difficulty",
+      "textSource": "Text Source",
+      "cancel": "Cancel",
+      "create": "Create Room",
+      "modes": {
+        "race": "🏎️ Race (100%)",
+        "time": "⏱️ Time Attack"
+      },
+      "sources": {
+        "english": "English",
+        "chinese": "Chinese",
+        "coder": "Code",
+        "custom": "Custom Text"
+      },
+      "styles": {
+        "modern": "Modern",
+        "classical": "Classical"
+      },
+      "loginRequired": "Please log in to use custom texts",
+      "noCustomTexts": "No saved texts found. Add them in Settings.",
+      "loginBtn": "Log In",
+      "errors": {
+        "roomNotFound": "Room not found",
+        "roomFull": "Room is full",
+        "gameStarted": "Game already started",
+        "opponentDisconnected": "Opponent disconnected"
+      },
+      "languages": {
+        "python": "Python",
+        "javascript": "JavaScript",
+        "typescript": "TypeScript",
+        "java": "Java",
+        "cpp": "C++",
+        "c": "C",
+        "go": "Go",
+        "rust": "Rust",
+        "html": "HTML",
+        "bash": "Bash/Linux",
+        "powershell": "PowerShell",
+        "k8s": "Kubernetes (K8s)"
+      },
+      "placeholders": {
+        "customText": "Paste your text here...",
+        "code": "ENTER CODE"
+      }
+    },
+    "arena": {
+      "waiting": "Waiting for opponent...",
+      "raceProgress": "RACE IN PROGRESS",
+      "timeAttack": "TIME ATTACK",
+      "gameOver": "GAME OVER",
+      "opponent": "Opponent",
+      "you": "You",
+      "winner": "Winner!",
+      "tie": "It's a Tie!",
+      "spectating": "Spectating",
+      "leave": "Leave Room",
+      "ready": "Ready",
+      "cancelReady": "Cancel Ready"
+    }
+  }
 }

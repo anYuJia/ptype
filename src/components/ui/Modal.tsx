@@ -1,32 +1,32 @@
-'use client';
+'use client'
 
-import { ReactNode, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ReactNode, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  title?: string;
+  isOpen: boolean
+  onClose: () => void
+  children: ReactNode
+  title?: string
 }
 
 export function Modal({ isOpen, onClose, children, title }: ModalProps) {
   // ESC 键关闭
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+      if (e.key === 'Escape') onClose()
+    }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEsc);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener('keydown', handleEsc)
+      document.body.style.overflow = 'hidden'
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEsc);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
+      document.removeEventListener('keydown', handleEsc)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen, onClose])
 
   return (
     <AnimatePresence>
@@ -69,5 +69,5 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
         </>
       )}
     </AnimatePresence>
-  );
+  )
 }

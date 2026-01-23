@@ -22,38 +22,41 @@ src/lib/security/
 
 ```tsx
 // 在组件中使用
-import { sign } from '@/lib/security';
+import { sign } from '@/lib/security'
 
 const MyComponent = () => {
-    const handleSubmit = async (data) => {
-        // 生成签名
-        const signature = await sign(data);
-        
-        // 调用 action 时传入签名
-        const result = await myServerAction(data, signature);
-    };
-};
+  const handleSubmit = async (data) => {
+    // 生成签名
+    const signature = await sign(data)
+
+    // 调用 action 时传入签名
+    const result = await myServerAction(data, signature)
+  }
+}
 ```
 
 ### 2. 服务端 - 验证签名
 
 ```typescript
 // 在 action 中验证
-'use server';
+'use server'
 
-import { verifyAdvancedSignature, AdvancedSignaturePayload } from '@/lib/security/verifier';
+import {
+  verifyAdvancedSignature,
+  AdvancedSignaturePayload,
+} from '@/lib/security/verifier'
 
 export async function myProtectedAction(
-    data: MyDataType,
-    signature?: AdvancedSignaturePayload
+  data: MyDataType,
+  signature?: AdvancedSignaturePayload
 ) {
-    // 验证签名
-    const verification = await verifyAdvancedSignature(signature, data);
-    if (!verification.valid) {
-        return { success: false, error: verification.error };
-    }
-    
-    // 继续处理业务逻辑...
+  // 验证签名
+  const verification = await verifyAdvancedSignature(signature, data)
+  if (!verification.valid) {
+    return { success: false, error: verification.error }
+  }
+
+  // 继续处理业务逻辑...
 }
 ```
 
@@ -78,6 +81,7 @@ SIGNATURE_SECRET="你的密钥-请使用强随机字符串"
 ## 注意事项
 
 ⚠️ **重要提示**：
+
 - 前端代码永远无法完全防止逆向工程
 - 此系统增加了攻击成本，但不能替代服务端的身份验证和授权
 - 生产环境应使用 Redis 存储 nonce 而不是内存 Set

@@ -1,218 +1,218 @@
 {
-    "Metadata": {
-        "title": "PType - 打字练习",
-        "description": "使用 PType 测试并提升你的打字速度"
-    },
-    "HomePage": {
-        "welcome": "欢迎使用 PType",
-        "start": "开始打字"
-    },
-    "Navigation": {
-        "practice": "练习",
-        "leaderboard": "排行",
-        "history": "历史",
-        "profile": "我的",
-        "login": "登录",
-        "register": "注册",
-        "logout": "退出",
-        "battle": "对战"
-    },
-    "Common": {
-        "loading": "加载中...",
-        "error": "错误",
-        "success": "成功",
-        "viewOnGithub": "在 GitHub 上查看",
-        "startTyping": "开始输入以开始测试..."
-    },
-    "History": {
-        "totalTests": "总测试数",
-        "averageSpeed": "平均速度",
-        "bestSpeed": "最高速度",
-        "totalTime": "总练习时长",
-        "cpmTrend": "CPM 趋势",
-        "recentActivity": "最近练习",
-        "table": {
-            "date": "日期",
-            "mode": "模式",
-            "difficulty": "难度",
-            "time": "时长",
-            "cpm": "CPM",
-            "accuracy": "准确率"
-        }
-    },
-    "Leaderboard": {
-        "difficulty": "难度:",
-        "style": "文体:",
-        "language": "语言:",
-        "rank": "排名",
-        "user": "用户",
-        "cpm": "CPM",
-        "accuracy": "准确率",
-        "date": "日期"
-    },
-    "Profile": {
-        "pleaseLogin": "请登录以查看您的个人资料",
-        "joined": "加入于 {date}",
-        "editProfile": "编辑资料",
-        "avgSpeed": "平均速度",
-        "bestSpeed": "最高速度",
-        "totalTests": "测试次数",
-        "timeSpent": "总时长",
-        "statistics": "统计数据",
-        "save": "保存",
-        "cancel": "取消",
-        "logout": "退出登录",
-        "activityHeatmap": "活跃度热力图"
-    },
-    "Settings": {
-        "time": "时间:",
-        "mode": "模式:",
-        "difficulty": "难度:",
-        "difficultyLabels": {
-            "easy": "简单",
-            "medium": "中等",
-            "hard": "困难"
-        },
-        "modeLabels": {
-            "english": "英文",
-            "chinese": "中文",
-            "coder": "代码",
-            "custom": "自定义"
-        },
-        "modeDescriptions": {
-            "english": "常用短语和名言",
-            "chinese": "现代文与文言文",
-            "coder": "多语言代码片段",
-            "custom": "使用您自己的文本"
-        },
-        "allowBackspace": "允许退格",
-        "caseSensitive": "区分大小写",
-        "ignorePunctuation": "忽略标点",
-        "chineseStyle": "文体:",
-        "programmingLanguage": "语言:",
-        "regenerate": "重新生成",
-        "customText": "自定义文本管理",
-        "customTextPlaceholder": "在此输入您的自定义文本...",
-        "customTitlePlaceholder": "输入标题...",
-        "editCustomText": "管理文本",
-        "startCustomTest": "开始测试",
-        "save": "保存",
-        "delete": "删除",
-        "new": "新建文本",
-        "savedTexts": "已保存文本",
-        "noSavedTexts": "暂无保存的文本",
-        "cancel": "取消",
-        "titleAndContentRequired": "标题和内容不能为空",
-        "soundEnabled": "机械音效",
-        "soundTypeLabels": {
-            "cherry-blue": "青轴",
-            "cherry-red": "红轴"
-        }
-    },
-    "Stats": {
-        "wpm": "WPM",
-        "cpm": "CPM",
-        "lpm": "LPM",
-        "acc": "ACC%",
-        "sec": "SEC",
-        "errors": "Errors",
-        "sublabels": {
-            "wordsPerMin": "单词/分钟",
-            "charsPerMin": "字符/分钟",
-            "linesPerMin": "行/分钟",
-            "seconds": "秒",
-            "accuracy": "准确率",
-            "errorCount": "错误数"
-        },
-        "stopAndRestart": "停止并重新开始"
-    },
-    "Results": {
-        "title": "测试完成！",
-        "chartTitle": {
-            "wpm": "WPM 变化曲线",
-            "cpm": "CPM 变化曲线",
-            "lpm": "LPM 变化曲线"
-        },
-        "playAgain": "再来一次",
-        "restartHint": "按 {tab} + {enter} 重新开始"
-    },
-    "Battle": {
-        "title": "在线对战竞技场",
-        "subtitle": "挑战真正的打字高手。加入房间或创建您原本的对战。",
-        "createRoom": "创建房间",
-        "createPrivate": "创建私人对局",
-        "privateDesc": "与好友进行自定义对战",
-        "joinById": "通过 ID 加入",
-        "joinBtn": "加入",
-        "liveRooms": "正在进行的房间",
-        "refresh": "刷新",
-        "noRooms": "暂无活跃房间。",
-        "beFirst": "成为第一个创建者！",
-        "joinNow": "立即加入",
-        "hostRoom": "{host} 的房间",
-        "modal": {
-            "title": "创建房间",
-            "mode": "游戏模式",
-            "timeLimit": "时间限制",
-            "difficulty": "难度",
-            "textSource": "文本来源",
-            "cancel": "取消",
-            "create": "创建房间",
-            "modes": {
-                "race": "🏎️ 竞速模式 (100%)",
-                "time": "⏱️ 限时挑战"
-            },
-            "sources": {
-                "english": "英文",
-                "chinese": "中文",
-                "coder": "代码",
-                "custom": "自定义文本"
-            },
-            "styles": {
-                "modern": "现代文",
-                "classical": "文言文"
-            },
-            "loginRequired": "请登录以使用自定义文本",
-            "noCustomTexts": "未找到文本，请在设置中添加",
-            "loginBtn": "登录",
-            "errors": {
-                "roomNotFound": "房间不存在",
-                "roomFull": "房间已满",
-                "gameStarted": "比赛已开始",
-                "opponentDisconnected": "对手已断开连接"
-            },
-            "languages": {
-                "python": "Python",
-                "javascript": "JavaScript",
-                "typescript": "TypeScript",
-                "java": "Java",
-                "cpp": "C++",
-                "c": "C",
-                "go": "Go",
-                "rust": "Rust",
-                "html": "HTML",
-                "bash": "Bash/Linux",
-                "powershell": "PowerShell",
-                "k8s": "Kubernetes (K8s)"
-            },
-            "placeholders": {
-                "customText": "在此粘贴您的文本...",
-                "code": "输入代码"
-            }
-        },
-        "arena": {
-            "waiting": "等待对手...",
-            "raceProgress": "竞速进行中",
-            "timeAttack": "限时挑战",
-            "gameOver": "游戏结束",
-            "opponent": "对手",
-            "you": "你",
-            "winner": "获胜！",
-            "tie": "平局！",
-            "spectating": "观战中",
-            "leave": "离开房间",
-            "ready": "准备",
-            "cancelReady": "取消准备"
-        }
+  "Metadata": {
+    "title": "PType - 打字练习",
+    "description": "使用 PType 测试并提升你的打字速度"
+  },
+  "HomePage": {
+    "welcome": "欢迎使用 PType",
+    "start": "开始打字"
+  },
+  "Navigation": {
+    "practice": "练习",
+    "leaderboard": "排行",
+    "history": "历史",
+    "profile": "我的",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "battle": "对战"
+  },
+  "Common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "viewOnGithub": "在 GitHub 上查看",
+    "startTyping": "开始输入以开始测试..."
+  },
+  "History": {
+    "totalTests": "总测试数",
+    "averageSpeed": "平均速度",
+    "bestSpeed": "最高速度",
+    "totalTime": "总练习时长",
+    "cpmTrend": "CPM 趋势",
+    "recentActivity": "最近练习",
+    "table": {
+      "date": "日期",
+      "mode": "模式",
+      "difficulty": "难度",
+      "time": "时长",
+      "cpm": "CPM",
+      "accuracy": "准确率"
     }
+  },
+  "Leaderboard": {
+    "difficulty": "难度:",
+    "style": "文体:",
+    "language": "语言:",
+    "rank": "排名",
+    "user": "用户",
+    "cpm": "CPM",
+    "accuracy": "准确率",
+    "date": "日期"
+  },
+  "Profile": {
+    "pleaseLogin": "请登录以查看您的个人资料",
+    "joined": "加入于 {date}",
+    "editProfile": "编辑资料",
+    "avgSpeed": "平均速度",
+    "bestSpeed": "最高速度",
+    "totalTests": "测试次数",
+    "timeSpent": "总时长",
+    "statistics": "统计数据",
+    "save": "保存",
+    "cancel": "取消",
+    "logout": "退出登录",
+    "activityHeatmap": "活跃度热力图"
+  },
+  "Settings": {
+    "time": "时间:",
+    "mode": "模式:",
+    "difficulty": "难度:",
+    "difficultyLabels": {
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难"
+    },
+    "modeLabels": {
+      "english": "英文",
+      "chinese": "中文",
+      "coder": "代码",
+      "custom": "自定义"
+    },
+    "modeDescriptions": {
+      "english": "常用短语和名言",
+      "chinese": "现代文与文言文",
+      "coder": "多语言代码片段",
+      "custom": "使用您自己的文本"
+    },
+    "allowBackspace": "允许退格",
+    "caseSensitive": "区分大小写",
+    "ignorePunctuation": "忽略标点",
+    "chineseStyle": "文体:",
+    "programmingLanguage": "语言:",
+    "regenerate": "重新生成",
+    "customText": "自定义文本管理",
+    "customTextPlaceholder": "在此输入您的自定义文本...",
+    "customTitlePlaceholder": "输入标题...",
+    "editCustomText": "管理文本",
+    "startCustomTest": "开始测试",
+    "save": "保存",
+    "delete": "删除",
+    "new": "新建文本",
+    "savedTexts": "已保存文本",
+    "noSavedTexts": "暂无保存的文本",
+    "cancel": "取消",
+    "titleAndContentRequired": "标题和内容不能为空",
+    "soundEnabled": "机械音效",
+    "soundTypeLabels": {
+      "cherry-blue": "青轴",
+      "cherry-red": "红轴"
+    }
+  },
+  "Stats": {
+    "wpm": "WPM",
+    "cpm": "CPM",
+    "lpm": "LPM",
+    "acc": "ACC%",
+    "sec": "SEC",
+    "errors": "Errors",
+    "sublabels": {
+      "wordsPerMin": "单词/分钟",
+      "charsPerMin": "字符/分钟",
+      "linesPerMin": "行/分钟",
+      "seconds": "秒",
+      "accuracy": "准确率",
+      "errorCount": "错误数"
+    },
+    "stopAndRestart": "停止并重新开始"
+  },
+  "Results": {
+    "title": "测试完成！",
+    "chartTitle": {
+      "wpm": "WPM 变化曲线",
+      "cpm": "CPM 变化曲线",
+      "lpm": "LPM 变化曲线"
+    },
+    "playAgain": "再来一次",
+    "restartHint": "按 {tab} + {enter} 重新开始"
+  },
+  "Battle": {
+    "title": "在线对战竞技场",
+    "subtitle": "挑战真正的打字高手。加入房间或创建您原本的对战。",
+    "createRoom": "创建房间",
+    "createPrivate": "创建私人对局",
+    "privateDesc": "与好友进行自定义对战",
+    "joinById": "通过 ID 加入",
+    "joinBtn": "加入",
+    "liveRooms": "正在进行的房间",
+    "refresh": "刷新",
+    "noRooms": "暂无活跃房间。",
+    "beFirst": "成为第一个创建者！",
+    "joinNow": "立即加入",
+    "hostRoom": "{host} 的房间",
+    "modal": {
+      "title": "创建房间",
+      "mode": "游戏模式",
+      "timeLimit": "时间限制",
+      "difficulty": "难度",
+      "textSource": "文本来源",
+      "cancel": "取消",
+      "create": "创建房间",
+      "modes": {
+        "race": "🏎️ 竞速模式 (100%)",
+        "time": "⏱️ 限时挑战"
+      },
+      "sources": {
+        "english": "英文",
+        "chinese": "中文",
+        "coder": "代码",
+        "custom": "自定义文本"
+      },
+      "styles": {
+        "modern": "现代文",
+        "classical": "文言文"
+      },
+      "loginRequired": "请登录以使用自定义文本",
+      "noCustomTexts": "未找到文本，请在设置中添加",
+      "loginBtn": "登录",
+      "errors": {
+        "roomNotFound": "房间不存在",
+        "roomFull": "房间已满",
+        "gameStarted": "比赛已开始",
+        "opponentDisconnected": "对手已断开连接"
+      },
+      "languages": {
+        "python": "Python",
+        "javascript": "JavaScript",
+        "typescript": "TypeScript",
+        "java": "Java",
+        "cpp": "C++",
+        "c": "C",
+        "go": "Go",
+        "rust": "Rust",
+        "html": "HTML",
+        "bash": "Bash/Linux",
+        "powershell": "PowerShell",
+        "k8s": "Kubernetes (K8s)"
+      },
+      "placeholders": {
+        "customText": "在此粘贴您的文本...",
+        "code": "输入代码"
+      }
+    },
+    "arena": {
+      "waiting": "等待对手...",
+      "raceProgress": "竞速进行中",
+      "timeAttack": "限时挑战",
+      "gameOver": "游戏结束",
+      "opponent": "对手",
+      "you": "你",
+      "winner": "获胜！",
+      "tie": "平局！",
+      "spectating": "观战中",
+      "leave": "离开房间",
+      "ready": "准备",
+      "cancelReady": "取消准备"
+    }
+  }
 }

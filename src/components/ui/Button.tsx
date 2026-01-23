@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import { ReactNode } from 'react';
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { ReactNode } from 'react'
+import { motion, HTMLMotionProps } from 'framer-motion'
 
-type MotionButtonProps = HTMLMotionProps<'button'>;
+type MotionButtonProps = HTMLMotionProps<'button'>
 
 interface ButtonProps extends Omit<MotionButtonProps, 'children'> {
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
-  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
+  children: ReactNode
 }
 
 export function Button({
@@ -24,19 +24,19 @@ export function Button({
     transition-all duration-200
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900
     disabled:opacity-50 disabled:cursor-not-allowed
-  `;
+  `
 
   const variantClasses = {
     primary: 'bg-teal-500 hover:bg-teal-400 text-white focus:ring-teal-500',
     secondary: 'bg-gray-700 hover:bg-gray-600 text-white focus:ring-gray-500',
     ghost: 'bg-transparent hover:bg-gray-800 text-gray-300 focus:ring-gray-500',
-  };
+  }
 
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-6 py-3 text-lg',
-  };
+  }
 
   return (
     <motion.button
@@ -47,5 +47,5 @@ export function Button({
     >
       {children}
     </motion.button>
-  );
+  )
 }

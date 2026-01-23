@@ -1,5 +1,5 @@
-import { TypingTest } from "@/features/typing-test/TypingTest";
+import { TypingTest } from '@/features/typing-test/TypingTest'
 
 export default function Home() {
-  return <TypingTest />;
+  return <TypingTest />
 }

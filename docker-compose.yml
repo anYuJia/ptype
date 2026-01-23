@@ -5,7 +5,7 @@ services:
     container_name: ptype_db
     restart: unless-stopped
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - '${DB_PORT:-5432}:5432'
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-ptype}
       POSTGRES_USER: ${DB_USER:-ptype}
@@ -13,7 +13,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ptype} -d ${DB_NAME:-ptype}"]
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${DB_USER:-ptype} -d ${DB_NAME:-ptype}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,7 +32,7 @@ services:
     container_name: ptype_web
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - '${PORT:-3000}:${PORT:-3000}'
     env_file:
       - .env
     environment:
@@ -50,5 +51,3 @@ volumes:
 networks:
   ptype_network:
     driver: bridge
-
-
