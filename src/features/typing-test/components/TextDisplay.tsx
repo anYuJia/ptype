@@ -17,7 +17,7 @@ interface TextDisplayProps {
   }
 }
 
-// 单个字符组件
+// Single character component - Memoized
 const Character = memo(function Character({
   char,
   status,
@@ -31,21 +31,20 @@ const Character = memo(function Character({
 
   const statusClasses = {
     pending: 'text-gray-500',
-    correct: 'text-emerald-400',  // 浅绿色 - 正确
-    incorrect: 'text-red-400',     // 浅红色 - 错误
+    correct: 'text-emerald-400',
+    incorrect: 'text-red-400',
     current: 'text-white',
   };
 
-  // 处理空格和换行显示
+  // Handle special chars
   let displayChar = char;
   if (char === ' ') displayChar = '\u00A0';
-  if (char === '\n') displayChar = '↵'; // 显示换行符
-  if (char === '\t') displayChar = '→'; // Tab 显示为箭头
+  if (char === '\n') displayChar = '↵';
+  if (char === '\t') displayChar = '→';
 
   const isSpecial = char === '\n' || char === '\t';
   const isSpace = char === ' ';
 
-  // 错误空格的特殊样式
   const incorrectSpaceClass = (status === 'incorrect' && isSpace) ? 'bg-red-500/30' : '';
 
   return (
@@ -55,18 +54,6 @@ const Character = memo(function Character({
       animate={{ scale: 1 }}
       transition={{ duration: 0.1 }}
     >
-      {/* 平滑移动的光标背景 */}
-      {isCurrent && (
-        <motion.span
-          layoutId="cursor-highlight"
-          className="absolute inset-0 bg-teal-500/30 border-b-2 border-teal-400 -z-10"
-          transition={{
-            type: "spring",
-            stiffness: 500,
-            damping: 30
-          }}
-        />
-      )}
       {displayChar}
     </motion.span>
   );
@@ -79,11 +66,12 @@ import { useTranslations } from 'next-intl';
 export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLSpanElement>(null);
+  const cursorOverlayRef = useRef<HTMLDivElement>(null); // New ref for independent cursor
   const t = useTranslations('Common');
   const tSettings = useTranslations('Settings');
 
-  // Track cursor position in state for rendering
-  const [cursorPosition, setCursorPosition] = useState({ left: 0, top: 0 });
+  // Removed cursorPosition state to prevent double-renders.
+  // We now use direct DOM manipulation in useLayoutEffect.
 
   // 使用 selector 只订阅需要的状态
   const { displayText, typedText, status, mode, allLines } = useTypingStore(
@@ -105,24 +93,38 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
     }
   }, [status, inputRef]);
 
-  // Update cursor position synchronously after layout using useLayoutEffect
-  // This is a valid pattern for synchronizing UI state with DOM measurements
+  // Optimize cursor update: Direct DOM manipulation
   useLayoutEffect(() => {
-    if (cursorRef.current) {
-      const newPos = {
-        left: cursorRef.current.offsetLeft || 0,
-        top: cursorRef.current.offsetTop || 0,
-      };
-      // Only update if position actually changed
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCursorPosition(prev => {
-        if (prev.left !== newPos.left || prev.top !== newPos.top) {
-          return newPos;
-        }
-        return prev;
-      });
+    if (cursorRef.current && containerRef.current) {
+      // Measure relative to the container usually, but here cursorRef is inside container.
+      // We want the checks to be fast.
+      const charEl = cursorRef.current;
+
+      const left = charEl.offsetLeft;
+      const top = charEl.offsetTop;
+      const width = charEl.offsetWidth;
+      const height = charEl.offsetHeight;
+
+      // 1. Update Input Position (Invisible)
+      if (inputRef.current) {
+        inputRef.current.style.left = `${left}px`;
+        inputRef.current.style.top = `${top}px`;
+      }
+
+      // 2. Update Visual Cursor Position (Direct transform)
+      if (cursorOverlayRef.current) {
+        cursorOverlayRef.current.style.display = 'block';
+        cursorOverlayRef.current.style.transform = `translate(${left}px, ${top}px)`;
+        cursorOverlayRef.current.style.width = `${width}px`;
+        cursorOverlayRef.current.style.height = `${height}px`;
+      }
+    } else {
+      // Hide cursor if no current char (e.g. finished?)
+      if (cursorOverlayRef.current && status === 'finished') {
+        cursorOverlayRef.current.style.display = 'none';
+      }
     }
-  }, [typedText]); // Run when typedText changes, which moves the cursor
+  }, [typedText, status]); // Re-run when text changes
 
   // 计算每个字符的状态 - 移除原有的大数组 map，改为渲染时计算
   // 保持 normalized 字符串缓存
@@ -268,8 +270,8 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         className="absolute opacity-0 pointer-events-auto caret-transparent"
         style={{
           position: 'absolute',
-          left: cursorPosition.left,
-          top: cursorPosition.top,
+          left: 0, // Controlled by useLayoutEffect
+          top: 0,  // Controlled by useLayoutEffect
           width: '1px',
           height: '1em',
           zIndex: 10,
@@ -295,6 +297,16 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         `}
         onClick={() => inputRef.current?.focus()}
       >
+        {/* Optimized Visual Cursor - sibling to text to avoid per-character layout thrashing */}
+        <div
+          ref={cursorOverlayRef}
+          className="absolute bg-teal-500/30 border-b-2 border-teal-400 transition-transform duration-100 ease-out will-change-transform z-0 rounded-sm pointer-events-none"
+          style={{
+            left: 0,
+            top: 0,
+            display: 'none' // Hidden until layout effect works
+          }}
+        />
         <AnimatePresence mode="popLayout" initial={false}>
           {linesToRender.map((line) => {
             const isCurrent = line.type === 'current';
