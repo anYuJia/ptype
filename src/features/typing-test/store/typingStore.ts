@@ -30,6 +30,11 @@ import {
 } from '../utils/wpmCalculator'
 import { calculateAllLines, LineInfo } from '../utils/lineUtils'
 
+import {
+  getMatchingBracket,
+  shouldAutoPair,
+} from '../utils/codeHelpers'
+
 // WPM 历史记录点（用于绘制曲线图）
 // CPM 历史记录点（用于绘制曲线图）
 export interface CpmHistoryPoint {
@@ -62,6 +67,7 @@ export interface TypingState {
   targetText: string // 原始文本
   displayText: string // 处理后的显示文本（根据选项处理）
   typedText: string
+  previewText: string // 预览文本（用于括号自动配对）
 
   // 统计数据
   correctChars: number
@@ -131,6 +137,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
   targetText: '',
   displayText: '',
   typedText: '',
+  previewText: '',
   correctChars: 0,
   errors: 0,
   wpm: 0,
@@ -268,32 +275,39 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
   // 处理输入
   handleInput: (char: string) => {
-    const { status, displayText, typedText } = get()
-
-    // 如果是 idle 状态，先开始测试
-    if (status === 'idle') {
-      get().startTest()
-    }
+    const { status, displayText, typedText, settings, previewText } = get()
 
     if (status === 'finished') return
 
-    // 如果已经输入完所有目标文本（极其罕见的情况），忽略新输入
-    // 正常应该早就追加了
+    // 如果已经输入完所有目标文本，忽略新输入
     if (typedText.length >= displayText.length) return
 
-    // 直接添加输入字符（不做任何转换，因为displayText已经预处理过了）
+    // 检查是否输入了预览中的字符
+    if (previewText && char === previewText[0]) {
+      set({ previewText: '' })
+      // 继续正常处理
+    }
+
     const newTypedText = typedText + char
     const analysis = analyzeTyping(displayText, newTypedText)
+
+    // 括标配对预览（所有模式均可支持，只要目标匹配）
+    let newPreviewText = ''
+    if (shouldAutoPair(char)) {
+      const matchingBracket = getMatchingBracket(char)
+      if (matchingBracket && displayText[newTypedText.length] === matchingBracket) {
+        newPreviewText = matchingBracket
+      }
+    }
 
     set({
       typedText: newTypedText,
       correctChars: analysis.correctChars,
       errors: analysis.errors,
       accuracy: calculateAccuracy(analysis.correctChars, analysis.totalTyped),
+      previewText: newPreviewText,
     })
 
-    // 检查剩余字符数，如果少于阈值，通过追加文本来实现"无限滚动"
-    // 阈值设为 150，大约是 2-3 行代码或英文
     const REMAINING_THRESHOLD = 150
     if (displayText.length - newTypedText.length < REMAINING_THRESHOLD) {
       get().appendText()
@@ -302,22 +316,12 @@ export const useTypingStore = create<TypingState>((set, get) => ({
 
   // 处理退格
   handleBackspace: () => {
-    // Fixed object literal syntax
-    const { status, typedText, displayText, settings } = get()
-
-    // 检查是否允许删除
-    if (!settings.typingOptions.allowBackspace) return
-
+    const { status, typedText, displayText } = get()
+    if (!get().settings.typingOptions.allowBackspace) return
     if (status === 'finished' || typedText.length === 0) return
 
-    // 检查是否会删除到上一行（防止跨行删除）
-    // 使用预计算的 lines 检查当前位置是否是某行的开头
-    const currentLineStart = get().lines.find(
-      (l) => l.startIndex === typedText.length
-    )
-    if (currentLineStart && currentLineStart.startIndex !== 0) {
-      return
-    }
+    const currentLineStart = get().lines.find((l) => l.startIndex === typedText.length)
+    if (currentLineStart && currentLineStart.startIndex !== 0) return
 
     const newTypedText = typedText.slice(0, -1)
     const analysis = analyzeTyping(displayText, newTypedText)
@@ -327,6 +331,7 @@ export const useTypingStore = create<TypingState>((set, get) => ({
       correctChars: analysis.correctChars,
       errors: analysis.errors,
       accuracy: calculateAccuracy(analysis.correctChars, analysis.totalTyped),
+      previewText: '', // 清除预览
     })
   },
 

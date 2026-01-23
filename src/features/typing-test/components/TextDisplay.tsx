@@ -82,17 +82,17 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
   // We now use direct DOM manipulation in useLayoutEffect.
 
   // 使用 selector 只订阅需要的状态
-  const { displayText, typedText, status, mode, allLines } = useTypingStore(
-    useShallow((state) => ({
-      displayText: state.displayText,
-      typedText: state.typedText,
-      status: state.status,
-      // 注意：mode 嵌套在 settings 中，直接获取可能会有问题如果 settings 更新
-      // 但 store.settings 是一个对象，我们应该具体订阅
-      mode: state.settings.mode,
-      allLines: state.lines,
-    }))
-  )
+  const { displayText, typedText, status, mode, allLines, previewText } =
+    useTypingStore(
+      useShallow((state) => ({
+        displayText: state.displayText,
+        typedText: state.typedText,
+        status: state.status,
+        mode: state.settings.mode,
+        allLines: state.lines,
+        previewText: state.previewText,
+      }))
+    )
 
   // 自动聚焦并定位input
   useEffect(() => {
@@ -101,25 +101,28 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
     }
   }, [status, inputRef])
 
-  // Optimize cursor update: Direct DOM manipulation
+  // Optimize cursor update: Direct DOM manipulation using Absolute coordinates
   useLayoutEffect(() => {
     if (cursorRef.current && containerRef.current) {
-      // Measure relative to the container usually, but here cursorRef is inside container.
-      // We want the checks to be fast.
       const charEl = cursorRef.current
+      const containerEl = containerRef.current
 
-      const left = charEl.offsetLeft
-      const top = charEl.offsetTop
-      const width = charEl.offsetWidth
-      const height = charEl.offsetHeight
+      const charRect = charEl.getBoundingClientRect()
+      const containerRect = containerEl.getBoundingClientRect()
 
-      // 1. Update Input Position (Invisible)
+      // Calculate relative position accurately
+      const left = charRect.left - containerRect.left
+      const top = charRect.top - containerRect.top
+      const width = charRect.width
+      const height = charRect.height
+
+      // 1. Update Input Position (Invisible but tracks cursor for IME)
       if (inputRef.current) {
         inputRef.current.style.left = `${left}px`
         inputRef.current.style.top = `${top}px`
       }
 
-      // 2. Update Visual Cursor Position (Direct transform)
+      // 2. Update Visual Cursor Position
       if (cursorOverlayRef.current) {
         cursorOverlayRef.current.style.display = 'block'
         cursorOverlayRef.current.style.transform = `translate(${left}px, ${top}px)`
@@ -127,12 +130,11 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
         cursorOverlayRef.current.style.height = `${height}px`
       }
     } else {
-      // Hide cursor if no current char (e.g. finished?)
-      if (cursorOverlayRef.current && status === 'finished') {
+      if (cursorOverlayRef.current) {
         cursorOverlayRef.current.style.display = 'none'
       }
     }
-  }, [typedText, status]) // Re-run when text changes
+  }, [typedText, status, previewText, allLines]) // Re-run when layout potentially changes
 
   // 计算每个字符的状态 - 移除原有的大数组 map，改为渲染时计算
   // 保持 normalized 字符串缓存
@@ -193,91 +195,64 @@ export function TextDisplay({ inputRef, inputHandlers }: TextDisplayProps) {
     hasNewline: boolean
   ) => {
     if (!lineText && !hasNewline)
-      return <span className="inline-block w-full">&nbsp;</span> // 保持空行高度
-
-    // 注意：lineText 是原始文本，而我们需要显示 normalizedDisplay 对应的字符
-    // 假设长度一致（normalizeSpecialChars 大多是 1:1 替换，除了省略号等少数情况）
-    // 如果长度不一致，这里的逻辑会从 normalizedDisplay 取出对应的字符，保持对齐
+      return <span className="inline-block w-full">&nbsp;</span>
 
     const chars = lineText.split('')
     const result = chars.map((_, i) => {
       const globalIndex = startOffset + i
-
-      // 直接获取 normalized 字符和状态
-      // 如果超出 normalizedDisplay 范围（比如 TextDisplay logic bug），fallback 到 lineText char
       const displayChar = normalizedDisplay[globalIndex] ?? lineText[i]
       if (!displayChar) return null
 
       let charStatus: 'pending' | 'correct' | 'incorrect' | 'current'
-
       if (globalIndex < normalizedTyped.length) {
-        // 比较 normalized 的字符
-        charStatus =
-          normalizedTyped[globalIndex] === displayChar ? 'correct' : 'incorrect'
-      } else if (
-        globalIndex === normalizedTyped.length &&
-        status !== 'finished'
-      ) {
+        charStatus = normalizedTyped[globalIndex] === displayChar ? 'correct' : 'incorrect'
+      } else if (globalIndex === normalizedTyped.length && status !== 'finished') {
         charStatus = 'current'
       } else {
         charStatus = 'pending'
       }
 
       const isCurrent = charStatus === 'current'
-
       return (
-        <span
-          key={globalIndex}
-          ref={isCurrent ? cursorRef : null}
-          className="relative inline-block"
-        >
-          <Character
-            char={displayChar}
-            status={charStatus}
-            isCurrent={isCurrent}
-          />
+        <span key={globalIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+          <Character char={displayChar} status={charStatus} isCurrent={isCurrent} />
+          {isCurrent && previewText && (
+            <span 
+              className="absolute left-[1ch] top-0 text-teal-400/60 font-bold animate-pulse pointer-events-none"
+            >
+              {previewText}
+            </span>
+          )}
         </span>
       )
     })
 
     if (hasNewline) {
       const newlineIndex = startOffset + chars.length
-      // 这里的 newline char 通常在 normalizedDisplay 也是 \n
       const newlineChar = normalizedDisplay[newlineIndex] ?? '\n'
-
       let newlineStatus: 'pending' | 'correct' | 'incorrect' | 'current'
-
       if (newlineIndex < normalizedTyped.length) {
-        newlineStatus =
-          normalizedTyped[newlineIndex] === newlineChar
-            ? 'correct'
-            : 'incorrect'
-      } else if (
-        newlineIndex === normalizedTyped.length &&
-        status !== 'finished'
-      ) {
+        newlineStatus = normalizedTyped[newlineIndex] === newlineChar ? 'correct' : 'incorrect'
+      } else if (newlineIndex === normalizedTyped.length && status !== 'finished') {
         newlineStatus = 'current'
       } else {
         newlineStatus = 'pending'
       }
 
       const isCurrent = newlineStatus === 'current'
-
       result.push(
-        <span
-          key={newlineIndex}
-          ref={isCurrent ? cursorRef : null}
-          className="relative inline-block"
-        >
-          <Character
-            char={newlineChar}
-            status={newlineStatus}
-            isCurrent={isCurrent}
-          />
+        <span key={newlineIndex} ref={isCurrent ? cursorRef : null} className="relative inline-block">
+          <Character char={newlineChar} status={newlineStatus} isCurrent={isCurrent} />
+          {isCurrent && previewText && (
+            <span 
+              className="absolute left-[1ch] top-0 text-teal-400/60 font-bold animate-pulse pointer-events-none"
+            >
+              {previewText}
+            </span>
+          )}
         </span>
       )
     }
-
     return result
   }
 

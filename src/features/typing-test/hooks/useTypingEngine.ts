@@ -10,6 +10,10 @@ import {
   ProgrammingLanguage,
   TypingOptions,
 } from '@/lib/constants'
+import {
+  getIndentToConsume,
+  getLeadingWhitespace,
+} from '../utils/codeHelpers'
 
 /**
  * 打字引擎 Hook
@@ -221,43 +225,60 @@ export function useTypingEngine() {
 
       if (status === 'finished') return
 
-      // 处理 Tab 键（代码模式）
-      if (e.key === 'Tab' && settings.mode === 'coder') {
+      // 处理 Tab 键
+      if (e.key === 'Tab') {
         e.preventDefault()
-        playSpace() // Tab sounds like Space usually, or Click?
-        handleInput('\t') // 输入制表符
+        // 智能 Tab：消耗目标文本中的连续空格/制表符
+        const indent = getIndentToConsume(displayText, typedText.length, 2)
+        if (indent) {
+          for (const char of indent) {
+            playSpace()
+            handleInput(char)
+          }
+        } else {
+          // 如果目标不是缩进，则按默认插入空格（仅代码模式支持默认插入）
+          if (settings.mode === 'coder') {
+            playSpace(); playSpace()
+            handleInput(' '); handleInput(' ')
+          }
+        }
+        
         const target = e.target as HTMLInputElement
-        target.value = ''
-        inputValueRef.current = ''
+        target.value = ''; inputValueRef.current = ''
         return
       }
 
       // 处理 Backspace
       if (e.key === 'Backspace') {
         e.preventDefault()
-
-        // 获取最新状态进行检查 (allowBackspace setting is checked internally by handleBackspace)
-
         playBackspace()
         handleBackspace()
         const target = e.target as HTMLInputElement
-        target.value = ''
-        inputValueRef.current = ''
+        target.value = ''; inputValueRef.current = ''
         return
       }
 
-      // 处理 Enter 换行（所有模式）
+      // 处理 Enter 换行
       if (e.key === 'Enter') {
         e.preventDefault()
         playEnter()
         handleInput('\n')
+        
+        // 智能 Enter：自动根据目标文本进行下一行缩进对齐 (所有模式适用)
+        const targetIndent = getLeadingWhitespace(displayText, typedText.length + 1)
+        if (targetIndent) {
+          for (const char of targetIndent) {
+            playSpace()
+            handleInput(char)
+          }
+        }
+        
         const target = e.target as HTMLInputElement
-        target.value = ''
-        inputValueRef.current = ''
+        target.value = ''; inputValueRef.current = ''
         return
       }
     },
-    [status, settings.mode, handleBackspace, handleInput]
+    [status, settings.mode, handleBackspace, handleInput, displayText, typedText]
   )
 
   return {
