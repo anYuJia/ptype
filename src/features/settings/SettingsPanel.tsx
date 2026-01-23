@@ -14,8 +14,8 @@ import { useTranslations } from 'next-intl';
 import {
   TimeSelector,
   ModeSelector,
-  DifficultySelector,
-  SoundSelector,
+  DifficultySelector, // Added back
+  SoundSelector, // keep import if it was re-exported
   ModeSpecificOptions,
 } from './components';
 
@@ -56,8 +56,6 @@ export function SettingsPanel({
     englishOptions,
     typingOptions,
     customText,
-    soundEnabled,
-    soundType,
   } = settings;
 
   // Load custom texts
@@ -238,14 +236,7 @@ export function SettingsPanel({
             disabled={disabled}
           />
 
-          {/* 音效选择 */}
-          <SoundSelector
-            soundEnabled={soundEnabled}
-            soundType={soundType}
-            onSoundEnabledChange={(e) => updateSettings({ soundEnabled: e })}
-            onSoundTypeChange={(t) => updateSettings({ soundType: t })}
-            disabled={disabled}
-          />
+          {/* 音效选择 已移动到 Header */}
         </div>
 
         {/* 右侧：重新生成按钮 */}
