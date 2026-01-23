@@ -25,7 +25,8 @@ export type ProgrammingLanguage =
     | 'rust'
     | 'html'
     | 'powershell'
-    | 'bash';
+    | 'bash'
+    | 'k8s';
 
 // 英文选项
 export interface EnglishOptions {
@@ -78,6 +79,7 @@ export const PROGRAMMING_LANGUAGE_OPTIONS: ProgrammingLanguage[] = [
     'html',
     'bash',
     'powershell',
+    'k8s',
 ];
 
 // 语言标签
@@ -93,6 +95,7 @@ export const PROGRAMMING_LANGUAGE_LABELS: Record<ProgrammingLanguage, string> = 
     html: 'HTML',
     bash: 'Bash/Linux',
     powershell: 'PowerShell',
+    k8s: 'Kubernetes (K8s)',
 };
 
 export const CHINESE_STYLE_LABELS: Record<ChineseStyle, string> = {

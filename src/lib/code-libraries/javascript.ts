@@ -124,6 +124,24 @@ export const javascriptLibrary: CodeLibrary = {
 
     hard: [
         {
+            code: cleanCode(`function useLocalStorage(key, initialValue) {\n\tconst [storedValue, setStoredValue] = useState(() => {\n\t\ttry {\n\t\t\tconst item = window.localStorage.getItem(key);\n\t\t\treturn item ? JSON.parse(item) : initialValue;\n\t\t} catch (error) {\n\t\t\tconsole.log(error);\n\t\t\treturn initialValue;\n\t\t}\n\t});\n\tconst setValue = (value) => {\n\t\ttry {\n\t\t\tconst valueToStore = value instanceof Function ? value(storedValue) : value;\n\t\t\tsetStoredValue(valueToStore);\n\t\t\twindow.localStorage.setItem(key, JSON.stringify(valueToStore));\n\t\t} catch (error) {\n\t\t\tconsole.log(error);\n\t\t}\n\t};\n\treturn [storedValue, setValue];\n}`),
+            difficulty: 'medium',
+            title: 'Custom Hook: useLocalStorage',
+            tags: ['React', 'Hooks'],
+        },
+        {
+            code: cleanCode(`function useEffectOnce(effect) {\n\tuseEffect(() => {\n\t\teffect();\n\t}, []);\n}`),
+            difficulty: 'medium',
+            title: 'Custom Hook: useEffectOnce',
+            tags: ['React', 'Hooks'],
+        },
+        {
+            code: cleanCode(`function Counter() {\n\tconst [count, setCount] = useState(0);\n\tuseEffect(() => {\n\t\tdocument.title = \`Count: \${count}\`;\n\t});\n\treturn (\n\t\t<button onClick={() => setCount(count + 1)}>\n\t\t\tClick me\n\t\t</button>\n\t);\n}`),
+            difficulty: 'medium',
+            title: 'React: useState & useEffect',
+            tags: ['React', 'Hooks'],
+        },
+        {
             code: cleanCode(`function longestPalindrome(s) {\n\tfunction expand(left, right) {\n\t\twhile (left >= 0 && right < s.length && s[left] === s[right]) {\n\t\t\tleft--;\n\t\t\tright++;\n\t\t}\n\t\treturn s.slice(left + 1, right);\n\t}\n\tlet longest = '';\n\tfor (let i = 0; i < s.length; i++) {\n\t\tconst odd = expand(i, i);\n\t\tconst even = expand(i, i + 1);\n\t\tif (odd.length > longest.length) longest = odd;\n\t\tif (even.length > longest.length) longest = even;\n\t}\n\treturn longest;\n}`),
             difficulty: 'hard',
             title: '最长回文子串',

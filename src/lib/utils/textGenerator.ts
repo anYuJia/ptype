@@ -14,6 +14,7 @@ import {
   englishLibrary,
   chineseModernLibrary,
   chineseClassicalLibrary,
+  k8sLibrary,
 } from '@/lib/code-libraries';
 
 // ==================== 文本池获取函数 ====================
@@ -53,6 +54,7 @@ function getTextPool(
       rust: rustLibrary,
       html: htmlLibrary,
       powershell: powershellLibrary,
+      k8s: k8sLibrary,
     };
 
     const library = codeLibraries[lang];

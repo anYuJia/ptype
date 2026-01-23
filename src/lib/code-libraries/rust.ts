@@ -65,5 +65,17 @@ export const rustLibrary: CodeLibrary = {
             title: '并发编程',
             tags: ['并发'],
         },
+        {
+            code: cleanCode(`fn main() {\n\tlet s1 = String::from("hello");\n\tlet s2 = s1;\n\t// println!("{}, world!", s1); // Error: value borrowed here after move\n\tprintln!("{}, world!", s2);\n}`),
+            difficulty: 'medium',
+            title: '所有权转移 (Move)',
+            tags: ['所有权'],
+        },
+        {
+            code: cleanCode(`fn main() {\n\tlet mut s = String::from("hello");\n\tlet r1 = &s;\n\t// let r2 = &mut s; // Error: cannot borrow \`s\` as mutable because it is also borrowed as immutable\n\tprintln!("{}", r1);\n}`),
+            difficulty: 'hard',
+            title: '可变引用限制',
+            tags: ['所有权', '借用'],
+        },
     ],
 };
