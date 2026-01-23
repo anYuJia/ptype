@@ -101,7 +101,12 @@
         "savedTexts": "已保存文本",
         "noSavedTexts": "暂无保存的文本",
         "cancel": "取消",
-        "titleAndContentRequired": "标题和内容不能为空"
+        "titleAndContentRequired": "标题和内容不能为空",
+        "soundEnabled": "机械音效",
+        "soundTypeLabels": {
+            "cherry-blue": "青轴",
+            "cherry-red": "红轴"
+        }
     },
     "Stats": {
         "wpm": "WPM",

@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useTypingStore } from '../store/typingStore';
+import { useSoundEffects } from './useSoundEffects';
 import { DifficultyLevel, EnglishOptions, ChineseStyle, ProgrammingLanguage, TypingOptions } from '@/lib/constants';
 
 /**
@@ -31,6 +32,8 @@ export function useTypingEngine() {
     resetTest,
     updateSettings,
   } = useTypingStore();
+
+  const { playClick, playSpace, playEnter, playBackspace } = useSoundEffects();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isComposingRef = useRef(false);
@@ -139,12 +142,16 @@ export function useTypingEngine() {
 
         // 逐个字符添加
         for (const char of newChars) {
+          if (char === ' ') playSpace();
+          else if (char === '\n') playEnter();
+          else playClick();
           handleInput(char);
         }
       } else if (newValue.length < oldValue.length) {
         // 处理删除
         const deleteCount = oldValue.length - newValue.length;
         for (let i = 0; i < deleteCount; i++) {
+          playBackspace();
           handleBackspace();
         }
       }
@@ -178,6 +185,9 @@ export function useTypingEngine() {
       if (data) {
         // 逐个字符添加
         for (const char of data) {
+          // 中文输入一般当作普通点击，或者 specialized sound?
+          // 暂时统一用 click，空格可能会比较少见
+          playClick();
           handleInput(char);
         }
       }
@@ -208,6 +218,7 @@ export function useTypingEngine() {
       // 处理 Tab 键（代码模式）
       if (e.key === 'Tab' && settings.mode === 'coder') {
         e.preventDefault();
+        playSpace(); // Tab sounds like Space usually, or Click?
         handleInput('\t');  // 输入制表符
         const target = e.target as HTMLInputElement;
         target.value = '';
@@ -221,6 +232,7 @@ export function useTypingEngine() {
 
         // 获取最新状态进行检查 (allowBackspace setting is checked internally by handleBackspace)
 
+        playBackspace();
         handleBackspace();
         const target = e.target as HTMLInputElement;
         target.value = '';
@@ -231,6 +243,7 @@ export function useTypingEngine() {
       // 处理 Enter 换行（所有模式）
       if (e.key === 'Enter') {
         e.preventDefault();
+        playEnter();
         handleInput('\n');
         const target = e.target as HTMLInputElement;
         target.value = '';

@@ -15,6 +15,7 @@ import {
   TimeSelector,
   ModeSelector,
   DifficultySelector,
+  SoundSelector,
   ModeSpecificOptions,
 } from './components';
 
@@ -55,6 +56,8 @@ export function SettingsPanel({
     englishOptions,
     typingOptions,
     customText,
+    soundEnabled,
+    soundType,
   } = settings;
 
   // Load custom texts
@@ -232,6 +235,15 @@ export function SettingsPanel({
             selectedTextId={selectedTextId}
             onCustomSelectChange={handleCustomSelectChange}
             onOpenCustomModal={() => setIsCustomModalOpen(true)}
+            disabled={disabled}
+          />
+
+          {/* 音效选择 */}
+          <SoundSelector
+            soundEnabled={soundEnabled}
+            soundType={soundType}
+            onSoundEnabledChange={(e) => updateSettings({ soundEnabled: e })}
+            onSoundTypeChange={(t) => updateSettings({ soundType: t })}
             disabled={disabled}
           />
         </div>

@@ -14,6 +14,10 @@ import {
   DEFAULT_PROGRAMMING_LANGUAGE,
   DEFAULT_ENGLISH_OPTIONS,
   DEFAULT_TYPING_OPTIONS,
+  SoundType,
+  DEFAULT_SOUND_ENABLED,
+  DEFAULT_SOUND_TYPE,
+  DEFAULT_SOUND_VOLUME,
 } from '@/lib/constants';
 import { generateText } from '@/lib/utils/textGenerator';
 import { analyzeTyping, calculateWPM, calculateCPM, calculateLPM, calculateAccuracy, normalizeSpecialChars } from '../utils/wpmCalculator';
@@ -38,6 +42,11 @@ export interface TypingSettings {
   englishOptions: EnglishOptions; // 英文选项
   typingOptions: TypingOptions; // 打字选项
   customText?: string; // 自定义文本
+
+  // 音效设置
+  soundEnabled: boolean;
+  soundType: SoundType;
+  soundVolume: number; // 0-1
 }
 
 // 状态接口
@@ -130,6 +139,9 @@ export const useTypingStore = create<TypingState>((set, get) => ({
     programmingLanguage: DEFAULT_PROGRAMMING_LANGUAGE,
     englishOptions: DEFAULT_ENGLISH_OPTIONS,
     typingOptions: DEFAULT_TYPING_OPTIONS,
+    soundEnabled: DEFAULT_SOUND_ENABLED,
+    soundType: DEFAULT_SOUND_TYPE,
+    soundVolume: DEFAULT_SOUND_VOLUME,
   },
 
   // 初始化测试（生成新文本）

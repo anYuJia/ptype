@@ -1,6 +1,9 @@
 // 练习模式
 export type TypingMode = 'english' | 'chinese' | 'coder' | 'custom';
 
+// 音效类型
+export type SoundType = 'cherry-blue' | 'cherry-red';
+
 // 练习状态
 export type TypingStatus = 'idle' | 'running' | 'finished';
 
@@ -48,6 +51,10 @@ export const DEFAULT_ENGLISH_OPTIONS: EnglishOptions = {
 export const DEFAULT_TYPING_OPTIONS: TypingOptions = {
     allowBackspace: true, // 默认允许删除
 };
+
+export const DEFAULT_SOUND_ENABLED = false;
+export const DEFAULT_SOUND_TYPE: SoundType = 'cherry-blue';
+export const DEFAULT_SOUND_VOLUME = 0.5;
 
 // 时间选项（秒）
 export const DURATION_OPTIONS = [15, 30, 60, 120] as const;

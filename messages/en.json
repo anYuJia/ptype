@@ -101,7 +101,12 @@
         "savedTexts": "Saved Texts",
         "noSavedTexts": "No saved texts found",
         "cancel": "Cancel",
-        "titleAndContentRequired": "Title and content required"
+        "titleAndContentRequired": "Title and content required",
+        "soundEnabled": "Mech Sound",
+        "soundTypeLabels": {
+            "cherry-blue": "Blue Switch",
+            "cherry-red": "Red Switch"
+        }
     },
     "Stats": {
         "wpm": "WPM",
