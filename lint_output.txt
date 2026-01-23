@@ -1,0 +1,257 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/home/pyu/code/ptype/server/server.js
+    1:20  error    A `require()` style import is forbidden      @typescript-eslint/no-require-imports
+  174:10  warning  'handleStartGame' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/battle/components/BattleLobby.tsx
+  15:67  warning  'username' is defined but never used                @typescript-eslint/no-unused-vars
+  22:24  warning  'setDifficulty' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:58  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+
+/home/pyu/code/ptype/src/features/battle/hooks/useBattleSocket.ts
+   3:44  warning  'useRef' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  55:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/pyu/code/ptype/src/features/battle/hooks/useBattleSocket.ts:55:9
+  53 |             autoConnect: true,
+  54 |         });
+> 55 |         setSocket(s);
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  56 |
+  57 |         s.on("connect", () => {
+  58 |             console.log("Connected to battle server", s.id);  react-hooks/set-state-in-effect
+
+/home/pyu/code/ptype/src/features/settings/SettingsPanel.tsx
+  18:3  warning  'SoundSelector' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/settings/actions.ts
+  16:67  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/settings/components/TimeSelector.tsx
+  39:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/pyu/code/ptype/src/features/settings/components/TimeSelector.tsx:39:13
+  37 |         const isStandard = DURATION_OPTIONS.includes(duration as typeof DURATION_OPTIONS[number]);
+  38 |         if (!isStandard && duration > 0 && savedCustom !== duration) {
+> 39 |             setSavedCustom(duration);
+     |             ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  40 |         }
+  41 |     }, [duration, savedCustom]);
+  42 |  react-hooks/set-state-in-effect
+  43:67  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+
+/home/pyu/code/ptype/src/features/typing-test/TypingTest.tsx
+  18:10  warning  'useBattleSocket' is defined but never used           @typescript-eslint/no-unused-vars
+  19:10  warning  'BattleLobby' is defined but never used               @typescript-eslint/no-unused-vars
+  20:10  warning  'BattleArena' is defined but never used               @typescript-eslint/no-unused-vars
+  50:11  warning  'openAuthModal' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  50:32  warning  'isAuthenticated' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  50:49  warning  'logout' is assigned a value but never used           @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/typing-test/components/BattleTabContent.tsx
+  5:10  warning  'useState' is defined but never used         @typescript-eslint/no-unused-vars
+  7:52  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  9:9   warning  'socket' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/typing-test/components/Header.tsx
+  12:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useSoundEffects.ts
+  54:32  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts
+  123:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playSpace`, but the source dependencies were [status, handleInput, handleBackspace]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:123:5
+  121 |   // Input change handler - 处理输入法确认后的输入
+  122 |   const handleInputChange = useCallback(
+> 123 |     (e: React.ChangeEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |       // 如果正在使用输入法，不处理 - 等待 compositionEnd
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 125 |       if (isComposingRef.current) {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 163 |       inputValueRef.current = '';
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 164 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  165 |     [status, handleInput, handleBackspace]
+  166 |   );
+  167 |      react-hooks/preserve-manual-memoization
+  123:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playEnter`, but the source dependencies were [status, handleInput, handleBackspace]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:123:5
+  121 |   // Input change handler - 处理输入法确认后的输入
+  122 |   const handleInputChange = useCallback(
+> 123 |     (e: React.ChangeEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |       // 如果正在使用输入法，不处理 - 等待 compositionEnd
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 125 |       if (isComposingRef.current) {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 163 |       inputValueRef.current = '';
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 164 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  165 |     [status, handleInput, handleBackspace]
+  166 |   );
+  167 |      react-hooks/preserve-manual-memoization
+  123:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playClick`, but the source dependencies were [status, handleInput, handleBackspace]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:123:5
+  121 |   // Input change handler - 处理输入法确认后的输入
+  122 |   const handleInputChange = useCallback(
+> 123 |     (e: React.ChangeEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |       // 如果正在使用输入法，不处理 - 等待 compositionEnd
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 125 |       if (isComposingRef.current) {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 163 |       inputValueRef.current = '';
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 164 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  165 |     [status, handleInput, handleBackspace]
+  166 |   );
+  167 |      react-hooks/preserve-manual-memoization
+  123:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playBackspace`, but the source dependencies were [status, handleInput, handleBackspace]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:123:5
+  121 |   // Input change handler - 处理输入法确认后的输入
+  122 |   const handleInputChange = useCallback(
+> 123 |     (e: React.ChangeEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |       // 如果正在使用输入法，不处理 - 等待 compositionEnd
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 125 |       if (isComposingRef.current) {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 163 |       inputValueRef.current = '';
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 164 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  165 |     [status, handleInput, handleBackspace]
+  166 |   );
+  167 |  react-hooks/preserve-manual-memoization
+  165:5  warning  React Hook useCallback has missing dependencies: 'playBackspace', 'playClick', 'playEnter', and 'playSpace'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+  178:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playClick`, but the source dependencies were [status, handleInput]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:178:5
+  176 |
+  177 |   const handleCompositionEnd = useCallback(
+> 178 |     (e: React.CompositionEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 179 |       isComposingRef.current = false;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 180 |
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 198 |       inputValueRef.current = '';
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 199 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  200 |     [status, handleInput]
+  201 |   );
+  202 |                                                                                                                           react-hooks/preserve-manual-memoization
+  200:5  warning  React Hook useCallback has a missing dependency: 'playClick'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  205:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playSpace`, but the source dependencies were [status, settings.mode, handleBackspace, handleInput]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:205:5
+  203 |   // KeyDown handler - 处理特殊键
+  204 |   const handleKeyDown = useCallback(
+> 205 |     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |       // 忽略输入法激活时的按键
+      | ^^^^^^^^^^^^^^^^^^^^
+> 207 |       // 特殊处理：如果按的是 Enter，且原生状态显示不在 composing，说明我们的 ref 状态可能滞后，允许通过
+      …
+      | ^^^^^^^^^^^^^^^^^^^^
+> 252 |       }
+      | ^^^^^^^^^^^^^^^^^^^^
+> 253 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  254 |     [status, settings.mode, handleBackspace, handleInput]
+  255 |   );
+  256 |                                                                     react-hooks/preserve-manual-memoization
+  205:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playBackspace`, but the source dependencies were [status, settings.mode, handleBackspace, handleInput]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:205:5
+  203 |   // KeyDown handler - 处理特殊键
+  204 |   const handleKeyDown = useCallback(
+> 205 |     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |       // 忽略输入法激活时的按键
+      | ^^^^^^^^^^^^^^^^^^^^
+> 207 |       // 特殊处理：如果按的是 Enter，且原生状态显示不在 composing，说明我们的 ref 状态可能滞后，允许通过
+      …
+      | ^^^^^^^^^^^^^^^^^^^^
+> 252 |       }
+      | ^^^^^^^^^^^^^^^^^^^^
+> 253 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  254 |     [status, settings.mode, handleBackspace, handleInput]
+  255 |   );
+  256 |                                                                 react-hooks/preserve-manual-memoization
+  205:5  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `playEnter`, but the source dependencies were [status, settings.mode, handleBackspace, handleInput]. Inferred different dependency than source.
+
+/home/pyu/code/ptype/src/features/typing-test/hooks/useTypingEngine.ts:205:5
+  203 |   // KeyDown handler - 处理特殊键
+  204 |   const handleKeyDown = useCallback(
+> 205 |     (e: React.KeyboardEvent<HTMLInputElement>) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |       // 忽略输入法激活时的按键
+      | ^^^^^^^^^^^^^^^^^^^^
+> 207 |       // 特殊处理：如果按的是 Enter，且原生状态显示不在 composing，说明我们的 ref 状态可能滞后，允许通过
+      …
+      | ^^^^^^^^^^^^^^^^^^^^
+> 252 |       }
+      | ^^^^^^^^^^^^^^^^^^^^
+> 253 |     },
+      | ^^^^^^ Could not preserve existing manual memoization
+  254 |     [status, settings.mode, handleBackspace, handleInput]
+  255 |   );
+  256 |                                                                     react-hooks/preserve-manual-memoization
+  254:5  warning  React Hook useCallback has missing dependencies: 'playBackspace', 'playEnter', and 'playSpace'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+/home/pyu/code/ptype/src/lib/utils/textGenerator.ts
+  75:10  warning  'shuffleArray' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 36 problems (17 errors, 19 warnings)
+

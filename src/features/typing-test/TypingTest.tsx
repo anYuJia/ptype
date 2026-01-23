@@ -15,7 +15,10 @@ import { useTypingEngine } from '@/features/typing-test/hooks/useTypingEngine';
 import { saveTypingResult } from '@/features/history/actions';
 import { sign } from '@/lib/security';
 import { useTranslations } from 'next-intl';
-
+import { useBattleSocket } from '@/features/battle/hooks/useBattleSocket';
+import { BattleLobby } from '@/features/battle/components/BattleLobby';
+import { BattleArena } from '@/features/battle/components/BattleArena';
+import { BattleTabContent } from '@/features/typing-test/components/BattleTabContent';
 
 // Lazy Load Heavy Components to optimize initial render and bundle size
 const ResultsCard = dynamic(() => import('@/features/typing-test/components/ResultsCard').then(mod => mod.ResultsCard), {
@@ -139,7 +142,7 @@ export function TypingTest() {
   }, [status]); // status 依赖主要是为了重置 savedRef
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'history' | 'profile'>('practice');
+  const [activeTab, setActiveTab] = useState<'practice' | 'leaderboard' | 'battle' | 'history' | 'profile'>('practice');
 
   // i18n
   const t = useTranslations('Navigation');
@@ -147,6 +150,7 @@ export function TypingTest() {
   const tabs = [
     { id: 'practice', label: t('practice') },
     { id: 'leaderboard', label: t('leaderboard') },
+    { id: 'battle', label: t('battle') },
     { id: 'history', label: t('history') },
     { id: 'profile', label: t('profile') },
   ] as const;
@@ -200,6 +204,8 @@ export function TypingTest() {
               )
             ) : activeTab === 'leaderboard' ? (
               <Leaderboard key="leaderboard" />
+            ) : activeTab === 'battle' ? (
+              <BattleTabContent user={user} />
             ) : activeTab === 'history' ? (
               <History key="history" />
             ) : activeTab === 'profile' ? (

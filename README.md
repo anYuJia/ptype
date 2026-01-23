@@ -1,470 +1,57 @@
-<div align="center">
+# PType - 极简主义打字竞技平台 ⌨️
 
-<h1 align="center">
-  <img src="./public/logo.png" alt="PType Logo" width="48" height="48" style="vertical-align: bottom; margin-right: 10px;">
-  PType
-</h1>
-<p align="center">
-  <strong>专为开发者打造的终极打字练习平台</strong>
-</p>
+## 项目简介
+PType 是一个专注于提升打字速度与准确率的在线竞技平台。采用现代化的极简设计，支持多种练习模式、实时在线对战以及详细的数据统计分析。
 
-[English](./README_EN.md) | [简体中文](./README.md)
+## ✨ 核心功能
 
-[![License](https://img.shields.io/github/license/anYuJia/ptype?style=flat-square&color=blue)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![GitHub stars](https://img.shields.io/github/stars/anYuJia/ptype?style=flat-square&color=yellow)](https://github.com/anYuJia/ptype/stargazers)
+### 1. 打字练习模式
+- **多语言支持**：英文（常用短语、名言）、中文（现代文、文言文）、代码（JS, TS, Rust 等）。
+- **个性化设置**：支持自定义测试时长（15s/30s/60s）、难度、标点符号及退格键设置。
+- **自定义文本**：支持粘贴自己的文本进行练习。
 
-<br/>
+### 2. ⚡ 在线对战 (1v1)
+- **实时竞速**：创建房间，邀请好友或随机匹配，进行实时 1v1 对决。
+- **双模式**：
+  - 🏎️ **竞速模式**：看谁先打完所有文本。
+  - ⏱️ **限时挑战**：固定时间内，看谁的正确字符数更多。
+- **自定义规则**：房主可设置比赛时间、文本内容等。
 
-**[在线演示](#) · [报告 Bug](https://github.com/anYuJia/ptype/issues) · [请求功能](https://github.com/anYuJia/ptype/issues)**
-
-</div>
-
----
-
-## 📖 目录
-
-- [✨ 项目亮点](#-项目亮点)
-- [📸 界面预览](#-界面预览)
-- [🚀 核心特性](#-核心特性)
-- [🛠️ 技术栈](#️-技术栈)
-- [💻 代码库支持](#-代码库支持)
-- [🏁 快速开始](#-快速开始)
-- [🔐 安全机制](#-安全机制)
-- [🤝 参与贡献](#-参与贡献)
-- [📄 许可证](#-许可证)
-- [🌟 Star History](#-star-history)
-
----
-
-## ✨ 项目亮点
-
-PType 不仅仅是一个打字练习工具，它是为了**提升开发者生产力**而生的训练场。
-
-- 🎯 **极致体验**：基于 React 19 和 Framer Motion 打造的丝滑动画与响应式设计。
-- 🌍 **多语言支持**：不仅支持英文、中文（现代/文言），更原生支持 10+ 种编程语言。
-- 📊 **专业分析**：统一使用 CPM (Characters Per Minute) 作为核心指标，提供 WPM、准确率热力图等多维度数据分析。
-- 🏆 **竞技排行**：内置全球排行榜与个人历史记录，实时监控你的成长曲线。
-- 🔐 **请求签名**：内置多层加密签名机制，防止 API 滥用和自动化攻击。
-- 🌐 **国际化**：完整的中英文界面支持，基于 next-intl 实现。
-
----
-
-## 📸 界面预览
-
-<div align="center">
-  <img src="./screenshots/code-mode.png" alt="Code Mode" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <p><i>程序员模式 - 沉浸式代码练习体验</i></p>
-</div>
-
-<details>
-<summary><b>查看更多截图</b></summary>
-<br>
-<table width="100%">
-  <tr>
-    <td width="50%" align="center"><b>英文模式</b><br><img src="./screenshots/english-mode.png" alt="English Mode"></td>
-    <td width="50%" align="center"><b>中文模式</b><br><img src="./screenshots/chinese-mode.png" alt="Chinese Mode"></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><b>详细统计面板</b><br><img src="./screenshots/result.png" alt="Statistics"></td>
-  </tr>
-</table>
-</details>
-
----
-
-## 🚀 核心特性
-
-### 1. 三大练习模式
-
-| 模式 | 描述 | 适用场景 |
-| :--- | :--- | :--- |
-| **📝 英文模式** | 经典单词练习，支持标点、大小写敏感 | 提升日常英文输入速度 |
-| **🇨🇳 中文模式** | 现代文、古文（论语、道德经） | 体验中华文化，提升中文打字 |
-| **💻 程序员模式** | 真实代码片段、Linux 命令、算法题 | **开发者必备**，提升 Coding 效率 |
-
-### 2. 智能数据分析
-
-- **CPM (Characters Per Minute)**: 全局核心速度指标，统一衡量中英文及代码输入效率。
-- **WPM (Words Per Minute)**: 英文模式辅助参考指标。
-- **准确率热力图**: 识别你的高频错误按键。
-- **历史回溯**: 完整的练习历史记录与趋势分析。
-
-### 3. 用户与社交
-
-- **账号系统**: 完整的注册登录流程，JWT 认证，数据云端存储。
-- **排行榜**: 实时更新的全球速度排行，激发练习动力。
-- **自定义文本**: 支持用户上传自己的练习文本。
-
----
+### 3. 数据分析
+- **详细统计**：WPM (每分钟单词数)、CPM (每分钟字符数)、准确率、错误率。
+- **历史记录**：保存所有的练习记录，随时查看进步趋势。
+- **排行榜**：查看全球顶尖打字高手的排名。
 
 ## 🛠️ 技术栈
+- **Frontend**: Next.js 14, React, TailwindCSS, Framer Motion
+- **Backend**: Node.js, Socket.io (WebSocket for real-time battle)
+- **State**: Zustand (Local state management)
+- **i18n**: next-intl (Internationalization)
 
-本项目采用现代化的全栈技术构建，确保高性能与可维护性。
+## 🚀 快速开始
 
-| 领域 | 技术选型 |
-| :--- | :--- |
-| **核心框架** | ![React](https://img.shields.io/badge/-React_19-20232A?logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/-Next.js_16-000000?logo=next.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white) |
-| **样式与动画** | ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS_v4-38B2AC?logo=tailwind-css&logoColor=white) ![Framer Motion](https://img.shields.io/badge/-Framer_Motion-0055FF?logo=framer&logoColor=white) |
-| **后端与数据** | ![Prisma](https://img.shields.io/badge/-Prisma-2D3748?logo=prisma&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?logo=postgresql&logoColor=white) |
-| **状态管理** | ![Zustand](https://img.shields.io/badge/-Zustand-443E38?logo=react&logoColor=white) |
-| **图表可视化** | ![Recharts](https://img.shields.io/badge/-Recharts-22b5bf?logo=react&logoColor=white) |
-| **国际化** | ![next-intl](https://img.shields.io/badge/-next--intl-000000?logo=next.js&logoColor=white) |
-| **认证安全** | ![JWT](https://img.shields.io/badge/-JWT-000000?logo=json-web-tokens&logoColor=white) ![HMAC](https://img.shields.io/badge/-HMAC--SHA256-blue) |
-
----
-
-## 💻 代码库支持
-
-PType 内置了丰富的代码练习库，涵盖主流语言与工具：
-
-<div align="center">
-
-![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
-![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
-![Java](https://img.shields.io/badge/-Java-007396?logo=java&logoColor=white)
-![Go](https://img.shields.io/badge/-Go-00ADD8?logo=go&logoColor=white)
-![C++](https://img.shields.io/badge/-C++-00599C?logo=c%2B%2B&logoColor=white)
-![Rust](https://img.shields.io/badge/-Rust-000000?logo=rust&logoColor=white)
-![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white)
-![PowerShell](https://img.shields.io/badge/-PowerShell-5391FE?logo=powershell&logoColor=white)
-![Bash](https://img.shields.io/badge/-Bash-4EAA25?logo=gnu-bash&logoColor=white)
-
-</div>
-
-> **特色内容**：包含 LeetCode 热门算法题（两数之和、LRU 缓存等）和真实场景的系统运维命令。
-
----
-
-## 🏁 快速开始
-
-### 环境要求
-
-| 启动方式 | 必需环境 |
-| :--- | :--- |
-| **🐳 Docker 部署**（推荐） | Docker 20.10+, Docker Compose 2.0+ |
-| **💻 本地部署** | Node.js >= 18.0, PostgreSQL >= 14.0 |
-
-### 🚀 一键启动（推荐）
-
-我们提供了智能启动脚本 `start.sh`，支持 Docker 和本地两种部署方式，自动配置数据库和环境变量。
-
+### 1. 安装依赖
 ```bash
-# 1. 克隆仓库
-git clone --depth 1 https://github.com/anYuJia/ptype.git
-cd ptype
-
-# 2. 运行启动脚本
-./start.sh
-```
-
-脚本会引导你完成：
-- ✅ 自动检测/创建 `.env` 配置文件
-- ✅ 自动生成安全密钥
-- ✅ 选择部署方式（Docker/本地）
-- ✅ 自动配置数据库
-- ✅ 启动应用服务
-
-<details>
-<summary><b>📋 启动脚本命令参考</b></summary>
-
-```bash
-# 交互式启动（推荐首次使用）
-./start.sh
-
-# Docker 部署
-./start.sh docker           # 交互式 Docker 部署
-./start.sh docker -d        # Docker 后台启动
-./start.sh docker -b -d     # 重新构建并后台启动
-
-# 本地部署
-./start.sh local            # 本地开发模式
-
-# 其他
-./start.sh setup            # 仅配置 .env 文件
-./start.sh help             # 显示帮助
-```
-
-</details>
-
----
-
-### 手动部署
-
-如果你更喜欢手动控制每一步，请参考以下指南：
-
-<details>
-<summary><b>🐳 手动 Docker 部署</b></summary>
-
-**1. 克隆仓库**
-
-```bash
-git clone --depth 1 https://github.com/anYuJia/ptype.git
-cd ptype
-```
-
-**2. 配置环境变量**
-
-```bash
-cp .env.example .env
-```
-
-编辑 `.env` 文件，设置安全密钥：
-
-```env
-# 数据库配置
-DB_USER=ptype
-DB_PASSWORD=ptype
-DB_NAME=ptype
-DB_PORT=5432
-
-# 安全密钥（必须修改！使用 openssl rand -base64 32 生成）
-JWT_SECRET="你的随机密钥"
-SIGNATURE_SECRET="你的随机密钥"
-
-# Cookie 设置（HTTP 环境设为 false）
-SECURE_COOKIES=false
-```
-
-**3. 启动服务**
-
-```bash
-# 构建并启动
-docker-compose up -d --build
-
-# 查看日志
-docker-compose logs -f
-```
-
-**4. 访问应用**
-
-打开浏览器访问 http://localhost:3000
-
-**常用命令：**
-
-```bash
-docker-compose logs -f web    # 查看应用日志
-docker-compose down           # 停止服务
-docker-compose down -v        # 停止并删除数据
-docker-compose restart        # 重启服务
-```
-
-</details>
-
-<details>
-<summary><b>💻 手动本地部署</b></summary>
-
-**1. 克隆仓库并安装依赖**
-
-```bash
-git clone --depth 1 https://github.com/anYuJia/ptype.git
-cd ptype
 npm install
 ```
 
-**2. 配置 PostgreSQL 数据库**
-
-选择以下任一方式：
-
-**方式 A：使用 Docker 启动数据库（推荐）**
-
+### 2. 启动 Socket.io 服务器 (用于对战)
 ```bash
-docker-compose up -d db
+node server/server.js
 ```
+> 服务器运行在 4000 端口。
 
-**方式 B：使用本地 PostgreSQL**
-
+### 3. 启动前端应用
 ```bash
-# 安装 PostgreSQL（以 Ubuntu 为例）
-sudo apt update && sudo apt install -y postgresql postgresql-contrib
-
-# 启动服务
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-
-# 创建数据库和用户
-sudo -u postgres psql << EOF
-CREATE USER ptype WITH PASSWORD 'ptype';
-CREATE DATABASE ptype OWNER ptype;
-GRANT ALL PRIVILEGES ON DATABASE ptype TO ptype;
-EOF
-```
-
-**3. 配置环境变量**
-
-```bash
-cp .env.example .env
-```
-
-编辑 `.env` 文件：
-
-```env
-# 数据库配置
-DB_USER=ptype
-DB_PASSWORD=ptype
-DB_NAME=ptype
-DB_PORT=5432
-DATABASE_URL="postgresql://ptype:ptype@localhost:5432/ptype?schema=public"
-
-# 安全密钥（必须修改！）
-JWT_SECRET="你的随机密钥"
-SIGNATURE_SECRET="你的随机密钥"
-
-# Cookie 设置
-SECURE_COOKIES=false
-```
-
-**4. 初始化数据库**
-
-```bash
-# 设置 Prisma 国内镜像（可选，加速下载）
-export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
-
-# 生成 Prisma 客户端
-npx prisma generate
-
-# 同步数据库结构
-npx prisma db push
-```
-
-**5. 启动应用**
-
-```bash
-# 开发模式（热重载）
 npm run dev
-
-# 或生产模式
-npm run build && npm start
 ```
+> 应用运行在 3000 端口。
 
-**6. 访问应用**
+### 4. 访问应用
+打开浏览器访问 [http://localhost:3000](http://localhost:3000)
 
-打开浏览器访问 http://localhost:3000
+## 🤝 贡献
+欢迎提交 Issue 和 PR！
 
-</details>
-
----
-
-### 常见问题
-
-<details>
-<summary><b>❓ .env 文件不存在</b></summary>
-
-```bash
-cp .env.example .env
-# 然后编辑 .env 配置 JWT_SECRET 和 SIGNATURE_SECRET
-```
-
-或使用启动脚本自动生成：`./start.sh setup`
-
-</details>
-
-<details>
-<summary><b>❓ 容器启动报错：Environment variables not configured</b></summary>
-
-请检查 `.env` 文件中的 `JWT_SECRET` 和 `SIGNATURE_SECRET` 是否已修改为非默认值。
-
-</details>
-
-<details>
-<summary><b>❓ 登录后无法保持会话</b></summary>
-
-如果使用 HTTP（非 HTTPS）访问，请在 `.env` 中设置：
-```env
-SECURE_COOKIES=false
-```
-
-</details>
-
-<details>
-<summary><b>❓ Prisma 引擎下载失败</b></summary>
-
-设置国内镜像后重试：
-```bash
-export PRISMA_ENGINES_MIRROR="https://registry.npmmirror.com/-/binary/prisma"
-npx prisma generate
-```
-
-</details>
-
-<details>
-<summary><b>❓ PostgreSQL collation 版本不匹配</b></summary>
-
-这是系统更新后的兼容性问题，执行以下命令修复：
-```bash
-sudo -u postgres psql -c "ALTER DATABASE template1 REFRESH COLLATION VERSION;"
-```
-
-</details>
-
----
-
-## 🔐 安全机制
-
-PType 内置了多层安全防护机制：
-
-### 用户认证
-
-- **JWT 认证** - 使用 JSON Web Token 进行用户身份验证
-- **HttpOnly Cookie** - Token 存储在 HttpOnly Cookie 中，防止 XSS 攻击
-- **Secure Cookie** - 生产环境（HTTPS）自动启用 Secure 标志
-
-> ⚠️ **HTTP 环境配置**：如果服务器未配置 HTTPS，需要在 `.env` 中设置 `SECURE_COOKIES=false`
-
-### 请求签名系统
-
-所有敏感的写操作（登录、注册、保存成绩等）都需要携带有效的请求签名。
-
-**安全特性：**
-- ⏱️ **时间戳验证** - 签名 5 分钟后自动过期
-- 🔄 **Nonce 防重放** - 每个签名只能使用一次
-- 🔒 **数据完整性** - 验证请求数据未被篡改
-- 🌐 **浏览器指纹** - 增加请求唯一性，防止跨设备重放
-- 🔐 **多轮 HMAC** - 增加逆向破解难度
-
-详细文档请参阅 [src/lib/security/README.md](./src/lib/security/README.md)
-
----
-
-## 🤝 参与贡献
-
-我们非常欢迎社区的贡献！无论是修复 Bug、添加新功能，还是丰富代码练习库。
-
-1. **Fork** 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启一个 **Pull Request**
-
-### 如何添加新的练习代码？
-
-所有代码库文件位于 `/src/lib/code-libraries/`。
-你可以参考现有的 `python.ts` 或 `java.ts` 格式，创建一个新的语言文件并在 `index.ts` 中导出。
-
----
-
-## 📄 许可证
-
-本项目基于 **MIT 许可证** 开源。详情请参阅 [LICENSE](LICENSE) 文件。
-
----
-
-## 🌟 Star History
-
-<div align="center">
-  <a href="https://star-history.com/#anYuJia/ptype&Date">
-    <img src="https://api.star-history.com/svg?repos=anYuJia/ptype&type=Date" alt="Star History Chart">
-  </a>
-</div>
-
-<br/>
-
-<div align="center">
-  <b>如果觉得 PType 对你有帮助，请给个 ⭐️ Star 支持一下！</b>
-  <br/>
-  <sub>Made with ❤️ by <a href="https://github.com/anYuJia">anYuJia</a></sub>
-</div>
+## 📄 License
+MIT License

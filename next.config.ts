@@ -14,6 +14,18 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   output: "standalone",
+  async rewrites() {
+    return [
+      {
+        source: '/socket.io',
+        destination: 'http://127.0.0.1:4000/socket.io/',
+      },
+      {
+        source: '/socket.io/:path*',
+        destination: 'http://127.0.0.1:4000/socket.io/:path*',
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

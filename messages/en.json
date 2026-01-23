@@ -14,7 +14,8 @@
         "profile": "Profile",
         "login": "Login",
         "register": "Register",
-        "logout": "Logout"
+        "logout": "Logout",
+        "battle": "Battle"
     },
     "Common": {
         "loading": "Loading...",
@@ -134,5 +135,84 @@
         },
         "playAgain": "Play Again",
         "restartHint": "Press {tab} + {enter} to restart"
+    },
+    "Battle": {
+        "title": "Online Battle Arena",
+        "subtitle": "Challenge true typing masters. Join a lobby or create your own.",
+        "createRoom": "Create Room",
+        "createPrivate": "Create Private Match",
+        "privateDesc": "Host a custom game for friends",
+        "joinById": "Join by ID",
+        "joinBtn": "JOIN",
+        "liveRooms": "Live Rooms",
+        "refresh": "Refresh",
+        "noRooms": "No active rooms found.",
+        "beFirst": "Be the first to create one!",
+        "joinNow": "Join Now",
+        "hostRoom": "{host}'s Room",
+        "modal": {
+            "title": "Create Room",
+            "mode": "Game Mode",
+            "timeLimit": "Time Limit",
+            "difficulty": "Difficulty",
+            "textSource": "Text Source",
+            "cancel": "Cancel",
+            "create": "Create Room",
+            "modes": {
+                "race": "🏎️ Race (100%)",
+                "time": "⏱️ Time Attack"
+            },
+            "sources": {
+                "english": "English",
+                "chinese": "Chinese",
+                "coder": "Code",
+                "custom": "Custom Text"
+            },
+            "styles": {
+                "modern": "Modern",
+                "classical": "Classical"
+            },
+            "loginRequired": "Please log in to use custom texts",
+            "noCustomTexts": "No saved texts found. Add them in Settings.",
+            "loginBtn": "Log In",
+            "errors": {
+                "roomNotFound": "Room not found",
+                "roomFull": "Room is full",
+                "gameStarted": "Game already started",
+                "opponentDisconnected": "Opponent disconnected"
+            },
+            "languages": {
+                "python": "Python",
+                "javascript": "JavaScript",
+                "typescript": "TypeScript",
+                "java": "Java",
+                "cpp": "C++",
+                "c": "C",
+                "go": "Go",
+                "rust": "Rust",
+                "html": "HTML",
+                "bash": "Bash/Linux",
+                "powershell": "PowerShell",
+                "k8s": "Kubernetes (K8s)"
+            },
+            "placeholders": {
+                "customText": "Paste your text here...",
+                "code": "ENTER CODE"
+            }
+        },
+        "arena": {
+            "waiting": "Waiting for opponent...",
+            "raceProgress": "RACE IN PROGRESS",
+            "timeAttack": "TIME ATTACK",
+            "gameOver": "GAME OVER",
+            "opponent": "Opponent",
+            "you": "You",
+            "winner": "Winner!",
+            "tie": "It's a Tie!",
+            "spectating": "Spectating",
+            "leave": "Leave Room",
+            "ready": "Ready",
+            "cancelReady": "Cancel Ready"
+        }
     }
 }

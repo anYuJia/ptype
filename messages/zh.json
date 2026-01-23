@@ -14,7 +14,8 @@
         "profile": "我的",
         "login": "登录",
         "register": "注册",
-        "logout": "退出"
+        "logout": "退出",
+        "battle": "对战"
     },
     "Common": {
         "loading": "加载中...",
@@ -134,5 +135,84 @@
         },
         "playAgain": "再来一次",
         "restartHint": "按 {tab} + {enter} 重新开始"
+    },
+    "Battle": {
+        "title": "在线对战竞技场",
+        "subtitle": "挑战真正的打字高手。加入房间或创建您原本的对战。",
+        "createRoom": "创建房间",
+        "createPrivate": "创建私人对局",
+        "privateDesc": "与好友进行自定义对战",
+        "joinById": "通过 ID 加入",
+        "joinBtn": "加入",
+        "liveRooms": "正在进行的房间",
+        "refresh": "刷新",
+        "noRooms": "暂无活跃房间。",
+        "beFirst": "成为第一个创建者！",
+        "joinNow": "立即加入",
+        "hostRoom": "{host} 的房间",
+        "modal": {
+            "title": "创建房间",
+            "mode": "游戏模式",
+            "timeLimit": "时间限制",
+            "difficulty": "难度",
+            "textSource": "文本来源",
+            "cancel": "取消",
+            "create": "创建房间",
+            "modes": {
+                "race": "🏎️ 竞速模式 (100%)",
+                "time": "⏱️ 限时挑战"
+            },
+            "sources": {
+                "english": "英文",
+                "chinese": "中文",
+                "coder": "代码",
+                "custom": "自定义文本"
+            },
+            "styles": {
+                "modern": "现代文",
+                "classical": "文言文"
+            },
+            "loginRequired": "请登录以使用自定义文本",
+            "noCustomTexts": "未找到文本，请在设置中添加",
+            "loginBtn": "登录",
+            "errors": {
+                "roomNotFound": "房间不存在",
+                "roomFull": "房间已满",
+                "gameStarted": "比赛已开始",
+                "opponentDisconnected": "对手已断开连接"
+            },
+            "languages": {
+                "python": "Python",
+                "javascript": "JavaScript",
+                "typescript": "TypeScript",
+                "java": "Java",
+                "cpp": "C++",
+                "c": "C",
+                "go": "Go",
+                "rust": "Rust",
+                "html": "HTML",
+                "bash": "Bash/Linux",
+                "powershell": "PowerShell",
+                "k8s": "Kubernetes (K8s)"
+            },
+            "placeholders": {
+                "customText": "在此粘贴您的文本...",
+                "code": "输入代码"
+            }
+        },
+        "arena": {
+            "waiting": "等待对手...",
+            "raceProgress": "竞速进行中",
+            "timeAttack": "限时挑战",
+            "gameOver": "游戏结束",
+            "opponent": "对手",
+            "you": "你",
+            "winner": "获胜！",
+            "tie": "平局！",
+            "spectating": "观战中",
+            "leave": "离开房间",
+            "ready": "准备",
+            "cancelReady": "取消准备"
+        }
     }
 }
